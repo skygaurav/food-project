@@ -18,7 +18,7 @@
                     You are signed in as an admin. Use the API endpoints to manage restaurants, categories,
                     and approve submitted dishes.
                 </p>
-                <form method="POST" action="{{ route('admin.logout') }}">
+                <form method="POST" action="{{ url('/admin/logout') }}">
                     @csrf
                     <button type="submit" class="rounded border border-slate-500 px-6 py-2 text-lg">
                         Log out
