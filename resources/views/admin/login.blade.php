@@ -24,7 +24,7 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('admin.login.attempt') }}" class="mt-6 space-y-6">
+                <form method="POST" action="{{ url('/admin/login') }}" class="mt-6 space-y-6">
                     @csrf
                     <label class="flex flex-col gap-2">
                         <span class="text-sm font-semibold">Username</span>
