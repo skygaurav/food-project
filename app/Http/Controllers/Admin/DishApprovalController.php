@@ -28,4 +28,20 @@ class DishApprovalController extends Controller
 
         return response()->json($dish->load(['restaurant', 'images']));
     }
+
+    public function approve(Dish $dish): JsonResponse
+    {
+        $dish->status = 'approved';
+        $dish->save();
+
+        return response()->json($dish->load(['restaurant', 'images']));
+    }
+
+    public function disapprove(Dish $dish): JsonResponse
+    {
+        $dish->status = 'rejected';
+        $dish->save();
+
+        return response()->json($dish->load(['restaurant', 'images']));
+    }
 }
