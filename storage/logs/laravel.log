@@ -1,0 +1,87 @@
+[2025-12-27 17:08:54] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [] is not defined. at /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Log/LogManager.php:210)
+[stacktrace]
+#0 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(135): Illuminate\\Log\\LogManager->resolve()
+#1 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(122): Illuminate\\Log\\LogManager->get()
+#2 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(645): Illuminate\\Log\\LogManager->driver()
+#3 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(274): Illuminate\\Log\\LogManager->error()
+#4 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(454): Illuminate\\Foundation\\Exceptions\\Handler->report()
+#5 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(157): Illuminate\\Foundation\\Console\\Kernel->reportException()
+#6 /workspaces/food-project/artisan(8): Illuminate\\Foundation\\Console\\Kernel->handle()
+#7 {main}
+"} 
+[2025-12-27 17:08:54] laravel.ERROR: The "" directory does not exist. {"exception":"[object] (Symfony\\Component\\Finder\\Exception\\DirectoryNotFoundException(code: 0): The \"\" directory does not exist. at /workspaces/food-project/vendor/symfony/finder/Finder.php:590)
+[stacktrace]
+#0 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/LoadConfiguration.php(86): Symfony\\Component\\Finder\\Finder->in()
+#1 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/LoadConfiguration.php(63): Illuminate\\Foundation\\Bootstrap\\LoadConfiguration->getConfigurationFiles()
+#2 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/LoadConfiguration.php(39): Illuminate\\Foundation\\Bootstrap\\LoadConfiguration->loadConfigurationFiles()
+#3 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(265): Illuminate\\Foundation\\Bootstrap\\LoadConfiguration->bootstrap()
+#4 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(383): Illuminate\\Foundation\\Application->bootstrapWith()
+#5 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(153): Illuminate\\Foundation\\Console\\Kernel->bootstrap()
+#6 /workspaces/food-project/artisan(8): Illuminate\\Foundation\\Console\\Kernel->handle()
+#7 {main}
+"} 
+[2025-12-27 17:09:07] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [] is not defined. at /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Log/LogManager.php:210)
+[stacktrace]
+#0 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(135): Illuminate\\Log\\LogManager->resolve()
+#1 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(122): Illuminate\\Log\\LogManager->get()
+#2 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(645): Illuminate\\Log\\LogManager->driver()
+#3 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(274): Illuminate\\Log\\LogManager->error()
+#4 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(454): Illuminate\\Foundation\\Exceptions\\Handler->report()
+#5 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(157): Illuminate\\Foundation\\Console\\Kernel->reportException()
+#6 /workspaces/food-project/artisan(8): Illuminate\\Foundation\\Console\\Kernel->handle()
+#7 {main}
+"} 
+[2025-12-27 17:09:07] laravel.ERROR: The "" directory does not exist. {"exception":"[object] (Symfony\\Component\\Finder\\Exception\\DirectoryNotFoundException(code: 0): The \"\" directory does not exist. at /workspaces/food-project/vendor/symfony/finder/Finder.php:590)
+[stacktrace]
+#0 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/LoadConfiguration.php(86): Symfony\\Component\\Finder\\Finder->in()
+#1 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/LoadConfiguration.php(63): Illuminate\\Foundation\\Bootstrap\\LoadConfiguration->getConfigurationFiles()
+#2 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/LoadConfiguration.php(39): Illuminate\\Foundation\\Bootstrap\\LoadConfiguration->loadConfigurationFiles()
+#3 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(265): Illuminate\\Foundation\\Bootstrap\\LoadConfiguration->bootstrap()
+#4 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(383): Illuminate\\Foundation\\Application->bootstrapWith()
+#5 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(153): Illuminate\\Foundation\\Console\\Kernel->bootstrap()
+#6 /workspaces/food-project/artisan(8): Illuminate\\Foundation\\Console\\Kernel->handle()
+#7 {main}
+"} 
+[2025-12-27 17:10:22] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [] is not defined. at /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Log/LogManager.php:210)
+[stacktrace]
+#0 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(135): Illuminate\\Log\\LogManager->resolve()
+#1 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(122): Illuminate\\Log\\LogManager->get()
+#2 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(645): Illuminate\\Log\\LogManager->driver()
+#3 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(274): Illuminate\\Log\\LogManager->error()
+#4 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(454): Illuminate\\Foundation\\Exceptions\\Handler->report()
+#5 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(157): Illuminate\\Foundation\\Console\\Kernel->reportException()
+#6 /workspaces/food-project/artisan(8): Illuminate\\Foundation\\Console\\Kernel->handle()
+#7 {main}
+"} 
+[2025-12-27 17:10:22] laravel.ERROR: The "" directory does not exist. {"exception":"[object] (Symfony\\Component\\Finder\\Exception\\DirectoryNotFoundException(code: 0): The \"\" directory does not exist. at /workspaces/food-project/vendor/symfony/finder/Finder.php:590)
+[stacktrace]
+#0 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/LoadConfiguration.php(86): Symfony\\Component\\Finder\\Finder->in()
+#1 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/LoadConfiguration.php(63): Illuminate\\Foundation\\Bootstrap\\LoadConfiguration->getConfigurationFiles()
+#2 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/LoadConfiguration.php(39): Illuminate\\Foundation\\Bootstrap\\LoadConfiguration->loadConfigurationFiles()
+#3 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(265): Illuminate\\Foundation\\Bootstrap\\LoadConfiguration->bootstrap()
+#4 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(383): Illuminate\\Foundation\\Application->bootstrapWith()
+#5 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(153): Illuminate\\Foundation\\Console\\Kernel->bootstrap()
+#6 /workspaces/food-project/artisan(8): Illuminate\\Foundation\\Console\\Kernel->handle()
+#7 {main}
+"} 
+[2025-12-27 17:11:28] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [] is not defined. at /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Log/LogManager.php:210)
+[stacktrace]
+#0 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(135): Illuminate\\Log\\LogManager->resolve()
+#1 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(122): Illuminate\\Log\\LogManager->get()
+#2 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(645): Illuminate\\Log\\LogManager->driver()
+#3 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(274): Illuminate\\Log\\LogManager->error()
+#4 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(454): Illuminate\\Foundation\\Exceptions\\Handler->report()
+#5 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(157): Illuminate\\Foundation\\Console\\Kernel->reportException()
+#6 /workspaces/food-project/artisan(8): Illuminate\\Foundation\\Console\\Kernel->handle()
+#7 {main}
+"} 
+[2025-12-27 17:11:28] laravel.ERROR: There are no commands defined in the "key" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"key\" namespace. at /workspaces/food-project/vendor/symfony/console/Application.php:624)
+[stacktrace]
+#0 /workspaces/food-project/vendor/symfony/console/Application.php(675): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /workspaces/food-project/vendor/symfony/console/Application.php(259): Symfony\\Component\\Console\\Application->find()
+#2 /workspaces/food-project/vendor/symfony/console/Application.php(171): Symfony\\Component\\Console\\Application->doRun()
+#3 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Console/Application.php(102): Symfony\\Component\\Console\\Application->run()
+#4 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(155): Illuminate\\Console\\Application->run()
+#5 /workspaces/food-project/artisan(8): Illuminate\\Foundation\\Console\\Kernel->handle()
+#6 {main}
+"} 
