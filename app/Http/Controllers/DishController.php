@@ -54,6 +54,9 @@ class DishController extends Controller
                 'name' => $request->string('name')->toString(),
                 'comment' => $request->string('comment')->toString(),
                 'status' => 'pending',
+                'meal_cost' => $request->input('meal_cost'),
+                'good_date_spot' => $request->boolean('good_date_spot'),
+                'website' => $request->string('website')->toString(),
             ]);
 
             foreach ($request->file('images', []) as $index => $image) {

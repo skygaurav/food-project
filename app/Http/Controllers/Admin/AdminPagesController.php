@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use App\Models\Restaurant;
 
 class AdminPagesController extends Controller
 {
@@ -18,6 +19,17 @@ class AdminPagesController extends Controller
     public function restaurants(Request $request): View
     {
         return view('admin.restaurants');
+    }
+
+    public function restaurantForm(Request $request, ?Restaurant $restaurant = null): View
+    {
+        return view('admin.restaurant_form', ['restaurant' => $restaurant]);
+    }
+
+    public function restaurantDishes(Request $request, Restaurant $restaurant): View
+    {
+        $dishes = $restaurant->dishes()->with('images')->get();
+        return view('admin.restaurant_dishes', compact('restaurant', 'dishes'));
     }
 
     public function disapprovals(Request $request): View

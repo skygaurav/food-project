@@ -30,7 +30,7 @@ function createRestaurantElement(r){
     const div = document.createElement('div');
     div.className = 'p-3 mb-2 border rounded flex justify-between items-center';
     div.dataset.id = r.id || '';
-    div.innerHTML = `<div><div class="font-semibold">${r.name}</div><div class="text-sm text-slate-600">${r.address||'—'}</div></div><div style="display:flex;gap:.5rem"><button class="edit-restaurant" data-id="${r.id||''}" data-name="${r.name}">Edit</button><button class="del-restaurant" data-id="${r.id||''}">Delete</button></div>`;
+    div.innerHTML = `<div><div class="font-semibold">${r.name}</div><div class="text-sm text-slate-600">${r.address||'—'}</div></div><div style="display:flex;gap:.5rem"><a class="edit-link rounded border px-2 py-1" href="/admin/restaurants/${r.id||''}/edit">Edit</a><a class="view-dishes rounded border px-2 py-1" href="/admin/restaurants/${r.id||''}/dishes">Dishes</a><button class="del-restaurant" data-id="${r.id||''}">Delete</button></div>`;
     return div;
 }
 
@@ -65,6 +65,9 @@ document.getElementById('add-restaurant').addEventListener('submit', async funct
         const created = await res.json();
         node.dataset.id = created.id;
         node.querySelectorAll('button').forEach(b=>{ b.dataset.id = created.id; b.dataset.name = created.name; });
+        // update links
+        node.querySelectorAll('a.view-dishes').forEach(a=>a.href = '/admin/restaurants/'+created.id+'/dishes');
+        node.querySelectorAll('a.edit-link').forEach(a=>a.href = '/admin/restaurants/'+created.id+'/edit');
     }catch(e){ node.remove(); alert('Create failed'); }
 });
 
@@ -81,19 +84,7 @@ function attachRestaurantHandlers(){
         });
     });
 
-    document.querySelectorAll('.edit-restaurant').forEach(b=>{
-        if(b._attached) return; b._attached = true;
-        b.addEventListener('click', async ev=>{
-            const id = ev.target.dataset.id; const current = ev.target.dataset.name||''; const newName = prompt('Name', current); if(newName===null) return; const newAddress = prompt('Address');
-            const container = ev.target.closest('.p-3'); const nameNode = container.querySelector('.font-semibold'); const oldName = nameNode.innerText; const addrNode = container.querySelector('.text-sm'); const oldAddr = addrNode.innerText;
-            nameNode.innerText = newName; addrNode.innerText = newAddress||'—';
-            try{
-                const r = await fetch('/admin/api/restaurants/'+id,{method:'PUT',credentials:'same-origin',headers:{'Content-Type':'application/json','X-CSRF-TOKEN':document.querySelector('meta[name="csrf-token"]').getAttribute('content')},body:JSON.stringify({name:newName,address:newAddress})});
-                if(!r.ok) throw new Error('update-failed');
-                const updated = await r.json(); ev.target.dataset.name = updated.name;
-            }catch(e){ nameNode.innerText = oldName; addrNode.innerText = oldAddr; alert('Update failed'); }
-        });
-    });
+    // edit uses dedicated form page; view/edit links are anchors
 }
 
 loadRestaurants();

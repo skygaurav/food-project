@@ -18,6 +18,9 @@ Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('admi
 // Admin pages (views)
 Route::get('/admin/categories', [AdminPagesController::class, 'categories']);
 Route::get('/admin/restaurants', [AdminPagesController::class, 'restaurants']);
+Route::get('/admin/restaurants/create', [AdminPagesController::class, 'restaurantForm']);
+Route::get('/admin/restaurants/{restaurant}/edit', [AdminPagesController::class, 'restaurantForm']);
+Route::get('/admin/restaurants/{restaurant}/dishes', [AdminPagesController::class, 'restaurantDishes']);
 Route::get('/admin/disapprovals', [AdminPagesController::class, 'disapprovals']);
 
 // Admin web API (session based)
@@ -31,6 +34,10 @@ Route::prefix('admin/api')->middleware(['web','admin.auth'])->group(function ():
 	Route::post('restaurants', [\App\Http\Controllers\Admin\RestaurantController::class, 'store']);
 	Route::put('restaurants/{restaurant}', [\App\Http\Controllers\Admin\RestaurantController::class, 'update']);
 	Route::delete('restaurants/{restaurant}', [\App\Http\Controllers\Admin\RestaurantController::class, 'destroy']);
+
+	// admin settings
+	Route::get('settings', [\App\Http\Controllers\Admin\AdminSettingController::class, 'get']);
+	Route::post('settings', [\App\Http\Controllers\Admin\AdminSettingController::class, 'save']);
 
 	Route::get('dishes/pending', [\App\Http\Controllers\Admin\DishApprovalController::class, 'index']);
 	Route::post('dishes/{dish}/approve', [\App\Http\Controllers\Admin\DishApprovalController::class, 'approve']);

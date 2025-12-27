@@ -102,22 +102,13 @@ function attachCategoryHandlers(){
         if(b._attached) return; b._attached = true;
         b.addEventListener('click', async ev=>{
             const id = ev.target.dataset.id; const current = ev.target.dataset.name||'';
-            const newName = prompt('New name', current); if(newName===null) return;
-            const container = ev.target.closest('.p-3');
-            const nameNode = container.querySelector('div');
-            const oldName = nameNode.innerText;
-            // optimistic update
-            nameNode.innerText = newName;
-            try{
-                const r = await fetch('/admin/api/categories/'+id,{method:'PUT',credentials:'same-origin',headers:{'Content-Type':'application/json','X-CSRF-TOKEN':document.querySelector('meta[name="csrf-token"]').getAttribute('content')},body:JSON.stringify({name:newName})});
-                if(!r.ok) throw new Error('update-failed');
-                const updated = await r.json();
-                ev.target.dataset.name = updated.name;
-            }catch(e){
-                // rollback
-                nameNode.innerText = oldName;
-                alert('Update failed');
-            }
+            const html = `<h3 class="text-lg font-semibold mb-2">Edit Category</h3><div><label class="block"><div class="text-sm">Name</div><input id="modal-cat-name" value="${current}" class="rounded border px-2 py-1 w-full"/></label><div style="margin-top:.75rem;text-align:right"><button id="modal-cat-save" class="rounded border px-3 py-1">Save</button></div></div>`;
+            window.adminModal.open(html);
+            document.getElementById('modal-cat-save').addEventListener('click', async ()=>{
+                const newName = document.getElementById('modal-cat-name').value.trim(); if(!newName) return alert('Required');
+                const container = ev.target.closest('.p-3'); const nameNode = container.querySelector('div'); const oldName = nameNode.innerText; nameNode.innerText = newName; window.adminModal.close();
+                try{ const r = await fetch('/admin/api/categories/'+id,{method:'PUT',credentials:'same-origin',headers:{'Content-Type':'application/json','X-CSRF-TOKEN':document.querySelector('meta[name="csrf-token"]').getAttribute('content')},body:JSON.stringify({name:newName})}); if(!r.ok) throw new Error('update-failed'); const updated = await r.json(); ev.target.dataset.name = updated.name; }catch(e){ nameNode.innerText = oldName; alert('Update failed'); }
+            });
         });
     });
 }
