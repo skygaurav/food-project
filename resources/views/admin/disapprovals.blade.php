@@ -23,12 +23,13 @@
     </div>
     <script>
         async function loadPending(){
-            const res = await fetch('/admin/api/dishes/pending');
+            const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            const res = await fetch('/admin/api/dishes/pending', { credentials: 'same-origin', headers: {'X-CSRF-TOKEN': token} });
             const data = res.ok ? await res.json() : [];
             const el = document.getElementById('dishes');
             el.innerHTML = data.length ? data.map(d=>`<div class="p-3 border rounded"><strong>${d.name}</strong> — ${d.restaurant?.name || ''} <div class="mt-2"><button data-id="${d.id}" class="approve">Approve</button> <button data-id="${d.id}" class="disapprove">Disapprove</button></div></div>`).join('') : '<p>No pending dishes</p>';
-            document.querySelectorAll('.approve').forEach(b=>b.addEventListener('click', async ev=>{ const id=ev.target.dataset.id; await fetch('/admin/api/dishes/'+id+'/approve',{method:'POST'}); loadPending(); }));
-            document.querySelectorAll('.disapprove').forEach(b=>b.addEventListener('click', async ev=>{ const id=ev.target.dataset.id; await fetch('/admin/api/dishes/'+id+'/disapprove',{method:'POST'}); loadPending(); }));
+            document.querySelectorAll('.approve').forEach(b=>b.addEventListener('click', async ev=>{ const id=ev.target.dataset.id; await fetch('/admin/api/dishes/'+id+'/approve',{method:'POST', credentials:'same-origin', headers:{'X-CSRF-TOKEN': token}}); loadPending(); }));
+            document.querySelectorAll('.disapprove').forEach(b=>b.addEventListener('click', async ev=>{ const id=ev.target.dataset.id; await fetch('/admin/api/dishes/'+id+'/disapprove',{method:'POST', credentials:'same-origin', headers:{'X-CSRF-TOKEN': token}}); loadPending(); }));
         }
         loadPending();
     </script>

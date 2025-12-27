@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Admin — Categories</title>
     <link rel="stylesheet" href="/app.css">
 </head>
@@ -33,7 +34,13 @@
         document.getElementById('add-category')?.addEventListener('submit', async function(e){
             e.preventDefault();
             const name = this.querySelector('[name="name"]').value;
-            const res = await fetch('/api/admin/categories', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name})});
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            const res = await fetch('/admin/api/categories', {
+                method:'POST',
+                credentials: 'same-origin',
+                headers:{'Content-Type':'application/json','X-CSRF-TOKEN': token},
+                body:JSON.stringify({name})
+            });
             if(res.ok){ alert('Created'); location.reload(); } else { alert('Failed'); }
         });
     </script>
