@@ -33,13 +33,13 @@ class AdminAuthController extends Controller
 
         $request->session()->put('admin_id', $admin->id);
 
-        return redirect()->route('admin.dashboard');
+        return redirect('/admin');
     }
 
     public function dashboard(Request $request): View|RedirectResponse
     {
         if (! $request->session()->has('admin_id')) {
-            return redirect()->route('admin.login');
+            return redirect('/admin/login');
         }
 
         return view('admin.dashboard');
@@ -49,6 +49,6 @@ class AdminAuthController extends Controller
     {
         $request->session()->forget('admin_id');
 
-        return redirect()->route('admin.login');
+        return redirect('/admin/login');
     }
 }
