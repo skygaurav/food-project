@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin Login</title>
-    @vite('resources/js/app.css')
+    <link rel="stylesheet" href="/app.css">
 </head>
 <body class="font-serif bg-white text-slate-900">
     <div class="min-h-screen bg-white">
