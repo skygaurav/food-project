@@ -21,7 +21,10 @@ class RouteServiceProvider extends ServiceProvider
     {
         $routesPath = base_path('routes/web.php');
         if (file_exists($routesPath)) {
-            require $routesPath;
+            // Load web routes within the 'web' middleware so session/cookie middleware runs
+            Route::middleware('web')->group(function () use ($routesPath) {
+                require $routesPath;
+            });
         }
     }
 }
