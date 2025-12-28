@@ -615,7 +615,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     this.classList.toggle('selected');
                 });
             });
-            });
         } catch (e) {
             console.error('Failed to load categories:', e);
             document.getElementById('categories-container').innerHTML = 
