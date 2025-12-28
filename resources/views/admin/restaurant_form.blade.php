@@ -1,6 +1,6 @@
 @extends('admin.layout')
 
-@section('title', isset($restaurant) ? 'Edit Restaurant' : 'New Restaurant')
+@section('title', $restaurant->exists ? 'Edit Restaurant' : 'New Restaurant')
 
 @section('content')
     <div class="breadcrumb">
@@ -8,13 +8,13 @@
         <span>›</span>
         <a href="/admin/restaurants">Restaurants</a>
         <span>›</span>
-        <span>{{ isset($restaurant) ? 'Edit' : 'New' }}</span>
+        <span>{{ $restaurant->exists ? 'Edit' : 'New' }}</span>
     </div>
 
     <div class="page-header">
         <div>
-            <h1 class="page-title">{{ isset($restaurant) ? 'Edit Restaurant' : 'Create New Restaurant' }}</h1>
-            <p class="page-subtitle">{{ isset($restaurant) ? 'Update restaurant details' : 'Add a new restaurant to the platform' }}</p>
+            <h1 class="page-title">{{ $restaurant->exists ? 'Edit Restaurant' : 'Create New Restaurant' }}</h1>
+            <p class="page-subtitle">{{ $restaurant->exists ? 'Update restaurant details' : 'Add a new restaurant to the platform' }}</p>
         </div>
     </div>
 
