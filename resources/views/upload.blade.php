@@ -334,6 +334,7 @@
         cursor: pointer;
         transition: all 0.2s;
         font-size: 0.875rem;
+        position: relative;
     }
     
     .category-chip:hover {
@@ -348,7 +349,9 @@
     }
     
     .category-chip input {
-        display: none;
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
     }
     
     .new-restaurant-fields {
@@ -617,14 +620,22 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Add click handlers
             container.querySelectorAll('.category-chip').forEach(chip => {
+                const checkbox = chip.querySelector('input');
+                
                 chip.addEventListener('click', function(e) {
-                    if (e.target.tagName === 'INPUT') return;
-                    const checkbox = this.querySelector('input');
+                    // If clicking directly on the checkbox, let the default behavior work
+                    if (e.target === checkbox) {
+                        this.classList.toggle('selected', checkbox.checked);
+                        return;
+                    }
+                    // Otherwise toggle the checkbox manually
                     checkbox.checked = !checkbox.checked;
                     this.classList.toggle('selected', checkbox.checked);
+                    // Dispatch change event so any listeners are notified
+                    checkbox.dispatchEvent(new Event('change', { bubbles: true }));
                 });
                 
-                chip.querySelector('input').addEventListener('change', function() {
+                checkbox.addEventListener('change', function() {
                     chip.classList.toggle('selected', this.checked);
                 });
             });

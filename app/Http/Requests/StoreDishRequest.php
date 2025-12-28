@@ -25,6 +25,9 @@ class StoreDishRequest extends FormRequest
             'phone' => ['nullable', 'string', 'max:50'],
             'images' => ['required', 'array', 'min:1'],
             'images.*' => ['required', 'image', 'max:5120'],
+            'categories' => ['nullable', 'array'],
+            'categories.*' => ['integer', 'exists:categories,id'],
+            'main_image_index' => ['nullable', 'integer', 'min:0'],
         ];
 
         // Either restaurant_id OR restaurant_name is required
