@@ -53,7 +53,7 @@
                             <td>{{ $d->id }}</td>
                             <td>
                                 @if($d->images && $d->images->count())
-                                    <img src="{{ $d->images->first()->url ?? '' }}" alt="" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
+                                    <img src="/storage/{{ $d->images->first()->path }}" alt="" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
                                 @else
                                     <div style="width: 50px; height: 50px; background: #f1f5f9; border-radius: 4px; display: flex; align-items: center; justify-content: center;"><svg class="icon icon-xl icon-muted"><use href="#icon-dish"></use></svg></div>
                                 @endif
