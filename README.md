@@ -36,3 +36,14 @@ ddev launch
 Notes:
 - The included `.ddev/config.yaml` configures PHP 8.0 and MySQL 8.0. DDEV will create the `db` service and make `DB_HOST=db` available inside the web container.
 - If you prefer a different MySQL version, change `db_version` in `.ddev/config.yaml`.
+
+Node.js (npm) in DDEV
+
+- A custom web container is provided to include Node.js and npm. After adding the Dockerfile, rebuild the web container:
+
+```bash
+# From project root
+ddev restart --omit-snapshot
+```
+
+- You can then run `ddev ssh` and use `node` / `npm` inside the web container.
