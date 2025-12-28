@@ -8,3 +8,7 @@ use_dns_when_possible: true
 xdebug_enabled: false
 db: mysql
 db_version: '8.0'
+
+hooks:
+	post-start:
+		- exec: "bash -lc 'if [ -f package.json ]; then npm ci --no-audit --no-fund; fi'"

@@ -47,3 +47,12 @@ ddev restart --omit-snapshot
 ```
 
 - You can then run `ddev ssh` and use `node` / `npm` inside the web container.
+
+- The Dockerfile accepts a build-arg `NODE_VERSION` (default 18). To change the Node version, rebuild with:
+
+```bash
+# Example: build web container with Node 20
+ddev restart --omit-snapshot --build-arg NODE_VERSION=20
+```
+
+- A DDEV `post-start` hook is included that runs `npm ci` inside the web container if a `package.json` exists. If you don't want this, remove the `hooks.post-start` entry from `.ddev/config.yaml`.
