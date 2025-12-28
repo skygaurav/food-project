@@ -533,11 +533,8 @@
                 
                 <div class="footer-section">
                     <h4>Company</h4>
-                    <ul>
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">Contact</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms of Service</a></li>
+                    <ul id="footer-cms-links">
+                        <li><a href="#">Loading...</a></li>
                     </ul>
                 </div>
                 
@@ -562,6 +559,28 @@
             </div>
         </div>
     </footer>
+    
+    <script>
+    // Load CMS footer links
+    document.addEventListener('DOMContentLoaded', async function() {
+        try {
+            const res = await fetch('/api/cms-pages/footer');
+            const pages = await res.json();
+            const container = document.getElementById('footer-cms-links');
+            
+            if (pages.length) {
+                container.innerHTML = pages.map(p => 
+                    `<li><a href="/page/${p.slug}">${p.title}</a></li>`
+                ).join('');
+            } else {
+                container.innerHTML = '<li><a href="/page/about">About Us</a></li>';
+            }
+        } catch (e) {
+            console.error('Failed to load footer links:', e);
+            document.getElementById('footer-cms-links').innerHTML = '';
+        }
+    });
+    </script>
     
     @stack('scripts')
 </body>

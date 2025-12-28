@@ -42,6 +42,14 @@
             Website Users
         </a>
     </div>
+
+    <div class="sidebar-section">
+        <div class="sidebar-section-title">Content</div>
+        <a href="/admin/cms-pages" class="nav-link {{ request()->is('admin/cms-pages*') ? 'active' : '' }}">
+            <span class="nav-icon">📄</span>
+            CMS Pages
+        </a>
+    </div>
     
     <div class="sidebar-section">
         <div class="sidebar-section-title">System</div>

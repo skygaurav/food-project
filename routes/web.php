@@ -6,10 +6,14 @@ use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminPagesController;
 use App\Http\Controllers\UserAuthController;
 use App\Http\Controllers\DishController;
+use App\Http\Controllers\Admin\CmsPageController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'home');
 Route::view('/dishes/{dish}', 'dish');
+
+// CMS pages (frontend)
+Route::get('/page/{slug}', [CmsPageController::class, 'showPage']);
 
 // User authentication routes
 Route::get('/login', [UserAuthController::class, 'showLogin'])->name('login');
@@ -46,6 +50,9 @@ Route::get('/admin/admins/{admin}/edit', [AdminPagesController::class, 'adminFor
 Route::get('/admin/users', [AdminPagesController::class, 'users']);
 Route::get('/admin/users/create', [AdminPagesController::class, 'userForm']);
 Route::get('/admin/users/{user}/edit', [AdminPagesController::class, 'userForm']);
+Route::get('/admin/cms-pages', [CmsPageController::class, 'index']);
+Route::get('/admin/cms-pages/create', [CmsPageController::class, 'create']);
+Route::get('/admin/cms-pages/{id}/edit', [CmsPageController::class, 'edit']);
 
 // Admin web API (session based)
 Route::prefix('admin/api')->middleware(['web','admin.auth'])->group(function (): void {
@@ -82,6 +89,13 @@ Route::prefix('admin/api')->middleware(['web','admin.auth'])->group(function ():
 	Route::post('users', [\App\Http\Controllers\Admin\UserManagementController::class, 'store']);
 	Route::put('users/{user}', [\App\Http\Controllers\Admin\UserManagementController::class, 'update']);
 	Route::delete('users/{user}', [\App\Http\Controllers\Admin\UserManagementController::class, 'destroy']);
+
+	// CMS Pages management
+	Route::get('cms-pages', [CmsPageController::class, 'apiIndex']);
+	Route::get('cms-pages/{id}', [CmsPageController::class, 'apiShow']);
+	Route::post('cms-pages', [CmsPageController::class, 'apiStore']);
+	Route::put('cms-pages/{id}', [CmsPageController::class, 'apiUpdate']);
+	Route::delete('cms-pages/{id}', [CmsPageController::class, 'apiDestroy']);
 });
 
 Route::get('/admin/spa', function () {
@@ -95,4 +109,5 @@ Route::prefix('api')->group(function (): void {
     Route::get('restaurants', [\App\Http\Controllers\RestaurantController::class, 'index']);
     Route::get('restaurants/{restaurant}', [\App\Http\Controllers\RestaurantController::class, 'show']);
     Route::get('categories', [\App\Http\Controllers\Admin\CategoryController::class, 'index']);
+    Route::get('cms-pages/footer', [CmsPageController::class, 'footerPages']);
 });
