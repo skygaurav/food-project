@@ -39,13 +39,14 @@
         <!-- Images Section -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Images</h3>
+                <h3 class="card-title">Images ({{ $dish->images->count() }})</h3>
             </div>
             <div class="card-body">
                 <div id="dish-images" class="dish-images-grid">
                     @if($dish->images->count() > 0)
-                        @foreach($dish->images as $image)
+                        @foreach($dish->images as $index => $image)
                             <div class="dish-image-item">
+                                <span class="image-index">{{ $index + 1 }}</span>
                                 <img src="/storage/{{ $image->path }}" alt="{{ $dish->name }}" onclick="openImageModal(this.src)" />
                             </div>
                         @endforeach
@@ -350,13 +351,21 @@
     
     .dish-images-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 1rem;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 0.75rem;
+        max-height: 400px;
+        overflow-y: auto;
+        padding: 0.25rem;
+    }
+    
+    .dish-image-item {
+        position: relative;
+        aspect-ratio: 1;
     }
     
     .dish-image-item img {
         width: 100%;
-        height: 150px;
+        height: 100%;
         object-fit: cover;
         border-radius: 8px;
         cursor: pointer;
@@ -366,6 +375,17 @@
     .dish-image-item img:hover {
         transform: scale(1.02);
         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .dish-image-item .image-index {
+        position: absolute;
+        top: 0.5rem;
+        left: 0.5rem;
+        background: rgba(0,0,0,0.6);
+        color: #fff;
+        font-size: 0.7rem;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
     }
     
     .no-images {

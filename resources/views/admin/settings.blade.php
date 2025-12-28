@@ -39,6 +39,30 @@
                     </select>
                 </div>
                 
+                <h3 style="font-size: 1rem; font-weight: 600; margin: 1.5rem 0 1rem; color: #475569; border-top: 1px solid #e2e8f0; padding-top: 1.5rem;">
+                    <svg class="icon icon-sm" style="margin-right: 0.5rem;"><use href="#icon-search"></use></svg>
+                    Homepage SEO Settings
+                </h3>
+                <p class="text-muted" style="font-size: 0.85rem; margin-bottom: 1rem;">These settings are used for the homepage and as fallback for CMS pages without SEO info.</p>
+                
+                <div class="form-group">
+                    <label class="form-label">Meta Title</label>
+                    <input type="text" name="meta_title" class="form-control" placeholder="FOODCITA - Discover Delicious Dishes" />
+                    <small class="text-muted">Recommended: 50-60 characters</small>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Meta Description</label>
+                    <textarea name="meta_description" class="form-control" rows="3" placeholder="Share your favorite meals and explore dishes loved by food enthusiasts in your city."></textarea>
+                    <small class="text-muted">Recommended: 150-160 characters</small>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Meta Keywords</label>
+                    <input type="text" name="meta_keywords" class="form-control" placeholder="food, dishes, restaurants, reviews, dining" />
+                    <small class="text-muted">Comma-separated keywords</small>
+                </div>
+                
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">
                         <svg class="icon"><use href="#icon-save"></use></svg> Save Settings
@@ -73,6 +97,9 @@ async function loadSettings() {
             if (settings.site_name) form.site_name.value = settings.site_name;
             if (settings.items_per_page) form.items_per_page.value = settings.items_per_page;
             if (settings.default_dish_status) form.default_dish_status.value = settings.default_dish_status;
+            if (settings.meta_title) form.meta_title.value = settings.meta_title;
+            if (settings.meta_description) form.meta_description.value = settings.meta_description;
+            if (settings.meta_keywords) form.meta_keywords.value = settings.meta_keywords;
         }
     } catch (e) {
         // Ignore - settings may not exist yet
@@ -84,7 +111,10 @@ form.addEventListener('submit', async e => {
     const payload = {
         site_name: form.site_name.value.trim(),
         items_per_page: parseInt(form.items_per_page.value),
-        default_dish_status: form.default_dish_status.value
+        default_dish_status: form.default_dish_status.value,
+        meta_title: form.meta_title.value.trim(),
+        meta_description: form.meta_description.value.trim(),
+        meta_keywords: form.meta_keywords.value.trim()
     };
     
     try {

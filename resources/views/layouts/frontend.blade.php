@@ -4,7 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'FOODCITA') - Discover Delicious Dishes</title>
+    <title>@yield('meta_title', $seoSettings['default_meta_title'] ?? 'FOODCITA - Discover Delicious Dishes')</title>
+    <meta name="description" content="@yield('meta_description', $seoSettings['default_meta_description'] ?? 'Share your favorite meals and explore dishes loved by food enthusiasts in your city.')">
+    <meta name="keywords" content="@yield('meta_keywords', $seoSettings['default_meta_keywords'] ?? 'food, dishes, restaurants, reviews, dining')">
     <link rel="stylesheet" href="/app.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -492,6 +494,7 @@
             
             <div class="header-actions">
                 @auth
+                    <a href="/my-dishes" class="nav-links-item" style="color: rgba(255,255,255,0.85); text-decoration: none; font-size: 0.9rem; font-weight: 500;">My Dishes</a>
                     <a href="/upload" class="btn-header btn-header-primary">+ Upload Dish</a>
                     <div class="user-menu">
                         <div class="user-avatar">{{ substr(auth()->user()->name, 0, 1) }}</div>

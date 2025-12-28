@@ -30,6 +30,11 @@ Route::get('/upload', function () {
 })->middleware('auth')->name('upload');
 Route::post('/api/dishes', [DishController::class, 'store'])->middleware('auth');
 
+// User's dish management
+Route::get('/my-dishes', function () {
+    return view('my-dishes');
+})->middleware('auth')->name('my-dishes');
+
 Route::get('/admin/login', [AdminAuthController::class, 'showLogin'])->name('admin.login');
 Route::post('/admin/login', [AdminAuthController::class, 'login'])->name('admin.login.attempt');
 Route::get('/admin', [AdminAuthController::class, 'dashboard'])->name('admin.dashboard');
@@ -121,5 +126,10 @@ Route::prefix('api')->group(function (): void {
         Route::post('dishes/{dish:slug}/reactions', [\App\Http\Controllers\DishReactionController::class, 'store']);
         Route::delete('dishes/{dish:slug}/reactions', [\App\Http\Controllers\DishReactionController::class, 'destroy']);
         Route::post('dishes/{dish:slug}/reviews', [\App\Http\Controllers\ReviewController::class, 'store']);
+        
+        // User's own dishes management
+        Route::get('my-dishes', [\App\Http\Controllers\DishController::class, 'myDishes']);
+        Route::put('dishes/{dish:id}', [\App\Http\Controllers\DishController::class, 'update']);
+        Route::delete('dishes/{dish:id}', [\App\Http\Controllers\DishController::class, 'destroy']);
     });
 });

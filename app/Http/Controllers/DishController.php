@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\DB;
 
 class DishController extends Controller
 {
+    /**
+     * Get all dishes for public listing (approved only).
+     */
     public function index(Request $request): JsonResponse
     {
         $query = Dish::query()
@@ -44,6 +47,94 @@ class DishController extends Controller
         }
 
         return response()->json($query->paginate(12));
+    }
+
+    /**
+     * Get current user's dishes (all statuses).
+     */
+    public function myDishes(Request $request): JsonResponse
+    {
+        $dishes = Dish::query()
+            ->with(['restaurant', 'images'])
+            ->where('user_id', auth()->id())
+            ->latest()
+            ->get()
+            ->map(function ($dish) {
+                return [
+                    'id' => $dish->id,
+                    'name' => $dish->name,
+                    'slug' => $dish->slug,
+                    'status' => $dish->status,
+                    'comment' => $dish->comment,
+                    'meal_cost' => $dish->meal_cost,
+                    'good_date_spot' => $dish->good_date_spot,
+                    'reservation' => $dish->reservation,
+                    'phone' => $dish->phone,
+                    'website' => $dish->website,
+                    'restaurant' => $dish->restaurant ? [
+                        'id' => $dish->restaurant->id,
+                        'name' => $dish->restaurant->name,
+                        'city' => $dish->restaurant->city,
+                    ] : null,
+                    'image_url' => $dish->images->first()?->path 
+                        ? '/storage/' . $dish->images->first()->path 
+                        : null,
+                    'created_at' => $dish->created_at,
+                    'updated_at' => $dish->updated_at,
+                ];
+            });
+
+        return response()->json($dishes);
+    }
+
+    /**
+     * Update a dish owned by the current user (only before approval).
+     */
+    public function update(Request $request, Dish $dish): JsonResponse
+    {
+        // Only the owner can update
+        if ($dish->user_id !== auth()->id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        // Can only edit pending dishes
+        if ($dish->status !== 'pending') {
+            return response()->json(['error' => 'Only pending dishes can be edited'], 400);
+        }
+
+        $validated = $request->validate([
+            'name' => 'sometimes|string|max:255',
+            'comment' => 'nullable|string|max:1000',
+            'meal_cost' => 'nullable|numeric|min:0',
+            'good_date_spot' => 'nullable|boolean',
+            'website' => 'nullable|url|max:255',
+            'phone' => 'nullable|string|max:50',
+            'reservation' => 'nullable|boolean',
+        ]);
+
+        $dish->update($validated);
+
+        return response()->json($dish->load(['restaurant', 'images']));
+    }
+
+    /**
+     * Delete a dish owned by the current user (only before approval).
+     */
+    public function destroy(Dish $dish): JsonResponse
+    {
+        // Only the owner can delete
+        if ($dish->user_id !== auth()->id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        // Can only delete pending dishes
+        if ($dish->status !== 'pending') {
+            return response()->json(['error' => 'Only pending dishes can be deleted'], 400);
+        }
+
+        $dish->delete();
+
+        return response()->json(['success' => true]);
     }
 
     public function store(StoreDishRequest $request): JsonResponse
@@ -134,6 +225,15 @@ class DishController extends Controller
 
     public function show(Dish $dish): JsonResponse
     {
+        // Only approved dishes can be viewed publicly
+        // Unless the user is the owner of the dish
+        if ($dish->status !== 'approved') {
+            $isOwner = auth()->check() && auth()->id() === $dish->user_id;
+            if (!$isOwner) {
+                return response()->json(['error' => 'Dish not found or not yet approved'], 404);
+            }
+        }
+        
         $dish->load([
             'restaurant.categories',
             'images',

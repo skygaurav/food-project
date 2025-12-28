@@ -79,6 +79,33 @@
                     </div>
                 </div>
                 
+                <h3 style="font-size: 1rem; font-weight: 600; margin: 1.5rem 0 1rem; color: #475569; border-top: 1px solid #e2e8f0; padding-top: 1.5rem;">
+                    <svg class="icon icon-sm" style="margin-right: 0.5rem;"><use href="#icon-search"></use></svg>
+                    SEO Settings (Optional)
+                </h3>
+                <p class="form-hint" style="margin-bottom: 1rem;">Leave empty to use default site SEO settings.</p>
+                
+                <div class="form-group">
+                    <label for="meta_title" class="form-label">Meta Title</label>
+                    <input type="text" id="meta_title" name="meta_title" class="form-control" 
+                           value="{{ $page->meta_title ?? '' }}" placeholder="Page-specific title for search engines">
+                    <small class="form-hint">Recommended: 50-60 characters</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="meta_description" class="form-label">Meta Description</label>
+                    <textarea id="meta_description" name="meta_description" class="form-control" rows="2" 
+                              placeholder="Brief description for search engine results">{{ $page->meta_description ?? '' }}</textarea>
+                    <small class="form-hint">Recommended: 150-160 characters</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="meta_keywords" class="form-label">Meta Keywords</label>
+                    <input type="text" id="meta_keywords" name="meta_keywords" class="form-control" 
+                           value="{{ $page->meta_keywords ?? '' }}" placeholder="keyword1, keyword2, keyword3">
+                    <small class="form-hint">Comma-separated keywords</small>
+                </div>
+                
                 <div class="form-actions">
                     <a href="/admin/cms-pages" class="btn btn-secondary">Cancel</a>
                     <button type="submit" class="btn btn-primary">
@@ -154,6 +181,9 @@ form.addEventListener('submit', async (e) => {
         sort_order: parseInt(document.getElementById('sort_order').value) || 0,
         show_in_footer: document.querySelector('input[name="show_in_footer"]:checked').value === '1',
         is_active: document.querySelector('input[name="is_active"]:checked').value === '1',
+        meta_title: document.getElementById('meta_title').value.trim() || null,
+        meta_description: document.getElementById('meta_description').value.trim() || null,
+        meta_keywords: document.getElementById('meta_keywords').value.trim() || null,
     };
     
     try {

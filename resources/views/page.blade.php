@@ -1,6 +1,8 @@
 @extends('layouts.frontend')
 
-@section('title', $page->title)
+@section('meta_title', $page->meta_title ?: $page->title . ' - ' . ($seoSettings['site_name'] ?? 'FOODCITA'))
+@section('meta_description', $page->meta_description ?: ($seoSettings['default_meta_description'] ?? ''))
+@section('meta_keywords', $page->meta_keywords ?: ($seoSettings['default_meta_keywords'] ?? ''))
 
 @push('styles')
 <style>
