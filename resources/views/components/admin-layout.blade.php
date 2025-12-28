@@ -16,6 +16,7 @@
                 <a href="/admin/restaurants" class="{{ request()->is('admin/restaurants') ? 'active' : '' }}">Restaurants</a>
                 <a href="/admin/dishes" class="{{ request()->is('admin/dishes') ? 'active' : '' }}">Dishes</a>
                 <form method="POST" action="{{ url('/admin/logout') }}">
+                <form method="POST" action="{{ route('admin.logout') }}">
                     @csrf
                     <button type="submit" class="rounded border border-slate-500 px-4 py-2 text-sm">
                         Log out
