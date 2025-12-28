@@ -55,44 +55,61 @@ class DishController extends Controller
      */
     public function myDishes(Request $request): JsonResponse
     {
-        $dishes = Dish::query()
+        $perPage = $request->integer('per_page', 10);
+        $page = $request->integer('page', 1);
+        
+        $query = Dish::query()
             ->with(['restaurant', 'images'])
             ->where('user_id', auth()->id())
-            ->latest()
-            ->get()
-            ->map(function ($dish) {
-                return [
-                    'id' => $dish->id,
-                    'name' => $dish->name,
-                    'slug' => $dish->slug,
-                    'status' => $dish->status,
-                    'comment' => $dish->comment,
-                    'meal_cost' => $dish->meal_cost,
-                    'good_date_spot' => $dish->good_date_spot,
-                    'reservation' => $dish->reservation,
-                    'phone' => $dish->phone,
-                    'website' => $dish->website,
-                    'restaurant' => $dish->restaurant ? [
-                        'id' => $dish->restaurant->id,
-                        'name' => $dish->restaurant->name,
-                        'city' => $dish->restaurant->city,
-                    ] : null,
-                    'images' => $dish->images->map(function ($image) {
-                        return [
-                            'id' => $image->id,
-                            'image_path' => $image->path,
-                            'is_primary' => $image->is_primary,
-                        ];
-                    }),
-                    'image_url' => $dish->images->first()?->path 
-                        ? '/storage/' . $dish->images->first()->path 
-                        : null,
-                    'created_at' => $dish->created_at,
-                    'updated_at' => $dish->updated_at,
-                ];
-            });
+            ->latest();
+        
+        $total = $query->count();
+        $dishes = $query->skip(($page - 1) * $perPage)->take($perPage)->get();
+        
+        $mappedDishes = $dishes->map(function ($dish) {
+            // Find primary image or use first one
+            $primaryImage = $dish->images->firstWhere('is_primary', true) ?? $dish->images->first();
+            
+            return [
+                'id' => $dish->id,
+                'name' => $dish->name,
+                'slug' => $dish->slug,
+                'status' => $dish->status,
+                'comment' => $dish->comment,
+                'meal_cost' => $dish->meal_cost,
+                'good_date_spot' => $dish->good_date_spot,
+                'reservation' => $dish->reservation,
+                'phone' => $dish->phone,
+                'website' => $dish->website,
+                'restaurant' => $dish->restaurant ? [
+                    'id' => $dish->restaurant->id,
+                    'name' => $dish->restaurant->name,
+                    'city' => $dish->restaurant->city,
+                ] : null,
+                'images' => $dish->images->map(function ($image) {
+                    return [
+                        'id' => $image->id,
+                        'image_path' => $image->path,
+                        'is_primary' => $image->is_primary,
+                    ];
+                }),
+                'image_url' => $primaryImage?->path 
+                    ? '/storage/' . $primaryImage->path 
+                    : null,
+                'created_at' => $dish->created_at,
+                'updated_at' => $dish->updated_at,
+            ];
+        });
 
-        return response()->json($dishes);
+        return response()->json([
+            'data' => $mappedDishes,
+            'meta' => [
+                'current_page' => $page,
+                'per_page' => $perPage,
+                'total' => $total,
+                'last_page' => (int) ceil($total / $perPage),
+            ]
+        ]);
     }
 
     /**

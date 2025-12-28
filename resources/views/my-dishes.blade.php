@@ -24,6 +24,71 @@
         gap: 1.5rem;
     }
     
+    /* Pagination styles */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 2rem;
+        padding: 1rem 0;
+    }
+    
+    .pagination-btn {
+        padding: 0.5rem 1rem;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.875rem;
+        transition: all 0.2s;
+    }
+    
+    .pagination-btn:hover:not(.disabled) {
+        background: var(--primary);
+        color: #fff;
+        border-color: var(--primary);
+    }
+    
+    .pagination-btn.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    .pagination-pages {
+        display: flex;
+        gap: 0.25rem;
+    }
+    
+    .pagination-page {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.875rem;
+        transition: all 0.2s;
+    }
+    
+    .pagination-page:hover {
+        border-color: var(--primary);
+    }
+    
+    .pagination-page.active {
+        background: var(--primary);
+        color: #fff;
+        border-color: var(--primary);
+    }
+    
+    .pagination-ellipsis {
+        padding: 0 0.5rem;
+        color: var(--text-muted);
+    }
+    
     .dish-card {
         background: #fff;
         border-radius: 16px;
@@ -450,6 +515,8 @@
     <div id="dishes-container" style="display: none;">
         <div id="dishes-grid" class="dishes-grid"></div>
         
+        <div id="pagination-container"></div>
+        
         <div id="empty-state" class="empty-state" style="display: none;">
             <div class="empty-state-icon">
                 <svg class="icon icon-4xl icon-muted"><use href="#icon-dish"></use></svg>
@@ -560,10 +627,16 @@
 @push('scripts')
 <script>
 let dishes = [];
+let currentPage = 1;
+let totalPages = 1;
+let perPage = 9;
 
-async function loadDishes() {
+async function loadDishes(page = 1) {
     try {
-        const res = await fetch('/api/my-dishes', {
+        document.getElementById('dishes-loader').style.display = 'block';
+        document.getElementById('dishes-container').style.display = 'none';
+        
+        const res = await fetch(`/api/my-dishes?page=${page}&per_page=${perPage}`, {
             headers: {
                 'Accept': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
@@ -572,8 +645,13 @@ async function loadDishes() {
         
         if (!res.ok) throw new Error('Failed to load dishes');
         
-        dishes = await res.json();
+        const data = await res.json();
+        dishes = data.data || [];
+        currentPage = data.meta?.current_page || 1;
+        totalPages = data.meta?.last_page || 1;
+        
         renderDishes();
+        renderPagination();
         
     } catch (e) {
         console.error('Failed to load dishes:', e);
@@ -657,6 +735,49 @@ function renderDishes() {
             </div>
         `;
     }).join('');
+}
+
+function renderPagination() {
+    const container = document.getElementById('pagination-container');
+    if (!container) return;
+    
+    if (totalPages <= 1) {
+        container.innerHTML = '';
+        return;
+    }
+    
+    let html = '<div class="pagination">';
+    
+    // Previous button
+    html += `<button class="pagination-btn ${currentPage === 1 ? 'disabled' : ''}" 
+             onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+             ← Prev</button>`;
+    
+    // Page numbers
+    html += '<div class="pagination-pages">';
+    for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+            html += `<button class="pagination-page ${i === currentPage ? 'active' : ''}" 
+                     onclick="goToPage(${i})">${i}</button>`;
+        } else if (i === currentPage - 2 || i === currentPage + 2) {
+            html += '<span class="pagination-ellipsis">...</span>';
+        }
+    }
+    html += '</div>';
+    
+    // Next button
+    html += `<button class="pagination-btn ${currentPage === totalPages ? 'disabled' : ''}" 
+             onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+             Next →</button>`;
+    
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function goToPage(page) {
+    if (page < 1 || page > totalPages) return;
+    loadDishes(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 let editMainImageId = null;
