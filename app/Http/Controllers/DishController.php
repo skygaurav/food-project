@@ -90,13 +90,31 @@ class DishController extends Controller
                 'meal_cost' => $request->input('meal_cost'),
                 'good_date_spot' => $request->boolean('good_date_spot'),
                 'website' => $request->string('website')->toString(),
+                'reservation' => $request->boolean('reservation'),
+                'phone' => $request->string('phone')->toString(),
             ]);
 
-            // Update restaurant with good_date_spot if set to true
+            // Update restaurant with additional info from dish submission
+            $restaurantUpdates = [];
+            
             if ($request->boolean('good_date_spot')) {
-                Restaurant::query()->where('id', $restaurantId)->update([
-                    'good_date_spot' => true,
-                ]);
+                $restaurantUpdates['good_date_spot'] = true;
+            }
+            
+            if ($request->filled('website')) {
+                $restaurantUpdates['website'] = $request->string('website')->toString();
+            }
+            
+            if ($request->boolean('reservation')) {
+                $restaurantUpdates['reservation'] = true;
+            }
+            
+            if ($request->filled('phone')) {
+                $restaurantUpdates['phone'] = $request->string('phone')->toString();
+            }
+            
+            if (!empty($restaurantUpdates)) {
+                Restaurant::query()->where('id', $restaurantId)->update($restaurantUpdates);
             }
 
             foreach ($request->file('images', []) as $index => $image) {
@@ -122,7 +140,25 @@ class DishController extends Controller
             'reviews',
             'reactions',
         ]);
+        
+        $dish->loadCount([
+            'reactions as likes_count' => fn ($q) => $q->where('type', 'like'),
+            'reactions as dislikes_count' => fn ($q) => $q->where('type', 'dislike'),
+        ]);
+        
+        $dish->loadAvg('reviews', 'rating');
+        
+        // Add user's reaction if authenticated
+        $userReaction = null;
+        if (auth()->check()) {
+            $userReaction = $dish->reactions()
+                ->where('user_id', auth()->id())
+                ->first();
+        }
+        
+        $response = $dish->toArray();
+        $response['user_reaction'] = $userReaction?->type;
 
-        return response()->json($dish);
+        return response()->json($response);
     }
 }

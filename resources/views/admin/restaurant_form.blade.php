@@ -96,6 +96,27 @@
                     </div>
                 </div>
                 
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Phone</label>
+                        <input type="tel" name="phone" value="{{ $restaurant->phone ?? '' }}" class="form-control" placeholder="e.g., +1 (555) 123-4567" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Accepts Reservations?</label>
+                        <div style="display: flex; gap: 1.5rem; padding: 0.75rem 0;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                <input type="radio" name="reservation" value="1" {{ isset($restaurant) && $restaurant->reservation ? 'checked' : '' }} style="accent-color: var(--primary);">
+                                <span>Yes</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                <input type="radio" name="reservation" value="0" {{ !isset($restaurant) || !$restaurant->reservation ? 'checked' : '' }} style="accent-color: var(--primary);">
+                                <span>No</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="form-group">
                     <label class="form-label">Categories</label>
                     <div id="categories-checkboxes" style="display: flex; flex-wrap: wrap; gap: 0.75rem; padding: 0.5rem 0;">
@@ -149,6 +170,7 @@ form.addEventListener('submit', async e => {
     
     const mealCostValue = form.meal_cost.value.trim();
     const goodDateSpotRadio = form.querySelector('input[name="good_date_spot"]:checked');
+    const reservationRadio = form.querySelector('input[name="reservation"]:checked');
     
     const payload = {
         name: form.name.value.trim(),
@@ -161,6 +183,8 @@ form.addEventListener('submit', async e => {
         opening_hours: form.opening_hours.value.trim() || null,
         meal_cost: mealCostValue ? parseFloat(mealCostValue) : null,
         good_date_spot: goodDateSpotRadio ? goodDateSpotRadio.value === '1' : false,
+        phone: form.phone.value.trim() || null,
+        reservation: reservationRadio ? reservationRadio.value === '1' : false,
         category_ids: categoryIds
     };
     

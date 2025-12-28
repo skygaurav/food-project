@@ -24,11 +24,14 @@ class DishApprovalController extends Controller
                 return [
                     'id' => $dish->id,
                     'name' => $dish->name,
+                    'slug' => $dish->slug,
                     'comment' => $dish->comment,
                     'status' => $dish->status,
                     'meal_cost' => $dish->meal_cost,
                     'good_date_spot' => $dish->good_date_spot,
                     'website' => $dish->website,
+                    'phone' => $dish->phone,
+                    'reservation' => $dish->reservation,
                     'restaurant_id' => $dish->restaurant_id,
                     'restaurant_name' => $dish->restaurant?->name,
                     'image_url' => $dish->images->first()?->path 
@@ -40,6 +43,44 @@ class DishApprovalController extends Controller
             });
 
         return response()->json($dishes);
+    }
+
+    /**
+     * Get a single dish with all details.
+     */
+    public function show(Dish $dish): JsonResponse
+    {
+        $dish->load(['restaurant.categories', 'images', 'reviews.user', 'reactions', 'user']);
+        
+        return response()->json([
+            'id' => $dish->id,
+            'name' => $dish->name,
+            'slug' => $dish->slug,
+            'comment' => $dish->comment,
+            'status' => $dish->status,
+            'meal_cost' => $dish->meal_cost,
+            'good_date_spot' => $dish->good_date_spot,
+            'website' => $dish->website,
+            'phone' => $dish->phone,
+            'reservation' => $dish->reservation,
+            'restaurant' => $dish->restaurant,
+            'images' => $dish->images->map(fn($img) => [
+                'id' => $img->id,
+                'url' => '/storage/' . $img->path,
+            ]),
+            'reviews' => $dish->reviews,
+            'reactions' => [
+                'likes' => $dish->reactions->where('type', 'like')->count(),
+                'dislikes' => $dish->reactions->where('type', 'dislike')->count(),
+            ],
+            'user' => $dish->user ? [
+                'id' => $dish->user->id,
+                'name' => $dish->user->name,
+                'email' => $dish->user->email,
+            ] : null,
+            'created_at' => $dish->created_at,
+            'updated_at' => $dish->updated_at,
+        ]);
     }
 
     public function index(): JsonResponse

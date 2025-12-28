@@ -441,6 +441,27 @@
                     </div>
                 </div>
                 
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Restaurant Phone</label>
+                        <input type="tel" id="phone" name="phone" class="form-control" placeholder="e.g. (555) 123-4567" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Takes Reservations?</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="reservation" value="1" />
+                                <span>Yes</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="reservation" value="0" checked />
+                                <span>No</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="form-group">
                     <label class="form-label">Good Date Spot?</label>
                     <div class="radio-group">

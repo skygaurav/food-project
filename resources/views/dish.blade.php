@@ -27,32 +27,216 @@
         width: 100%;
         height: 400px;
         object-fit: cover;
+        cursor: pointer;
+        transition: transform 0.3s;
+    }
+    
+    .dish-main-image:hover {
+        transform: scale(1.02);
     }
     
     .dish-thumbnails {
         display: flex;
         gap: 0.5rem;
-        padding: 0.5rem;
-        background: rgba(0,0,0,0.5);
+        padding: 0.75rem;
+        background: rgba(0,0,0,0.6);
         position: absolute;
         bottom: 0;
         left: 0;
         right: 0;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+    
+    .dish-thumbnails::-webkit-scrollbar {
+        display: none;
     }
     
     .dish-thumbnail {
-        width: 60px;
-        height: 60px;
+        width: 70px;
+        height: 70px;
         border-radius: 8px;
         object-fit: cover;
         cursor: pointer;
-        border: 2px solid transparent;
-        transition: border-color 0.2s;
+        border: 3px solid transparent;
+        transition: all 0.2s;
+        flex-shrink: 0;
     }
     
-    .dish-thumbnail.active,
+    .dish-thumbnail.active {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 2px rgba(235, 82, 2, 0.3);
+    }
+    
     .dish-thumbnail:hover {
+        border-color: rgba(255,255,255,0.7);
+    }
+    
+    .image-counter {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: rgba(0,0,0,0.6);
+        color: #fff;
+        padding: 0.5rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    
+    .image-nav-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0,0,0,0.5);
+        color: #fff;
+        border: none;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s;
+        z-index: 10;
+    }
+    
+    .image-nav-btn:hover {
+        background: rgba(0,0,0,0.8);
+    }
+    
+    .image-nav-btn.prev {
+        left: 1rem;
+    }
+    
+    .image-nav-btn.next {
+        right: 1rem;
+    }
+    
+    /* Image Modal/Lightbox */
+    .image-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.95);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .image-modal.show {
+        display: flex;
+    }
+    
+    .image-modal-content {
+        position: relative;
+        max-width: 90vw;
+        max-height: 90vh;
+    }
+    
+    .image-modal-img {
+        max-width: 90vw;
+        max-height: 85vh;
+        object-fit: contain;
+        border-radius: 8px;
+    }
+    
+    .image-modal-close {
+        position: absolute;
+        top: -40px;
+        right: 0;
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 2rem;
+        cursor: pointer;
+        padding: 0.5rem;
+    }
+    
+    .image-modal-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255,255,255,0.2);
+        color: #fff;
+        border: none;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s;
+    }
+    
+    .image-modal-nav:hover {
+        background: rgba(255,255,255,0.3);
+    }
+    
+    .image-modal-nav.prev {
+        left: -70px;
+    }
+    
+    .image-modal-nav.next {
+        right: -70px;
+    }
+    
+    .image-modal-counter {
+        position: absolute;
+        bottom: -40px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: #fff;
+        font-size: 0.9rem;
+    }
+    
+    .image-modal-thumbnails {
+        position: absolute;
+        bottom: -100px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 0.5rem;
+        max-width: 80vw;
+        overflow-x: auto;
+        padding: 0.5rem;
+    }
+    
+    .image-modal-thumb {
+        width: 60px;
+        height: 60px;
+        border-radius: 6px;
+        object-fit: cover;
+        cursor: pointer;
+        border: 2px solid transparent;
+        opacity: 0.6;
+        transition: all 0.2s;
+        flex-shrink: 0;
+    }
+    
+    .image-modal-thumb.active,
+    .image-modal-thumb:hover {
         border-color: #fff;
+        opacity: 1;
+    }
+    
+    @media (max-width: 768px) {
+        .image-modal-nav.prev {
+            left: 1rem;
+        }
+        
+        .image-modal-nav.next {
+            right: 1rem;
+        }
+        
+        .image-modal-thumbnails {
+            display: none;
+        }
     }
     
     .dish-info {
@@ -161,10 +345,14 @@
         background: #fff5eb;
     }
     
-    .dish-action-btn.liked {
-        border-color: #ef4444;
-        background: #fef2f2;
-        color: #ef4444;
+    .dish-action-btn.active {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: #fff;
+    }
+    
+    .dish-action-btn.active:hover {
+        opacity: 0.9;
     }
     
     /* Reviews Section */
@@ -336,7 +524,14 @@
     <div id="dish-content" style="display: none;">
         <section class="dish-detail">
             <div class="dish-image-container">
-                <img id="dish-main-image" src="" alt="" class="dish-main-image" />
+                <img id="dish-main-image" src="" alt="" class="dish-main-image" onclick="openGalleryModal(currentImageIndex)" />
+                <div id="image-counter" class="image-counter" style="display: none;">1 / 1</div>
+                <button id="prev-btn" class="image-nav-btn prev" style="display: none;" onclick="navigateImage(-1)">
+                    <svg class="icon" style="color: #fff;"><use href="#icon-chevron-left"></use></svg>
+                </button>
+                <button id="next-btn" class="image-nav-btn next" style="display: none;" onclick="navigateImage(1)">
+                    <svg class="icon" style="color: #fff;"><use href="#icon-chevron-right"></use></svg>
+                </button>
                 <div id="dish-thumbnails" class="dish-thumbnails" style="display: none;"></div>
             </div>
             
@@ -372,6 +567,14 @@
                     <div class="dish-detail-item">
                         <div class="dish-detail-label">Date Spot</div>
                         <div id="dish-date-spot" class="dish-detail-value">-</div>
+                    </div>
+                    <div class="dish-detail-item">
+                        <div class="dish-detail-label">Reservation</div>
+                        <div id="dish-reservation" class="dish-detail-value">-</div>
+                    </div>
+                    <div class="dish-detail-item">
+                        <div class="dish-detail-label">Phone</div>
+                        <div id="dish-phone" class="dish-detail-value">-</div>
                     </div>
                     <div class="dish-detail-item">
                         <div class="dish-detail-label">Website</div>
@@ -454,32 +657,117 @@
         <p class="empty-state-text">The dish you're looking for doesn't exist or has been removed.</p>
         <a href="/" class="btn btn-primary" style="margin-top: 1rem;">Back to Home</a>
     </div>
+    
+    <!-- Image Gallery Modal -->
+    <div id="gallery-modal" class="image-modal">
+        <div class="image-modal-content">
+            <button class="image-modal-close" onclick="closeGalleryModal()">&times;</button>
+            <button class="image-modal-nav prev" onclick="modalNavigate(-1)">
+                <svg class="icon" style="color: #fff;"><use href="#icon-chevron-left"></use></svg>
+            </button>
+            <img id="modal-main-image" class="image-modal-img" src="" alt="" />
+            <button class="image-modal-nav next" onclick="modalNavigate(1)">
+                <svg class="icon" style="color: #fff;"><use href="#icon-chevron-right"></use></svg>
+            </button>
+            <div id="modal-counter" class="image-modal-counter">1 / 1</div>
+            <div id="modal-thumbnails" class="image-modal-thumbnails"></div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const dishId = window.location.pathname.split('/').pop();
+    const dishSlug = window.location.pathname.split('/').pop();
+    const isAuthenticated = {{ auth()->check() ? 'true' : 'false' }};
     
     const loader = document.getElementById('dish-loader');
     const content = document.getElementById('dish-content');
     const error = document.getElementById('dish-error');
     
     let currentDish = null;
+    let currentImageIndex = 0;
     
     async function loadDish() {
         try {
-            const res = await fetch(`/api/dishes/${dishId}`);
+            const res = await fetch(`/api/dishes/${dishSlug}`);
             if (!res.ok) throw new Error('Dish not found');
             
             currentDish = await res.json();
             renderDish();
             loadRelatedDishes();
+            setupReactionButtons();
             
         } catch (e) {
             console.error('Failed to load dish:', e);
             loader.style.display = 'none';
             error.style.display = 'block';
+        }
+    }
+    
+    function setupReactionButtons() {
+        const likeBtn = document.getElementById('like-btn');
+        const dislikeBtn = document.getElementById('dislike-btn');
+        
+        if (!isAuthenticated) {
+            likeBtn.addEventListener('click', () => window.location.href = '/login');
+            dislikeBtn.addEventListener('click', () => window.location.href = '/login');
+            return;
+        }
+        
+        // Update button states based on user's reaction
+        updateReactionButtons();
+        
+        likeBtn.addEventListener('click', () => handleReaction('like'));
+        dislikeBtn.addEventListener('click', () => handleReaction('dislike'));
+    }
+    
+    function updateReactionButtons() {
+        const likeBtn = document.getElementById('like-btn');
+        const dislikeBtn = document.getElementById('dislike-btn');
+        
+        likeBtn.classList.remove('active');
+        dislikeBtn.classList.remove('active');
+        
+        if (currentDish.user_reaction === 'like') {
+            likeBtn.classList.add('active');
+        } else if (currentDish.user_reaction === 'dislike') {
+            dislikeBtn.classList.add('active');
+        }
+        
+        // Update counts
+        document.getElementById('dish-likes').textContent = currentDish.likes_count || 0;
+    }
+    
+    async function handleReaction(type) {
+        try {
+            const res = await fetch(`/api/dishes/${dishSlug}/reactions`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ type })
+            });
+            
+            if (!res.ok) {
+                if (res.status === 401) {
+                    window.location.href = '/login';
+                    return;
+                }
+                throw new Error('Failed to update reaction');
+            }
+            
+            const data = await res.json();
+            currentDish.user_reaction = data.reaction?.type || null;
+            currentDish.likes_count = data.likes_count;
+            currentDish.dislikes_count = data.dislikes_count;
+            updateReactionButtons();
+            
+        } catch (e) {
+            console.error('Failed to update reaction:', e);
+            alert('Failed to update reaction. Please try again.');
         }
     }
     
@@ -494,9 +782,16 @@ document.addEventListener('DOMContentLoaded', function() {
         if (dish.images && dish.images.length > 0) {
             mainImage.src = '/storage/' + dish.images[0].path;
             mainImage.alt = dish.name;
+            currentImageIndex = 0;
             
-            // Thumbnails
+            // Show image counter and navigation for multiple images
             if (dish.images.length > 1) {
+                document.getElementById('image-counter').style.display = 'block';
+                document.getElementById('image-counter').textContent = `1 / ${dish.images.length}`;
+                document.getElementById('prev-btn').style.display = 'flex';
+                document.getElementById('next-btn').style.display = 'flex';
+                
+                // Thumbnails
                 const thumbsContainer = document.getElementById('dish-thumbnails');
                 thumbsContainer.style.display = 'flex';
                 thumbsContainer.innerHTML = dish.images.map((img, idx) => `
@@ -529,6 +824,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         document.getElementById('dish-cost').textContent = dish.meal_cost ? '$' + parseFloat(dish.meal_cost).toFixed(2) : '-';
         document.getElementById('dish-date-spot').innerHTML = dish.good_date_spot ? 'Yes <svg class="icon icon-sm icon-danger icon-filled"><use href="#icon-heart-filled"></use></svg>' : 'No';
+        document.getElementById('dish-reservation').innerHTML = dish.reservation ? 'Yes <svg class="icon icon-sm icon-success"><use href="#icon-check-circle"></use></svg>' : 'No';
+        document.getElementById('dish-phone').innerHTML = dish.phone ? `<a href="tel:${dish.phone}" style="color: var(--primary);">${dish.phone}</a>` : '-';
         
         if (dish.website) {
             document.getElementById('dish-website').innerHTML = `<a href="${dish.website}" target="_blank" style="color: var(--primary);">Visit</a>`;
@@ -548,13 +845,108 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     window.changeImage = function(idx) {
+        currentImageIndex = idx;
         const mainImage = document.getElementById('dish-main-image');
         mainImage.src = '/storage/' + currentDish.images[idx].path;
         
         document.querySelectorAll('.dish-thumbnail').forEach((thumb, i) => {
             thumb.classList.toggle('active', i === idx);
         });
+        
+        // Update counter
+        const imageCount = currentDish.images.length;
+        if (imageCount > 1) {
+            document.getElementById('image-counter').textContent = `${idx + 1} / ${imageCount}`;
+        }
     };
+    
+    // Navigate images with arrow buttons
+    window.navigateImage = function(direction) {
+        if (!currentDish.images || currentDish.images.length <= 1) return;
+        
+        const imageCount = currentDish.images.length;
+        let newIndex = currentImageIndex + direction;
+        
+        if (newIndex < 0) newIndex = imageCount - 1;
+        if (newIndex >= imageCount) newIndex = 0;
+        
+        changeImage(newIndex);
+    };
+    
+    // Gallery Modal Functions
+    window.openGalleryModal = function(idx) {
+        if (!currentDish.images || currentDish.images.length === 0) return;
+        
+        const modal = document.getElementById('gallery-modal');
+        const modalImg = document.getElementById('modal-main-image');
+        const modalThumbs = document.getElementById('modal-thumbnails');
+        const modalCounter = document.getElementById('modal-counter');
+        
+        currentImageIndex = idx || 0;
+        modalImg.src = '/storage/' + currentDish.images[currentImageIndex].path;
+        modalCounter.textContent = `${currentImageIndex + 1} / ${currentDish.images.length}`;
+        
+        // Render modal thumbnails
+        if (currentDish.images.length > 1) {
+            modalThumbs.innerHTML = currentDish.images.map((img, i) => `
+                <img src="/storage/${img.path}" alt="" class="image-modal-thumb ${i === currentImageIndex ? 'active' : ''}" onclick="modalChangeImage(${i})" />
+            `).join('');
+        } else {
+            modalThumbs.style.display = 'none';
+        }
+        
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    };
+    
+    window.closeGalleryModal = function() {
+        document.getElementById('gallery-modal').classList.remove('show');
+        document.body.style.overflow = '';
+    };
+    
+    window.modalNavigate = function(direction) {
+        if (!currentDish.images || currentDish.images.length <= 1) return;
+        
+        const imageCount = currentDish.images.length;
+        let newIndex = currentImageIndex + direction;
+        
+        if (newIndex < 0) newIndex = imageCount - 1;
+        if (newIndex >= imageCount) newIndex = 0;
+        
+        modalChangeImage(newIndex);
+    };
+    
+    window.modalChangeImage = function(idx) {
+        currentImageIndex = idx;
+        const modalImg = document.getElementById('modal-main-image');
+        const modalCounter = document.getElementById('modal-counter');
+        
+        modalImg.src = '/storage/' + currentDish.images[idx].path;
+        modalCounter.textContent = `${idx + 1} / ${currentDish.images.length}`;
+        
+        // Update modal thumbnails
+        document.querySelectorAll('.image-modal-thumb').forEach((thumb, i) => {
+            thumb.classList.toggle('active', i === idx);
+        });
+        
+        // Also update main page thumbnails
+        changeImage(idx);
+    };
+    
+    // Keyboard navigation for modal
+    document.addEventListener('keydown', function(e) {
+        const modal = document.getElementById('gallery-modal');
+        if (!modal.classList.contains('show')) return;
+        
+        if (e.key === 'Escape') closeGalleryModal();
+        if (e.key === 'ArrowLeft') modalNavigate(-1);
+        if (e.key === 'ArrowRight') modalNavigate(1);
+    });
+    
+    // Close modal on backdrop click
+    document.getElementById('gallery-modal').addEventListener('click', function(e) {
+        if (e.target === this) closeGalleryModal();
+    });
     
     function renderReviews(reviews) {
         const list = document.getElementById('reviews-list');
@@ -594,7 +986,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         : 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80';
                     
                     return `
-                        <a href="/dishes/${dish.id}" class="related-card" style="text-decoration: none;">
+                        <a href="/dishes/${dish.slug}" class="related-card" style="text-decoration: none;">
                             <img src="${image}" alt="${dish.name}" class="related-card-image" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'" />
                             <div class="related-card-body">
                                 <h4 class="related-card-title">${dish.name}</h4>

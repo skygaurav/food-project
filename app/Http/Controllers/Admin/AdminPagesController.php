@@ -52,6 +52,12 @@ class AdminPagesController extends Controller
         return view('admin.dishes');
     }
 
+    public function dishView(Request $request, Dish $dish): View
+    {
+        $dish->load(['restaurant.categories', 'images', 'reviews.user', 'reactions', 'user']);
+        return view('admin.dish_view', ['dish' => $dish]);
+    }
+
     public function disapprovals(Request $request): View
     {
         return view('admin.disapprovals');

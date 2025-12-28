@@ -26,6 +26,8 @@ class StoreRestaurantRequest extends FormRequest
             'opening_hours' => ['nullable', 'string'],
             'meal_cost' => ['nullable', 'numeric', 'min:0'],
             'good_date_spot' => ['nullable', 'boolean'],
+            'phone' => ['nullable', 'string', 'max:50'],
+            'reservation' => ['nullable', 'boolean'],
             'category_ids' => ['required', 'array'],
             'category_ids.*' => ['integer', 'exists:categories,id'],
         ];

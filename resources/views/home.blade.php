@@ -186,12 +186,12 @@ document.addEventListener('DOMContentLoaded', function() {
             
             return `
                 <article class="dish-card">
-                    <a href="/dishes/${dish.id}">
+                    <a href="/dishes/${dish.slug}">
                         <img src="${image}" alt="${dish.name}" class="dish-card-image" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'" />
                     </a>
                     <div class="dish-card-body">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.25rem;">
-                            <a href="/dishes/${dish.id}" style="text-decoration: none; color: inherit;">
+                            <a href="/dishes/${dish.slug}" style="text-decoration: none; color: inherit;">
                                 <h3 class="dish-card-title">${dish.name}</h3>
                             </a>
                             ${city ? `<span style="font-size: 0.75rem; color: var(--text-muted); background: #f1f5f9; padding: 0.25rem 0.5rem; border-radius: 4px;">${city}</span>` : ''}

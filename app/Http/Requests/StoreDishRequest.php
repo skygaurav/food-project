@@ -21,6 +21,8 @@ class StoreDishRequest extends FormRequest
             'meal_cost' => ['nullable', 'numeric', 'min:0'],
             'good_date_spot' => ['nullable', 'boolean'],
             'website' => ['nullable', 'string', 'max:255', 'url'],
+            'reservation' => ['nullable', 'boolean'],
+            'phone' => ['nullable', 'string', 'max:50'],
             'images' => ['required', 'array', 'min:1'],
             'images.*' => ['required', 'image', 'max:5120'],
         ];

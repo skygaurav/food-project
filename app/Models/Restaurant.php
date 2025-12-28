@@ -25,12 +25,15 @@ class Restaurant extends Model
         'meal_cost',
         'good_date_spot',
         'is_approved',
+        'reservation',
+        'phone',
     ];
 
     protected $casts = [
         'good_date_spot' => 'boolean',
         'meal_cost' => 'decimal:2',
         'is_approved' => 'boolean',
+        'reservation' => 'boolean',
     ];
 
     public function categories(): BelongsToMany

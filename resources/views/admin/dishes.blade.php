@@ -220,6 +220,7 @@ function render() {
                 <td data-col="date_spot" class="hidden">${d.good_date_spot ? '<span class="badge badge-success">Yes</span>' : '<span class="text-muted">No</span>'}</td>
                 <td data-col="created_at" class="hidden">${formatDate(d.created_at)}</td>
                 <td class="actions">
+                    <a href="/admin/dishes/${d.id}" class="btn btn-secondary btn-sm">View</a>
                     ${d.status === 'pending' ? `
                         <button class="btn btn-success btn-sm" onclick="approveDish(${d.id})">Approve</button>
                         <button class="btn btn-danger btn-sm" onclick="rejectDish(${d.id})">Reject</button>

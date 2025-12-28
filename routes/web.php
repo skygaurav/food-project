@@ -10,7 +10,9 @@ use App\Http\Controllers\Admin\CmsPageController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'home');
-Route::view('/dishes/{dish}', 'dish');
+Route::get('/dishes/{dish:slug}', function (\App\Models\Dish $dish) {
+    return view('dish', ['dishSlug' => $dish->slug]);
+});
 
 // CMS pages (frontend)
 Route::get('/page/{slug}', [CmsPageController::class, 'showPage']);
@@ -42,6 +44,7 @@ Route::get('/admin/restaurants/{restaurant}/dishes', [AdminPagesController::clas
 Route::get('/admin/categories/create', [AdminPagesController::class, 'categoryForm']);
 Route::get('/admin/categories/{category}/edit', [AdminPagesController::class, 'categoryForm']);
 Route::get('/admin/dishes', [AdminPagesController::class, 'dishes']);
+Route::get('/admin/dishes/{dish:id}', [AdminPagesController::class, 'dishView']);
 Route::get('/admin/disapprovals', [AdminPagesController::class, 'disapprovals']);
 Route::get('/admin/settings', [AdminPagesController::class, 'settings']);
 Route::get('/admin/admins', [AdminPagesController::class, 'admins']);
@@ -73,6 +76,7 @@ Route::prefix('admin/api')->middleware(['web','admin.auth'])->group(function ():
 	// All dishes
 	Route::get('dishes', [\App\Http\Controllers\Admin\DishApprovalController::class, 'all']);
 	Route::get('dishes/pending', [\App\Http\Controllers\Admin\DishApprovalController::class, 'index']);
+	Route::get('dishes/{dish}', [\App\Http\Controllers\Admin\DishApprovalController::class, 'show']);
 	Route::post('dishes/{dish}/approve', [\App\Http\Controllers\Admin\DishApprovalController::class, 'approve']);
 	Route::post('dishes/{dish}/disapprove', [\App\Http\Controllers\Admin\DishApprovalController::class, 'disapprove']);
 
@@ -105,10 +109,17 @@ Route::get('/admin/spa', function () {
 // Public API for frontend
 Route::prefix('api')->group(function (): void {
     Route::get('dishes', [\App\Http\Controllers\DishController::class, 'index']);
-    Route::get('dishes/{dish}', [\App\Http\Controllers\DishController::class, 'show']);
+    Route::get('dishes/{dish:slug}', [\App\Http\Controllers\DishController::class, 'show']);
     Route::get('restaurants', [\App\Http\Controllers\RestaurantController::class, 'index']);
     Route::get('restaurants/search', [\App\Http\Controllers\RestaurantController::class, 'search']);
     Route::get('restaurants/{restaurant}', [\App\Http\Controllers\RestaurantController::class, 'show']);
     Route::get('categories', [\App\Http\Controllers\Admin\CategoryController::class, 'index']);
     Route::get('cms-pages/footer', [CmsPageController::class, 'footerPages']);
+    
+    // Reactions (like/dislike) - requires auth
+    Route::middleware('auth')->group(function (): void {
+        Route::post('dishes/{dish:slug}/reactions', [\App\Http\Controllers\DishReactionController::class, 'store']);
+        Route::delete('dishes/{dish:slug}/reactions', [\App\Http\Controllers\DishReactionController::class, 'destroy']);
+        Route::post('dishes/{dish:slug}/reviews', [\App\Http\Controllers\ReviewController::class, 'store']);
+    });
 });

@@ -20,10 +20,11 @@ Route::prefix('admin')->middleware(['auth:sanctum'])->group(function (): void {
 
 Route::get('restaurants', [RestaurantController::class, 'index']);
 Route::get('dishes', [DishController::class, 'index']);
-Route::get('dishes/{dish}', [DishController::class, 'show']);
+Route::get('dishes/{dish:slug}', [DishController::class, 'show']);
 
 Route::middleware(['auth:sanctum'])->group(function (): void {
     Route::post('dishes', [DishController::class, 'store']);
-    Route::post('dishes/{dish}/reviews', [ReviewController::class, 'store']);
-    Route::post('dishes/{dish}/reactions', [DishReactionController::class, 'store']);
+    Route::post('dishes/{dish:slug}/reviews', [ReviewController::class, 'store']);
+    Route::post('dishes/{dish:slug}/reactions', [DishReactionController::class, 'store']);
+    Route::delete('dishes/{dish:slug}/reactions', [DishReactionController::class, 'destroy']);
 });
