@@ -19,6 +19,9 @@ class Dish extends Model
         'name',
         'comment',
         'status',
+        'meal_cost',
+        'good_date_spot',
+        'website',
     ];
 
     public function restaurant(): BelongsTo
