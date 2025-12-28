@@ -1,4 +1,4 @@
-<?php $__env->startSection('title', isset($restaurant) ? 'Edit Restaurant' : 'New Restaurant'); ?>
+<?php $__env->startSection('title', $restaurant->exists ? 'Edit Restaurant' : 'New Restaurant'); ?>
 
 <?php $__env->startSection('content'); ?>
     <div class="breadcrumb">
@@ -6,13 +6,13 @@
         <span>›</span>
         <a href="/admin/restaurants">Restaurants</a>
         <span>›</span>
-        <span><?php echo e(isset($restaurant) ? 'Edit' : 'New'); ?></span>
+        <span><?php echo e($restaurant->exists ? 'Edit' : 'New'); ?></span>
     </div>
 
     <div class="page-header">
         <div>
-            <h1 class="page-title"><?php echo e(isset($restaurant) ? 'Edit Restaurant' : 'Create New Restaurant'); ?></h1>
-            <p class="page-subtitle"><?php echo e(isset($restaurant) ? 'Update restaurant details' : 'Add a new restaurant to the platform'); ?></p>
+            <h1 class="page-title"><?php echo e($restaurant->exists ? 'Edit Restaurant' : 'Create New Restaurant'); ?></h1>
+            <p class="page-subtitle"><?php echo e($restaurant->exists ? 'Update restaurant details' : 'Add a new restaurant to the platform'); ?></p>
         </div>
     </div>
 
@@ -73,6 +73,27 @@
                     <textarea name="opening_hours" class="form-control" rows="3" placeholder="e.g., Mon-Fri: 9am-10pm, Sat-Sun: 10am-11pm"><?php echo e($restaurant->opening_hours ?? ''); ?></textarea>
                 </div>
                 
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Meal Cost ($)</label>
+                        <input type="number" step="0.01" min="0" name="meal_cost" value="<?php echo e($restaurant->meal_cost ?? ''); ?>" class="form-control" placeholder="e.g., 25.00" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Good Date Spot?</label>
+                        <div style="display: flex; gap: 1.5rem; padding: 0.75rem 0;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                <input type="radio" name="good_date_spot" value="1" <?php echo e(isset($restaurant) && $restaurant->good_date_spot ? 'checked' : ''); ?> style="accent-color: var(--primary);">
+                                <span>Yes</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                <input type="radio" name="good_date_spot" value="0" <?php echo e(!isset($restaurant) || !$restaurant->good_date_spot ? 'checked' : ''); ?> style="accent-color: var(--primary);">
+                                <span>No</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="form-group">
                     <label class="form-label">Categories</label>
                     <div id="categories-checkboxes" style="display: flex; flex-wrap: wrap; gap: 0.75rem; padding: 0.5rem 0;">
@@ -82,7 +103,7 @@
                 
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">
-                        <span>💾</span> <?php echo e(isset($restaurant) ? 'Update Restaurant' : 'Create Restaurant'); ?>
+                        <span>💾</span> <?php echo e($restaurant->exists ? 'Update Restaurant' : 'Create Restaurant'); ?>
 
                     </button>
                     <a href="/admin/restaurants" class="btn btn-secondary">Cancel</a>
@@ -125,6 +146,9 @@ form.addEventListener('submit', async e => {
     const categoryCheckboxes = form.querySelectorAll('input[name="category_ids"]:checked');
     const categoryIds = Array.from(categoryCheckboxes).map(cb => parseInt(cb.value));
     
+    const mealCostValue = form.meal_cost.value.trim();
+    const goodDateSpotRadio = form.querySelector('input[name="good_date_spot"]:checked');
+    
     const payload = {
         name: form.name.value.trim(),
         address: form.address.value.trim(),
@@ -134,6 +158,8 @@ form.addEventListener('submit', async e => {
         postcode: form.postcode.value.trim(),
         website: form.website.value.trim() || null,
         opening_hours: form.opening_hours.value.trim() || null,
+        meal_cost: mealCostValue ? parseFloat(mealCostValue) : null,
+        good_date_spot: goodDateSpotRadio ? goodDateSpotRadio.value === '1' : false,
         category_ids: categoryIds
     };
     

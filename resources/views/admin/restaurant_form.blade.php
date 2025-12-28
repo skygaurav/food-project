@@ -105,7 +105,7 @@
                 
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">
-                        <span>💾</span> {{ isset($restaurant) ? 'Update Restaurant' : 'Create Restaurant' }}
+                        <span>💾</span> {{ $restaurant->exists ? 'Update Restaurant' : 'Create Restaurant' }}
                     </button>
                     <a href="/admin/restaurants" class="btn btn-secondary">Cancel</a>
                 </div>
