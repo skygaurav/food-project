@@ -464,7 +464,34 @@
                                    placeholder="e.g. 90001" />
                             <div class="form-error"></div>
                         </div>
-                        <div class="form-group"></div>
+                        <div class="form-group">
+                            <label class="form-label">Country <span class="required">*</span></label>
+                            <select id="restaurant_country" name="restaurant_country" class="form-control">
+                                <option value="">Select Country</option>
+                                <option value="United States" selected>United States</option>
+                                <option value="Australia">Australia</option>
+                                <option value="United Kingdom">United Kingdom</option>
+                                <option value="Canada">Canada</option>
+                                <option value="New Zealand">New Zealand</option>
+                                <option value="India">India</option>
+                                <option value="Singapore">Singapore</option>
+                                <option value="Malaysia">Malaysia</option>
+                                <option value="Japan">Japan</option>
+                                <option value="South Korea">South Korea</option>
+                                <option value="Thailand">Thailand</option>
+                                <option value="Indonesia">Indonesia</option>
+                                <option value="Philippines">Philippines</option>
+                                <option value="Vietnam">Vietnam</option>
+                                <option value="Germany">Germany</option>
+                                <option value="France">France</option>
+                                <option value="Italy">Italy</option>
+                                <option value="Spain">Spain</option>
+                                <option value="Netherlands">Netherlands</option>
+                                <option value="Ireland">Ireland</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <div class="form-error"></div>
+                        </div>
                     </div>
                 </div>
                 

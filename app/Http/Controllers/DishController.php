@@ -263,7 +263,8 @@ class DishController extends Controller
                         'city' => $city,
                         'region' => $state,
                         'postcode' => $postcode,
-                        'address' => $request->string('restaurant_address')->toString(),
+                        'address' => $request->string('restaurant_address')->toString() ?: '',
+                        'country' => $request->string('restaurant_country')->toString() ?: 'United States',
                         'is_approved' => false,
                     ]);
                     $restaurantId = $restaurant->id;
