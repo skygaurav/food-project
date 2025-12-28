@@ -1,9 +1,7 @@
-@extends('layouts.frontend')
+<?php $__env->startSection('meta_title', 'Popular Dishes - ' . ($seoSettings['site_name'] ?? 'FOODCITA')); ?>
+<?php $__env->startSection('meta_description', 'Discover the most popular dishes loved by food enthusiasts. Explore top-rated meals from the best restaurants.'); ?>
 
-@section('meta_title', 'Popular Dishes - ' . ($seoSettings['site_name'] ?? 'FOODCITA'))
-@section('meta_description', 'Discover the most popular dishes loved by food enthusiasts. Explore top-rated meals from the best restaurants.')
-
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <style>
     .popular-hero {
         text-align: center;
@@ -315,9 +313,9 @@
         border-color: var(--primary);
     }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
     <!-- Hero Section -->
     <section class="popular-hero">
         <h1 class="popular-title">🔥 Popular Dishes</h1>
@@ -374,9 +372,9 @@
         <!-- Pagination -->
         <div id="pagination-container"></div>
     </section>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     let currentPage = 1;
@@ -624,4 +622,6 @@ document.addEventListener('DOMContentLoaded', function() {
     loadDishes();
 });
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('layouts.frontend', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /workspaces/food-project/resources/views/popular.blade.php ENDPATH**/ ?>

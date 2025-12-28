@@ -22,7 +22,7 @@ Route::get('restaurants', [RestaurantController::class, 'index']);
 Route::get('restaurants/{restaurant}', [RestaurantController::class, 'show']);
 Route::get('dishes', [DishController::class, 'index']);
 Route::get('dishes/popular', [DishController::class, 'popular']);
-Route::get('dishes/{dish:slug}', [DishController::class, 'show']);
+Route::get('dishes/{dish:slug}', [DishController::class, 'show'])->where('dish', '^(?!popular$).*');
 
 Route::middleware(['auth:sanctum'])->group(function (): void {
     Route::post('dishes', [DishController::class, 'store']);

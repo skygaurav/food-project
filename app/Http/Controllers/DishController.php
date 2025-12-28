@@ -81,9 +81,16 @@ class DishController extends Controller
             });
         }
 
-        // Sort by popularity score (likes + reviews count + average rating)
-        // Using raw expression to create a popularity score
-        $query->orderByRaw('(COALESCE(likes_count, 0) * 2 + COALESCE(reviews_count, 0) + COALESCE(reviews_avg_rating, 0)) DESC');
+        // Sort by popularity score: likes (weighted x2) + reviews count + average rating
+        // Use subqueries for proper ordering since aliases can't be used in ORDER BY directly
+        $query->addSelect([
+            DB::raw('(
+                (SELECT COUNT(*) FROM dish_reactions WHERE dish_reactions.dish_id = dishes.id AND dish_reactions.type = "like") * 2 +
+                (SELECT COUNT(*) FROM reviews WHERE reviews.dish_id = dishes.id) +
+                COALESCE((SELECT AVG(rating) FROM reviews WHERE reviews.dish_id = dishes.id), 0)
+            ) as popularity_score')
+        ])
+        ->orderByDesc('popularity_score');
 
         return response()->json($query->paginate($perPage));
     }

@@ -842,7 +842,8 @@ document.addEventListener('DOMContentLoaded', function() {
             let primaryIndex = dish.images.findIndex(img => img.is_primary);
             if (primaryIndex === -1) primaryIndex = 0;
             
-            mainImage.src = '/storage/' + dish.images[primaryIndex].path;
+            const imgPath = dish.images[primaryIndex].path;
+            mainImage.src = imgPath.startsWith('http') ? imgPath : '/storage/' + imgPath;
             mainImage.alt = dish.name;
             currentImageIndex = primaryIndex;
             
@@ -856,9 +857,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Thumbnails
                 const thumbsContainer = document.getElementById('dish-thumbnails');
                 thumbsContainer.style.display = 'flex';
-                thumbsContainer.innerHTML = dish.images.map((img, idx) => `
-                    <img src="/storage/${img.path}" alt="${dish.name}" class="dish-thumbnail ${idx === primaryIndex ? 'active' : ''}" onclick="changeImage(${idx})" />
-                `).join('');
+                thumbsContainer.innerHTML = dish.images.map((img, idx) => {
+                    const thumbSrc = img.path.startsWith('http') ? img.path : '/storage/' + img.path;
+                    return `<img src="${thumbSrc}" alt="${dish.name}" class="dish-thumbnail ${idx === primaryIndex ? 'active' : ''}" onclick="changeImage(${idx})" />`;
+                }).join('');
             }
         } else {
             mainImage.src = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=900&q=80';
@@ -909,7 +911,8 @@ document.addEventListener('DOMContentLoaded', function() {
     window.changeImage = function(idx) {
         currentImageIndex = idx;
         const mainImage = document.getElementById('dish-main-image');
-        mainImage.src = '/storage/' + currentDish.images[idx].path;
+        const imgPath = currentDish.images[idx].path;
+        mainImage.src = imgPath.startsWith('http') ? imgPath : '/storage/' + imgPath;
         
         document.querySelectorAll('.dish-thumbnail').forEach((thumb, i) => {
             thumb.classList.toggle('active', i === idx);
@@ -945,14 +948,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const modalCounter = document.getElementById('modal-counter');
         
         currentImageIndex = idx || 0;
-        modalImg.src = '/storage/' + currentDish.images[currentImageIndex].path;
+        const modalImgPath = currentDish.images[currentImageIndex].path;
+        modalImg.src = modalImgPath.startsWith('http') ? modalImgPath : '/storage/' + modalImgPath;
         modalCounter.textContent = `${currentImageIndex + 1} / ${currentDish.images.length}`;
         
         // Render modal thumbnails
         if (currentDish.images.length > 1) {
-            modalThumbs.innerHTML = currentDish.images.map((img, i) => `
-                <img src="/storage/${img.path}" alt="" class="image-modal-thumb ${i === currentImageIndex ? 'active' : ''}" onclick="modalChangeImage(${i})" />
-            `).join('');
+            modalThumbs.innerHTML = currentDish.images.map((img, i) => {
+                const thumbSrc = img.path.startsWith('http') ? img.path : '/storage/' + img.path;
+                return `<img src="${thumbSrc}" alt="" class="image-modal-thumb ${i === currentImageIndex ? 'active' : ''}" onclick="modalChangeImage(${i})" />`;
+            }).join('');
         } else {
             modalThumbs.style.display = 'none';
         }
@@ -983,7 +988,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const modalImg = document.getElementById('modal-main-image');
         const modalCounter = document.getElementById('modal-counter');
         
-        modalImg.src = '/storage/' + currentDish.images[idx].path;
+        const imgPath = currentDish.images[idx].path;
+        modalImg.src = imgPath.startsWith('http') ? imgPath : '/storage/' + imgPath;
         modalCounter.textContent = `${idx + 1} / ${currentDish.images.length}`;
         
         // Update modal thumbnails
@@ -1051,9 +1057,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (dish.images && dish.images.length > 0) {
                         primaryImage = dish.images.find(img => img.is_primary) || dish.images[0];
                     }
-                    const image = primaryImage 
-                        ? '/storage/' + primaryImage.path 
-                        : 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80';
+                    let image = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80';
+                    if (primaryImage) {
+                        image = primaryImage.path.startsWith('http') ? primaryImage.path : '/storage/' + primaryImage.path;
+                    }
                     
                     return `
                         <a href="/dishes/${dish.slug}" class="related-card" style="text-decoration: none;">
