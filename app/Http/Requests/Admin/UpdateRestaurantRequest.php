@@ -24,6 +24,8 @@ class UpdateRestaurantRequest extends FormRequest
             'postcode' => ['required', 'string', 'max:20'],
             'website' => ['nullable', 'url', 'max:255'],
             'opening_hours' => ['nullable', 'string'],
+            'meal_cost' => ['nullable', 'numeric', 'min:0'],
+            'good_date_spot' => ['nullable', 'boolean'],
             'category_ids' => ['required', 'array'],
             'category_ids.*' => ['integer', 'exists:categories,id'],
         ];
