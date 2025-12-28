@@ -14,13 +14,13 @@
                 <div class="flex items-center gap-4">
                     @auth
                         <span class="text-sm">Welcome, {{ auth()->user()->name }}</span>
-                        <form method="POST" action="{{ route('logout') }}" class="inline">
+                        <form method="POST" action="/logout" class="inline">
                             @csrf
                             <button type="submit" class="text-sm underline hover:text-slate-300">Logout</button>
                         </form>
                     @else
-                        <a href="{{ route('login') }}" class="text-sm underline hover:text-slate-300">Login</a>
-                        <a href="{{ route('register') }}" class="text-sm bg-white text-black px-4 py-1 rounded hover:bg-slate-200">Register</a>
+                        <a href="/login" class="text-sm underline hover:text-slate-300">Login</a>
+                        <a href="/register" class="text-sm bg-white text-black px-4 py-1 rounded hover:bg-slate-200">Register</a>
                     @endauth
                 </div>
             </div>
@@ -39,7 +39,7 @@
                     @else
                         <p class="mt-2 text-sm text-slate-600">Login to share your favorite dishes with the community</p>
                         <a
-                            href="{{ route('login') }}"
+                            href="/login"
                             class="mt-4 inline-flex items-center justify-center rounded border border-slate-500 px-8 py-2 text-lg hover:bg-slate-100"
                         >
                             Login to Upload

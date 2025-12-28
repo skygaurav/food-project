@@ -1,62 +1,73 @@
 @extends('admin.layout')
 
-@section('title', isset($admin) && $admin->id ? 'Edit Admin' : 'Create Admin')
+@section('title', isset($admin) && $admin->id ? 'Edit Admin' : 'New Admin')
 
 @section('content')
+    <div class="breadcrumb">
+        <a href="/admin">Dashboard</a>
+        <span>›</span>
+        <a href="/admin/admins">Admin Users</a>
+        <span>›</span>
+        <span>{{ isset($admin) && $admin->id ? 'Edit' : 'New' }}</span>
+    </div>
+
     <div class="page-header">
         <div>
-            <h1 class="page-title">{{ isset($admin) && $admin->id ? 'Edit Admin' : 'Create Admin' }}</h1>
-            <p class="page-subtitle">{{ isset($admin) && $admin->id ? 'Update admin user details' : 'Add a new administrator' }}</p>
+            <h1 class="page-title">{{ isset($admin) && $admin->id ? 'Edit Admin User' : 'Create New Admin User' }}</h1>
+            <p class="page-subtitle">{{ isset($admin) && $admin->id ? 'Update admin user details' : 'Add a new administrator account' }}</p>
         </div>
-        <a href="/admin/admins" class="btn btn-secondary">
-            ← Back to Admins
-        </a>
     </div>
 
     <div class="card">
-        <form id="admin-form" class="form-grid">
-            <div class="form-group">
-                <label for="username" class="form-label">Username <span class="required">*</span></label>
-                <input type="text" id="username" name="username" class="form-input" required
-                       value="{{ isset($admin) ? $admin->username : '' }}" placeholder="Enter username">
-            </div>
-
-            <div class="form-group">
-                <label for="password" class="form-label">
-                    Password {{ isset($admin) && $admin->id ? '(leave blank to keep current)' : '' }}
-                    @if(!isset($admin) || !$admin->id)<span class="required">*</span>@endif
-                </label>
-                <input type="password" id="password" name="password" class="form-input"
-                       {{ !isset($admin) || !$admin->id ? 'required' : '' }} placeholder="Enter password" minlength="6">
-            </div>
-
-            <div class="form-group">
-                <label for="password_confirm" class="form-label">Confirm Password</label>
-                <input type="password" id="password_confirm" name="password_confirm" class="form-input"
-                       placeholder="Confirm password">
-            </div>
-
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary" id="submit-btn">
-                    {{ isset($admin) && $admin->id ? 'Update Admin' : 'Create Admin' }}
-                </button>
-                <a href="/admin/admins" class="btn btn-secondary">Cancel</a>
-            </div>
-        </form>
+        <div class="card-body">
+            <form id="admin-form">
+                <input type="hidden" name="id" value="{{ $admin->id ?? '' }}" />
+                
+                <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: #475569;">Account Information</h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Username <span style="color: #ef4444;">*</span></label>
+                        <input type="text" name="username" value="{{ $admin->username ?? '' }}" class="form-control" placeholder="Enter username" required />
+                    </div>
+                </div>
+                
+                <h3 style="font-size: 1rem; font-weight: 600; margin: 1.5rem 0 1rem; color: #475569;">Password{{ isset($admin) && $admin->id ? ' (leave blank to keep current)' : '' }}</h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Password @if(!isset($admin) || !$admin->id)<span style="color: #ef4444;">*</span>@endif</label>
+                        <input type="password" name="password" class="form-control" placeholder="Enter password" minlength="6" {{ !isset($admin) || !$admin->id ? 'required' : '' }} />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Confirm Password</label>
+                        <input type="password" name="password_confirm" class="form-control" placeholder="Confirm password" />
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" id="submit-btn">
+                        <span>💾</span> {{ isset($admin) && $admin->id ? 'Update Admin' : 'Create Admin' }}
+                    </button>
+                    <a href="/admin/admins" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
     </div>
 @endsection
 
 @push('scripts')
 <script>
-const adminId = {{ isset($admin) && $admin->id ? $admin->id : 'null' }};
-const isEdit = adminId !== null;
+const form = document.getElementById('admin-form');
+const isEdit = form.id.value !== '';
 
-document.getElementById('admin-form').addEventListener('submit', async function(e) {
+form.addEventListener('submit', async function(e) {
     e.preventDefault();
     
-    const username = document.getElementById('username').value.trim();
-    const password = document.getElementById('password').value;
-    const passwordConfirm = document.getElementById('password_confirm').value;
+    const username = form.username.value.trim();
+    const password = form.password.value;
+    const passwordConfirm = form.password_confirm.value;
     
     if (!username) {
         alert('Username is required');
@@ -80,7 +91,7 @@ document.getElementById('admin-form').addEventListener('submit', async function(
     
     const submitBtn = document.getElementById('submit-btn');
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Saving...';
+    submitBtn.innerHTML = '<span>⏳</span> Saving...';
     
     try {
         const data = { username };
@@ -89,7 +100,7 @@ document.getElementById('admin-form').addEventListener('submit', async function(
         }
         
         if (isEdit) {
-            await adminFetch('PUT', `/admin/api/admins/${adminId}`, data);
+            await adminFetch('PUT', `/admin/api/admins/${form.id.value}`, data);
         } else {
             await adminFetch('POST', '/admin/api/admins', data);
         }
@@ -98,7 +109,7 @@ document.getElementById('admin-form').addEventListener('submit', async function(
     } catch (err) {
         alert('Failed to save admin: ' + (err.message || 'Unknown error'));
         submitBtn.disabled = false;
-        submitBtn.textContent = isEdit ? 'Update Admin' : 'Create Admin';
+        submitBtn.innerHTML = '<span>💾</span> ' + (isEdit ? 'Update Admin' : 'Create Admin');
     }
 });
 </script>

@@ -14,7 +14,7 @@
                 <a href="/" class="text-3xl font-semibold tracking-wide">FOODCITA</a>
                 <div class="flex items-center gap-4">
                     <span class="text-sm">Welcome, {{ auth()->user()->name }}</span>
-                    <form method="POST" action="{{ route('logout') }}" class="inline">
+                    <form method="POST" action="/logout" class="inline">
                         @csrf
                         <button type="submit" class="text-sm underline hover:text-slate-300">Logout</button>
                     </form>
