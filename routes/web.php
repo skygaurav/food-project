@@ -76,9 +76,9 @@ Route::prefix('admin/api')->middleware(['web','admin.auth'])->group(function ():
 	// All dishes
 	Route::get('dishes', [\App\Http\Controllers\Admin\DishApprovalController::class, 'all']);
 	Route::get('dishes/pending', [\App\Http\Controllers\Admin\DishApprovalController::class, 'index']);
-	Route::get('dishes/{dish}', [\App\Http\Controllers\Admin\DishApprovalController::class, 'show']);
-	Route::post('dishes/{dish}/approve', [\App\Http\Controllers\Admin\DishApprovalController::class, 'approve']);
-	Route::post('dishes/{dish}/disapprove', [\App\Http\Controllers\Admin\DishApprovalController::class, 'disapprove']);
+	Route::get('dishes/{dish:id}', [\App\Http\Controllers\Admin\DishApprovalController::class, 'show']);
+	Route::post('dishes/{dish:id}/approve', [\App\Http\Controllers\Admin\DishApprovalController::class, 'approve']);
+	Route::post('dishes/{dish:id}/disapprove', [\App\Http\Controllers\Admin\DishApprovalController::class, 'disapprove']);
 
 	// Admin user management
 	Route::get('admins', [\App\Http\Controllers\Admin\AdminManagementController::class, 'index']);
