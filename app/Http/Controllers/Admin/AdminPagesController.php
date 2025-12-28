@@ -10,6 +10,8 @@ use Illuminate\View\View;
 use App\Models\Restaurant;
 use App\Models\Category;
 use App\Models\Dish;
+use App\Models\Admin;
+use App\Models\User;
 
 class AdminPagesController extends Controller
 {
@@ -58,5 +60,25 @@ class AdminPagesController extends Controller
     public function settings(Request $request): View
     {
         return view('admin.settings');
+    }
+
+    public function admins(Request $request): View
+    {
+        return view('admin.admins');
+    }
+
+    public function adminForm(Request $request, ?Admin $admin = null): View
+    {
+        return view('admin.admin_form', ['admin' => $admin]);
+    }
+
+    public function users(Request $request): View
+    {
+        return view('admin.users');
+    }
+
+    public function userForm(Request $request, ?User $user = null): View
+    {
+        return view('admin.user_form', ['user' => $user]);
     }
 }

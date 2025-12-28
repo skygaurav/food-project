@@ -8,19 +8,43 @@
 </head>
 <body class="font-serif text-slate-900 bg-white">
     <div>
-        <header class="bg-black py-6 text-center text-white">
-            <a href="/" class="text-3xl font-semibold tracking-wide">FOODCITA</a>
+        <header class="bg-black py-6 text-white">
+            <div class="mx-auto max-w-6xl px-6 flex items-center justify-between">
+                <a href="/" class="text-3xl font-semibold tracking-wide">FOODCITA</a>
+                <div class="flex items-center gap-4">
+                    @auth
+                        <span class="text-sm">Welcome, {{ auth()->user()->name }}</span>
+                        <form method="POST" action="{{ route('logout') }}" class="inline">
+                            @csrf
+                            <button type="submit" class="text-sm underline hover:text-slate-300">Logout</button>
+                        </form>
+                    @else
+                        <a href="{{ route('login') }}" class="text-sm underline hover:text-slate-300">Login</a>
+                        <a href="{{ route('register') }}" class="text-sm bg-white text-black px-4 py-1 rounded hover:bg-slate-200">Register</a>
+                    @endauth
+                </div>
+            </div>
         </header>
         <main class="mx-auto w-full max-w-6xl px-6 pb-16 pt-10">
             <section class="space-y-10">
                 <div class="rounded border border-slate-300 bg-white p-6 text-center">
                     <h1 class="text-2xl font-medium">Upload a Dish or Drink!</h1>
-                    <a
-                        href="/upload"
-                        class="mt-4 inline-flex items-center justify-center rounded border border-slate-500 px-8 py-2 text-lg"
-                    >
-                        Upload
-                    </a>
+                    @auth
+                        <a
+                            href="/upload"
+                            class="mt-4 inline-flex items-center justify-center rounded bg-black text-white px-8 py-2 text-lg hover:bg-slate-800"
+                        >
+                            Upload
+                        </a>
+                    @else
+                        <p class="mt-2 text-sm text-slate-600">Login to share your favorite dishes with the community</p>
+                        <a
+                            href="{{ route('login') }}"
+                            class="mt-4 inline-flex items-center justify-center rounded border border-slate-500 px-8 py-2 text-lg hover:bg-slate-100"
+                        >
+                            Login to Upload
+                        </a>
+                    @endauth
                 </div>
 
                 <div class="rounded border border-slate-300 bg-white p-6 text-center">

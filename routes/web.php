@@ -4,11 +4,25 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminPagesController;
+use App\Http\Controllers\UserAuthController;
+use App\Http\Controllers\DishController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'home');
 Route::view('/dishes/{dish}', 'dish');
-Route::view('/upload', 'upload');
+
+// User authentication routes
+Route::get('/login', [UserAuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [UserAuthController::class, 'login']);
+Route::get('/register', [UserAuthController::class, 'showRegister'])->name('register');
+Route::post('/register', [UserAuthController::class, 'register']);
+Route::post('/logout', [UserAuthController::class, 'logout'])->name('logout');
+
+// Upload dish (requires authentication)
+Route::get('/upload', function () {
+    return view('upload');
+})->middleware('auth')->name('upload');
+Route::post('/api/dishes', [DishController::class, 'store'])->middleware('auth');
 
 Route::get('/admin/login', [AdminAuthController::class, 'showLogin'])->name('admin.login');
 Route::post('/admin/login', [AdminAuthController::class, 'login'])->name('admin.login.attempt');
@@ -26,6 +40,12 @@ Route::get('/admin/categories/{category}/edit', [AdminPagesController::class, 'c
 Route::get('/admin/dishes', [AdminPagesController::class, 'dishes']);
 Route::get('/admin/disapprovals', [AdminPagesController::class, 'disapprovals']);
 Route::get('/admin/settings', [AdminPagesController::class, 'settings']);
+Route::get('/admin/admins', [AdminPagesController::class, 'admins']);
+Route::get('/admin/admins/create', [AdminPagesController::class, 'adminForm']);
+Route::get('/admin/admins/{admin}/edit', [AdminPagesController::class, 'adminForm']);
+Route::get('/admin/users', [AdminPagesController::class, 'users']);
+Route::get('/admin/users/create', [AdminPagesController::class, 'userForm']);
+Route::get('/admin/users/{user}/edit', [AdminPagesController::class, 'userForm']);
 
 // Admin web API (session based)
 Route::prefix('admin/api')->middleware(['web','admin.auth'])->group(function (): void {
@@ -48,6 +68,20 @@ Route::prefix('admin/api')->middleware(['web','admin.auth'])->group(function ():
 	Route::get('dishes/pending', [\App\Http\Controllers\Admin\DishApprovalController::class, 'index']);
 	Route::post('dishes/{dish}/approve', [\App\Http\Controllers\Admin\DishApprovalController::class, 'approve']);
 	Route::post('dishes/{dish}/disapprove', [\App\Http\Controllers\Admin\DishApprovalController::class, 'disapprove']);
+
+	// Admin user management
+	Route::get('admins', [\App\Http\Controllers\Admin\AdminManagementController::class, 'index']);
+	Route::get('admins/{admin}', [\App\Http\Controllers\Admin\AdminManagementController::class, 'show']);
+	Route::post('admins', [\App\Http\Controllers\Admin\AdminManagementController::class, 'store']);
+	Route::put('admins/{admin}', [\App\Http\Controllers\Admin\AdminManagementController::class, 'update']);
+	Route::delete('admins/{admin}', [\App\Http\Controllers\Admin\AdminManagementController::class, 'destroy']);
+
+	// Website user management
+	Route::get('users', [\App\Http\Controllers\Admin\UserManagementController::class, 'index']);
+	Route::get('users/{user}', [\App\Http\Controllers\Admin\UserManagementController::class, 'show']);
+	Route::post('users', [\App\Http\Controllers\Admin\UserManagementController::class, 'store']);
+	Route::put('users/{user}', [\App\Http\Controllers\Admin\UserManagementController::class, 'update']);
+	Route::delete('users/{user}', [\App\Http\Controllers\Admin\UserManagementController::class, 'destroy']);
 });
 
 Route::get('/admin/spa', function () {

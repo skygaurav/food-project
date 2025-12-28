@@ -30,6 +30,18 @@
             Pending Approval
         </a>
     </div>
+
+    <div class="sidebar-section">
+        <div class="sidebar-section-title">User Management</div>
+        <a href="/admin/admins" class="nav-link {{ request()->is('admin/admins*') ? 'active' : '' }}">
+            <span class="nav-icon">👑</span>
+            Admin Users
+        </a>
+        <a href="/admin/users" class="nav-link {{ request()->is('admin/users*') ? 'active' : '' }}">
+            <span class="nav-icon">👥</span>
+            Website Users
+        </a>
+    </div>
     
     <div class="sidebar-section">
         <div class="sidebar-section-title">System</div>

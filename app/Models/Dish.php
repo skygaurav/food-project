@@ -29,6 +29,11 @@ class Dish extends Model
         return $this->belongsTo(Restaurant::class);
     }
 
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function images(): HasMany
     {
         return $this->hasMany(DishImage::class);
