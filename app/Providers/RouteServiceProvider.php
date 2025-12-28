@@ -29,8 +29,8 @@ class RouteServiceProvider extends ServiceProvider
         
         $apiRoutesPath = base_path('routes/api.php');
         if (file_exists($apiRoutesPath)) {
-            // Load api routes with 'api' prefix and 'api' middleware
-            Route::prefix('api')->middleware('api')->group(function () use ($apiRoutesPath) {
+            // Load api routes with 'api' prefix and 'web' middleware for session-based auth
+            Route::prefix('api')->middleware('web')->group(function () use ($apiRoutesPath) {
                 require $apiRoutesPath;
             });
         }
