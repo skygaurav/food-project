@@ -91,6 +91,235 @@
             gap: 1rem;
         }
         
+        /* Hamburger Menu */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            gap: 5px;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            z-index: 101;
+        }
+        
+        .hamburger span {
+            display: block;
+            width: 100%;
+            height: 3px;
+            background: #fff;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+        
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+        
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+        }
+        
+        /* Mobile Menu Overlay */
+        .mobile-menu-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .mobile-menu-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+        
+        /* Mobile Menu */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: -280px;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            z-index: 100;
+            padding: 80px 1.5rem 2rem;
+            transition: right 0.3s ease;
+            overflow-y: auto;
+        }
+        
+        .mobile-menu.active {
+            right: 0;
+        }
+        
+        .mobile-menu a {
+            display: block;
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            padding: 0.875rem 0;
+            font-size: 1rem;
+            font-weight: 500;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            transition: color 0.2s;
+        }
+        
+        .mobile-menu a:hover {
+            color: var(--primary);
+        }
+        
+        .mobile-menu .mobile-menu-section {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .mobile-menu .btn-mobile {
+            display: block;
+            text-align: center;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-top: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .mobile-menu .btn-mobile-outline {
+            border: 1px solid rgba(255,255,255,0.3);
+            color: #fff;
+        }
+        
+        .mobile-menu .btn-mobile-primary {
+            background: var(--primary);
+            color: #fff;
+        }
+        
+        .mobile-menu .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 0;
+            color: #fff;
+        }
+        
+        .mobile-menu .user-info .user-avatar {
+            width: 40px;
+            height: 40px;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+            
+            .mobile-menu {
+                display: block;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .header-actions {
+                display: none;
+            }
+            
+            .header-container {
+                height: 60px;
+            }
+            
+            .logo {
+                font-size: 1.5rem;
+            }
+            
+            .main-content {
+                padding: 1.5rem 1rem;
+            }
+            
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 1rem 0.75rem;
+            }
+            
+            .logo {
+                font-size: 1.25rem;
+            }
+            
+            .footer-container {
+                padding: 2rem 1rem 1.5rem;
+            }
+            
+            .dish-card-image {
+                height: 160px;
+            }
+            
+            .dish-card-body {
+                padding: 1rem;
+            }
+            
+            .dish-card-title {
+                font-size: 1rem;
+            }
+        }
+        
+        /* Responsive Grid Helper */
+        .responsive-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        @media (max-width: 640px) {
+            .responsive-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+        
+        /* Responsive Section Headers */
+        .section-header {
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+        }
+        
+        @media (max-width: 768px) {
+            .section-title {
+                font-size: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .section-title {
+                font-size: 1.25rem;
+            }
+        }
+        
         .btn-header {
             padding: 0.5rem 1.25rem;
             border-radius: 6px;
@@ -380,6 +609,36 @@
             margin: 0 0 1.5rem 0;
         }
         
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 2rem 1.5rem;
+                border-radius: 12px;
+            }
+            
+            .hero-title {
+                font-size: 1.75rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero-section {
+                padding: 1.5rem 1rem;
+                border-radius: 8px;
+            }
+            
+            .hero-title {
+                font-size: 1.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 0.9rem;
+            }
+        }
+        
         /* Filter Section */
         .filter-section {
             background: #fff;
@@ -393,6 +652,17 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
+        }
+        
+        @media (max-width: 480px) {
+            .filter-section {
+                padding: 1rem;
+                border-radius: 8px;
+            }
+            
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
         }
         
         .filter-group label {
@@ -563,8 +833,46 @@
                     <a href="/register" class="btn-header btn-header-primary">Sign Up</a>
                 @endauth
             </div>
+            
+            <!-- Hamburger Menu Button -->
+            <div class="hamburger" id="hamburger" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
         </div>
     </header>
+    
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay" onclick="toggleMobileMenu()"></div>
+    
+    <!-- Mobile Menu -->
+    <nav class="mobile-menu" id="mobileMenu">
+        <a href="/" onclick="toggleMobileMenu()">Home</a>
+        <a href="/popular" onclick="toggleMobileMenu()">🔥 Popular</a>
+        <a href="/#categories" onclick="toggleMobileMenu()">Categories</a>
+        
+        @auth
+            <a href="/my-dishes" onclick="toggleMobileMenu()">My Dishes</a>
+            <a href="/upload" onclick="toggleMobileMenu()">+ Upload Dish</a>
+            
+            <div class="mobile-menu-section">
+                <div class="user-info">
+                    <div class="user-avatar">{{ substr(auth()->user()->name, 0, 1) }}</div>
+                    <span>{{ auth()->user()->name }}</span>
+                </div>
+                <form method="POST" action="/logout">
+                    @csrf
+                    <button type="submit" class="btn-mobile btn-mobile-outline" style="width: 100%; cursor: pointer; border: 1px solid rgba(255,255,255,0.3); background: transparent;">Logout</button>
+                </form>
+            </div>
+        @else
+            <div class="mobile-menu-section">
+                <a href="/login" class="btn-mobile btn-mobile-outline" onclick="toggleMobileMenu()">Login</a>
+                <a href="/register" class="btn-mobile btn-mobile-primary" onclick="toggleMobileMenu()">Sign Up</a>
+            </div>
+        @endauth
+    </nav>
     
     <!-- Main Content -->
     <main class="main-content">
@@ -788,6 +1096,38 @@
         } catch (e) {
             console.error('Failed to load footer links:', e);
             document.getElementById('footer-cms-links').innerHTML = '';
+        }
+    });
+    
+    // Mobile Menu Toggle
+    function toggleMobileMenu() {
+        const hamburger = document.getElementById('hamburger');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const overlay = document.getElementById('mobileMenuOverlay');
+        
+        hamburger.classList.toggle('active');
+        mobileMenu.classList.toggle('active');
+        overlay.classList.toggle('active');
+        
+        // Prevent body scroll when menu is open
+        if (mobileMenu.classList.contains('active')) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+    }
+    
+    // Close mobile menu on window resize (if switching to desktop)
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768) {
+            const hamburger = document.getElementById('hamburger');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const overlay = document.getElementById('mobileMenuOverlay');
+            
+            hamburger.classList.remove('active');
+            mobileMenu.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
         }
     });
     </script>
