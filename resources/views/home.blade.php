@@ -33,20 +33,6 @@
         </div>
     </section>
 
-    <!-- Recent Reviews Section -->
-    <section class="home-section" id="reviews">
-        <div class="section-header" style="margin-bottom: 1.5rem;">
-            <h2 class="section-title">⭐ Recent Reviews</h2>
-        </div>
-        <div id="reviews-loader" class="loader">
-            <div class="loader-spinner"></div>
-        </div>
-        <div id="reviews-grid" class="reviews-grid" style="display: none;"></div>
-        <div id="reviews-empty" style="display: none; text-align: center; padding: 2rem; color: var(--text-muted);">
-            No reviews yet
-        </div>
-    </section>
-
     <!-- Categories Section -->
     <section class="home-section" id="categories">
         <div class="section-header" style="margin-bottom: 1.5rem;">
@@ -102,9 +88,21 @@
             @endauth
         </div>
         
-        <!-- Load More -->
-        <div id="load-more-container" style="text-align: center; margin-top: 2rem; display: none;">
-            <button id="load-more-btn" class="btn btn-outline">Load More Dishes</button>
+        <!-- Pagination -->
+        <div id="dishes-pagination" class="pagination-container" style="display: none;"></div>
+    </section>
+
+    <!-- Recent Reviews Section -->
+    <section class="home-section" id="reviews">
+        <div class="section-header" style="margin-bottom: 1.5rem;">
+            <h2 class="section-title">⭐ Recent Reviews</h2>
+        </div>
+        <div id="reviews-loader" class="loader">
+            <div class="loader-spinner"></div>
+        </div>
+        <div id="reviews-grid" class="reviews-grid" style="display: none;"></div>
+        <div id="reviews-empty" style="display: none; text-align: center; padding: 2rem; color: var(--text-muted);">
+            No reviews yet
         </div>
     </section>
 @endsection
@@ -236,6 +234,96 @@
             grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
         }
     }
+    
+    /* Pagination Styles */
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 2rem;
+        padding: 1rem 0;
+        flex-wrap: wrap;
+    }
+    
+    .pagination-btn {
+        padding: 0.5rem 1rem;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.875rem;
+        transition: all 0.2s;
+    }
+    
+    .pagination-btn:hover:not(.disabled) {
+        background: var(--primary);
+        color: #fff;
+        border-color: var(--primary);
+    }
+    
+    .pagination-btn.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    .pagination-pages {
+        display: flex;
+        gap: 0.25rem;
+    }
+    
+    .pagination-page {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.875rem;
+        transition: all 0.2s;
+    }
+    
+    .pagination-page:hover {
+        border-color: var(--primary);
+    }
+    
+    .pagination-page.active {
+        background: var(--primary);
+        color: #fff;
+        border-color: var(--primary);
+    }
+    
+    .pagination-info {
+        color: var(--text-muted);
+        font-size: 0.875rem;
+        margin-left: 1rem;
+    }
+    
+    @media (max-width: 480px) {
+        .pagination-container {
+            gap: 0.25rem;
+        }
+        
+        .pagination-btn {
+            padding: 0.4rem 0.75rem;
+            font-size: 0.8rem;
+        }
+        
+        .pagination-page {
+            width: 32px;
+            height: 32px;
+            font-size: 0.8rem;
+        }
+        
+        .pagination-info {
+            width: 100%;
+            text-align: center;
+            margin: 0.5rem 0 0 0;
+        }
+    }
 </style>
 @endpush
 
@@ -244,6 +332,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     let currentPage = 1;
     let lastPage = 1;
+    let totalDishes = 0;
     let allDishes = [];
     let categories = [];
     let cities = new Set();
@@ -251,8 +340,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const dishesGrid = document.getElementById('dishes-grid');
     const dishesLoader = document.getElementById('dishes-loader');
     const dishesEmpty = document.getElementById('dishes-empty');
-    const loadMoreContainer = document.getElementById('load-more-container');
-    const loadMoreBtn = document.getElementById('load-more-btn');
+    const dishesPagination = document.getElementById('dishes-pagination');
     
     const filterCategory = document.getElementById('filter-category');
     const filterCity = document.getElementById('filter-city');
@@ -277,16 +365,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Load dishes
-    async function loadDishes(append = false) {
-        if (!append) {
-            dishesLoader.style.display = 'flex';
-            dishesGrid.style.display = 'none';
-            dishesEmpty.style.display = 'none';
-            loadMoreContainer.style.display = 'none';
-        } else {
-            loadMoreBtn.disabled = true;
-            loadMoreBtn.textContent = 'Loading...';
-        }
+    async function loadDishes() {
+        dishesLoader.style.display = 'flex';
+        dishesGrid.style.display = 'none';
+        dishesEmpty.style.display = 'none';
+        dishesPagination.style.display = 'none';
         
         try {
             const params = new URLSearchParams();
@@ -299,13 +382,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const res = await fetch('/api/dishes?' + params.toString());
             const data = await res.json();
             
-            if (!append) {
-                allDishes = data.data || [];
-            } else {
-                allDishes = [...allDishes, ...(data.data || [])];
-            }
-            
+            allDishes = data.data || [];
             lastPage = data.last_page || 1;
+            totalDishes = data.total || 0;
             
             // Extract cities for filter
             allDishes.forEach(dish => {
@@ -316,6 +395,7 @@ document.addEventListener('DOMContentLoaded', function() {
             updateCitiesFilter();
             
             renderDishes();
+            renderPagination();
             
         } catch (e) {
             console.error('Failed to load dishes:', e);
@@ -343,7 +423,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (allDishes.length === 0) {
             dishesGrid.style.display = 'none';
             dishesEmpty.style.display = 'block';
-            loadMoreContainer.style.display = 'none';
+            dishesPagination.style.display = 'none';
             return;
         }
         
@@ -386,16 +466,57 @@ document.addEventListener('DOMContentLoaded', function() {
         
         dishesGrid.style.display = 'grid';
         dishesEmpty.style.display = 'none';
-        
-        // Show/hide load more button
-        if (currentPage < lastPage) {
-            loadMoreContainer.style.display = 'block';
-            loadMoreBtn.disabled = false;
-            loadMoreBtn.textContent = 'Load More Dishes';
-        } else {
-            loadMoreContainer.style.display = 'none';
-        }
     }
+    
+    function renderPagination() {
+        if (lastPage <= 1) {
+            if (totalDishes > 0) {
+                dishesPagination.innerHTML = `<span class="pagination-info">Showing all ${totalDishes} dish(es)</span>`;
+                dishesPagination.style.display = 'flex';
+            } else {
+                dishesPagination.style.display = 'none';
+            }
+            return;
+        }
+        
+        let html = '';
+        
+        // Previous button
+        html += `<button class="pagination-btn ${currentPage === 1 ? 'disabled' : ''}" 
+                 onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                 ← Prev</button>`;
+        
+        // Page numbers
+        html += '<div class="pagination-pages">';
+        for (let i = 1; i <= lastPage; i++) {
+            if (i === 1 || i === lastPage || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                html += `<button class="pagination-page ${i === currentPage ? 'active' : ''}" 
+                         onclick="goToPage(${i})">${i}</button>`;
+            } else if (i === currentPage - 2 || i === currentPage + 2) {
+                html += '<span style="padding: 0 0.5rem; color: var(--text-muted);">...</span>';
+            }
+        }
+        html += '</div>';
+        
+        // Next button
+        html += `<button class="pagination-btn ${currentPage === lastPage ? 'disabled' : ''}" 
+                 onclick="goToPage(${currentPage + 1})" ${currentPage === lastPage ? 'disabled' : ''}>
+                 Next →</button>`;
+        
+        // Info
+        html += `<span class="pagination-info">Page ${currentPage} of ${lastPage} (${totalDishes} dishes)</span>`;
+        
+        dishesPagination.innerHTML = html;
+        dishesPagination.style.display = 'flex';
+    }
+    
+    window.goToPage = function(page) {
+        if (page < 1 || page > lastPage) return;
+        currentPage = page;
+        loadDishes();
+        // Scroll to dishes section
+        document.getElementById('dishes').scrollIntoView({ behavior: 'smooth' });
+    };
     
     // Event listeners
     filterCategory.addEventListener('change', () => {
@@ -413,11 +534,6 @@ document.addEventListener('DOMContentLoaded', function() {
         loadDishes();
     });
     
-    loadMoreBtn.addEventListener('click', () => {
-        currentPage++;
-        loadDishes(true);
-    });
-    
     // Load popular dishes
     async function loadPopularDishes() {
         const popularGrid = document.getElementById('popular-grid');
@@ -425,7 +541,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const popularEmpty = document.getElementById('popular-empty');
         
         try {
-            const res = await fetch('/api/dishes/popular?per_page=4');
+            const res = await fetch('/api/dishes/popular?per_page=3');
             const data = await res.json();
             const dishes = data.data || [];
             
