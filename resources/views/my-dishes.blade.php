@@ -629,7 +629,7 @@
 let dishes = [];
 let currentPage = 1;
 let totalPages = 1;
-let perPage = 9;
+let perPage = 6;
 
 async function loadDishes(page = 1) {
     try {
@@ -742,7 +742,12 @@ function renderPagination() {
     if (!container) return;
     
     if (totalPages <= 1) {
-        container.innerHTML = '';
+        // Show page info even with single page
+        if (dishes.length > 0) {
+            container.innerHTML = '<div class="pagination"><span style="color: var(--text-muted); font-size: 0.875rem;">Showing all ' + dishes.length + ' dish(es)</span></div>';
+        } else {
+            container.innerHTML = '';
+        }
         return;
     }
     
