@@ -31,19 +31,26 @@ class AdminSettingController extends Controller
     {
         $adminId = $request->session()->get('admin_id');
         if (! $adminId) {
-            return response()->json(null, 403);
+            return response()->json(['error' => 'Unauthorized'], 403);
         }
 
-        $data = $request->validate([
-            'key' => ['required','string'],
-            'value' => ['required','array'],
-        ]);
+        $data = $request->all();
+        
+        // Save each setting as a separate key-value pair
+        foreach ($data as $key => $value) {
+            if ($key === '_token') {
+                continue;
+            }
+            
+            AdminSetting::query()->updateOrCreate(
+                [
+                    'admin_id' => $adminId,
+                    'key' => $key,
+                ],
+                ['value' => $value]
+            );
+        }
 
-        $setting = AdminSetting::query()->updateOrCreate([
-            'admin_id' => $adminId,
-            'key' => $data['key'],
-        ],['value' => $data['value']]);
-
-        return response()->json($setting);
+        return response()->json(['success' => true]);
     }
 }

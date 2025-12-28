@@ -43,6 +43,25 @@
                             </div>
                         </div>
 
+                        <label class="flex flex-col gap-2">
+                            <span class="text-sm font-semibold">Meal Cost ($)</span>
+                            <input type="number" step="0.01" min="0" class="rounded border border-slate-300 px-3 py-2" placeholder="e.g. 25.00" />
+                        </label>
+
+                        <div class="flex flex-col gap-2">
+                            <span class="text-sm font-semibold">Good Date Spot?</span>
+                            <div class="flex gap-4">
+                                <label class="flex items-center gap-2">
+                                    <input type="radio" name="good_date_spot" value="1" class="rounded border-slate-300" />
+                                    <span>Yes</span>
+                                </label>
+                                <label class="flex items-center gap-2">
+                                    <input type="radio" name="good_date_spot" value="0" class="rounded border-slate-300" checked />
+                                    <span>No</span>
+                                </label>
+                            </div>
+                        </div>
+
                         <div class="flex flex-col gap-4">
                             <button type="button" class="rounded border border-slate-500 px-6 py-2 text-lg">
                                 Submit
