@@ -53,4 +53,16 @@ class RestaurantController extends Controller
 
         return response()->json($restaurant);
     }
+    
+    /**
+     * Get all categories for selection
+     */
+    public function categories(): JsonResponse
+    {
+        $categories = \App\Models\Category::query()
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        return response()->json($categories);
+    }
 }

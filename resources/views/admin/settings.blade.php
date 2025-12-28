@@ -40,6 +40,23 @@
                 </div>
                 
                 <h3 style="font-size: 1rem; font-weight: 600; margin: 1.5rem 0 1rem; color: #475569; border-top: 1px solid #e2e8f0; padding-top: 1.5rem;">
+                    <svg class="icon icon-sm" style="margin-right: 0.5rem;"><use href="#icon-image"></use></svg>
+                    Image Upload Settings
+                </h3>
+                <p class="text-muted" style="font-size: 0.85rem; margin-bottom: 1rem;">Set dimensions for uploaded dish images. Leave empty to keep original dimensions.</p>
+                
+                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Image Width (px)</label>
+                        <input type="number" name="image_width" class="form-control" placeholder="e.g. 800" min="100" max="3000" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Image Height (px)</label>
+                        <input type="number" name="image_height" class="form-control" placeholder="e.g. 600" min="100" max="3000" />
+                    </div>
+                </div>
+                
+                <h3 style="font-size: 1rem; font-weight: 600; margin: 1.5rem 0 1rem; color: #475569; border-top: 1px solid #e2e8f0; padding-top: 1.5rem;">
                     <svg class="icon icon-sm" style="margin-right: 0.5rem;"><use href="#icon-search"></use></svg>
                     Homepage SEO Settings
                 </h3>
@@ -100,6 +117,8 @@ async function loadSettings() {
             if (settings.meta_title) form.meta_title.value = settings.meta_title;
             if (settings.meta_description) form.meta_description.value = settings.meta_description;
             if (settings.meta_keywords) form.meta_keywords.value = settings.meta_keywords;
+            if (settings.image_width) form.image_width.value = settings.image_width;
+            if (settings.image_height) form.image_height.value = settings.image_height;
         }
     } catch (e) {
         // Ignore - settings may not exist yet
@@ -114,7 +133,9 @@ form.addEventListener('submit', async e => {
         default_dish_status: form.default_dish_status.value,
         meta_title: form.meta_title.value.trim(),
         meta_description: form.meta_description.value.trim(),
-        meta_keywords: form.meta_keywords.value.trim()
+        meta_keywords: form.meta_keywords.value.trim(),
+        image_width: form.image_width.value ? parseInt(form.image_width.value) : null,
+        image_height: form.image_height.value ? parseInt(form.image_height.value) : null
     };
     
     try {

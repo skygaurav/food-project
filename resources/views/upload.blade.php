@@ -146,6 +146,38 @@
         height: 80px;
         border-radius: 8px;
         overflow: hidden;
+        cursor: pointer;
+        border: 3px solid transparent;
+        transition: border-color 0.2s;
+    }
+    
+    .image-preview.is-main {
+        border-color: var(--primary);
+    }
+    
+    .image-preview::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: rgba(0,0,0,0);
+        transition: background 0.2s;
+    }
+    
+    .image-preview:hover::before {
+        background: rgba(0,0,0,0.2);
+    }
+    
+    .image-preview .main-badge {
+        position: absolute;
+        bottom: 4px;
+        left: 4px;
+        background: var(--primary);
+        color: #fff;
+        font-size: 0.65rem;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-weight: 600;
+        text-transform: uppercase;
     }
     
     .image-preview img {
@@ -285,6 +317,40 @@
         background: #fff7ed;
     }
     
+    /* Categories multiselect */
+    .categories-select {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .category-chip {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        background: #f1f5f9;
+        border: 2px solid #e2e8f0;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.875rem;
+    }
+    
+    .category-chip:hover {
+        border-color: var(--primary);
+        background: #fff7ed;
+    }
+    
+    .category-chip.selected {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: #fff;
+    }
+    
+    .category-chip input {
+        display: none;
+    }
+    
     .new-restaurant-fields {
         display: none;
         margin-top: 1rem;
@@ -404,6 +470,16 @@
                         <div class="form-group"></div>
                     </div>
                 </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Restaurant Categories <span class="required">*</span></label>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem;">Select one or more categories that best describe this restaurant</p>
+                    <div id="categories-container" class="categories-select">
+                        <!-- Categories will be loaded here -->
+                        <span style="color: var(--text-muted); font-size: 0.875rem;">Loading categories...</span>
+                    </div>
+                    <div class="form-error"></div>
+                </div>
             </div>
             
             <div class="form-section">
@@ -430,7 +506,11 @@
                         <input type="file" id="images" name="images[]" accept="image/*" multiple />
                     </div>
                     <div class="form-error"></div>
+                    <p id="main-image-hint" style="display: none; font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">
+                        <svg class="icon icon-sm"><use href="#icon-info"></use></svg> Click on an image to set it as the main image
+                    </p>
                     <div id="image-previews" class="image-previews"></div>
+                    <input type="hidden" id="main_image_index" name="main_image_index" value="0" />
                 </div>
             </div>
             
@@ -439,7 +519,7 @@
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label">Meal Cost ($)</label>
+                        <label class="form-label">Meal Cost ($) <span class="required">*</span></label>
                         <input type="number" id="meal_cost" name="meal_cost" class="form-control" step="0.01" min="0" placeholder="e.g. 25.00" />
                         <div class="form-error"></div>
                     </div>
@@ -503,6 +583,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const successMessage = document.getElementById('success-message');
     const imagesInput = document.getElementById('images');
     const imagePreviews = document.getElementById('image-previews');
+    const mainImageHint = document.getElementById('main-image-hint');
+    const mainImageIndexInput = document.getElementById('main_image_index');
     
     // Restaurant autocomplete elements
     const restaurantSearch = document.getElementById('restaurant_search');
@@ -516,6 +598,44 @@ document.addEventListener('DOMContentLoaded', function() {
     
     let searchTimeout = null;
     let isNewRestaurant = false;
+    let mainImageIndex = 0;
+    let selectedCategories = [];
+    
+    // Load categories
+    async function loadCategories() {
+        try {
+            const res = await fetch('/api/categories');
+            const categories = await res.json();
+            
+            const container = document.getElementById('categories-container');
+            container.innerHTML = categories.map(cat => `
+                <label class="category-chip" data-id="${cat.id}">
+                    <input type="checkbox" name="categories[]" value="${cat.id}" />
+                    ${cat.name}
+                </label>
+            `).join('');
+            
+            // Add click handlers
+            container.querySelectorAll('.category-chip').forEach(chip => {
+                chip.addEventListener('click', function(e) {
+                    if (e.target.tagName === 'INPUT') return;
+                    const checkbox = this.querySelector('input');
+                    checkbox.checked = !checkbox.checked;
+                    this.classList.toggle('selected', checkbox.checked);
+                });
+                
+                chip.querySelector('input').addEventListener('change', function() {
+                    chip.classList.toggle('selected', this.checked);
+                });
+            });
+        } catch (e) {
+            console.error('Failed to load categories:', e);
+            document.getElementById('categories-container').innerHTML = 
+                '<span style="color: #dc2626; font-size: 0.875rem;">Failed to load categories</span>';
+        }
+    }
+    
+    loadCategories();
     
     // Autocomplete search
     restaurantSearch.addEventListener('input', function() {
@@ -626,23 +746,56 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Image preview
+    // Image preview with main image selection
     imagesInput.addEventListener('change', function() {
         imagePreviews.innerHTML = '';
+        mainImageIndex = 0;
+        mainImageIndexInput.value = '0';
+        
+        if (this.files.length > 0) {
+            mainImageHint.style.display = 'block';
+        } else {
+            mainImageHint.style.display = 'none';
+        }
         
         Array.from(this.files).forEach((file, index) => {
             const reader = new FileReader();
             reader.onload = function(e) {
                 const preview = document.createElement('div');
-                preview.className = 'image-preview';
+                preview.className = 'image-preview' + (index === 0 ? ' is-main' : '');
+                preview.dataset.index = index;
                 preview.innerHTML = `
                     <img src="${e.target.result}" alt="Preview" />
+                    ${index === 0 ? '<span class="main-badge">Main</span>' : ''}
                 `;
+                preview.addEventListener('click', function() {
+                    setMainImage(parseInt(this.dataset.index));
+                });
                 imagePreviews.appendChild(preview);
             };
             reader.readAsDataURL(file);
         });
     });
+    
+    function setMainImage(index) {
+        mainImageIndex = index;
+        mainImageIndexInput.value = index.toString();
+        
+        document.querySelectorAll('.image-preview').forEach((p, i) => {
+            p.classList.toggle('is-main', i === index);
+            const badge = p.querySelector('.main-badge');
+            if (i === index) {
+                if (!badge) {
+                    const span = document.createElement('span');
+                    span.className = 'main-badge';
+                    span.textContent = 'Main';
+                    p.appendChild(span);
+                }
+            } else {
+                if (badge) badge.remove();
+            }
+        });
+    }
     
     // Form submit
     form.addEventListener('submit', async function(e) {
@@ -688,6 +841,22 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
+        // Validate categories
+        const categoriesContainer = document.getElementById('categories-container');
+        const selectedCats = categoriesContainer.querySelectorAll('input[name="categories[]"]:checked');
+        if (selectedCats.length === 0) {
+            const catGroup = categoriesContainer.closest('.form-group');
+            catGroup.classList.add('has-error');
+            let errorEl = catGroup.querySelector('.form-error');
+            if (errorEl) errorEl.innerHTML = '<svg class="icon icon-xs"><use href="#icon-x"></use></svg> Please select at least one category';
+            isValid = false;
+        } else {
+            const catGroup = categoriesContainer.closest('.form-group');
+            catGroup.classList.remove('has-error');
+            let errorEl = catGroup.querySelector('.form-error');
+            if (errorEl) errorEl.style.display = 'none';
+        }
+        
         // Validate dish name
         const nameInput = document.getElementById('name');
         if (!nameInput.value.trim()) {
@@ -727,13 +896,16 @@ document.addEventListener('DOMContentLoaded', function() {
             V.clearError(phoneInput);
         }
         
-        // Validate meal cost
+        // Validate meal cost (now required)
         const mealCostInput = document.getElementById('meal_cost');
-        if (mealCostInput.value && parseFloat(mealCostInput.value) < 0) {
+        if (!mealCostInput.value || mealCostInput.value.trim() === '') {
+            V.setError(mealCostInput, 'Meal cost is required');
+            isValid = false;
+        } else if (parseFloat(mealCostInput.value) < 0) {
             V.setError(mealCostInput, 'Meal cost cannot be negative');
             isValid = false;
         } else {
-            V.clearError(mealCostInput);
+            V.setSuccess(mealCostInput);
         }
         
         if (!isValid) {
@@ -801,6 +973,16 @@ document.addEventListener('DOMContentLoaded', function() {
             V.setError(this, 'Please enter a valid phone number');
         } else {
             V.clearError(this);
+        }
+    });
+    
+    document.getElementById('meal_cost').addEventListener('blur', function() {
+        if (!this.value || this.value.trim() === '') {
+            V.setError(this, 'Meal cost is required');
+        } else if (parseFloat(this.value) < 0) {
+            V.setError(this, 'Meal cost cannot be negative');
+        } else {
+            V.setSuccess(this);
         }
     });
     

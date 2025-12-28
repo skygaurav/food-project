@@ -342,6 +342,78 @@
         object-fit: cover;
     }
     
+    /* Categories multiselect styles */
+    .categories-select {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        padding: 0.75rem;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        min-height: 50px;
+    }
+    
+    .category-chip {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.375rem 0.75rem;
+        background: #e2e8f0;
+        border: 2px solid transparent;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        user-select: none;
+    }
+    
+    .category-chip:hover {
+        background: #d1d5db;
+    }
+    
+    .category-chip.selected {
+        background: var(--primary);
+        color: #fff;
+        border-color: var(--primary);
+    }
+    
+    /* Main image indicator */
+    .current-image-item.is-main {
+        border: 3px solid var(--primary);
+    }
+    
+    .current-image-item.is-main::before {
+        content: '★ Main';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--primary);
+        color: #fff;
+        font-size: 0.65rem;
+        text-align: center;
+        padding: 2px;
+        z-index: 1;
+    }
+    
+    .new-image-preview.is-main {
+        border: 3px solid var(--primary);
+    }
+    
+    .new-image-preview.is-main::before {
+        content: '★ Main';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--primary);
+        color: #fff;
+        font-size: 0.65rem;
+        text-align: center;
+        padding: 2px;
+        z-index: 1;
+    }
+    
     .loader {
         text-align: center;
         padding: 4rem;
@@ -402,6 +474,7 @@
                     <!-- Image Management Section -->
                     <div class="form-group">
                         <label class="form-label">Images</label>
+                        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem;">Click on an image to set it as the main image</p>
                         <div id="current-images" class="current-images"></div>
                         
                         <div class="image-upload-area" id="image-upload-area" onclick="document.getElementById('new-images-input').click()">
@@ -410,6 +483,15 @@
                         </div>
                         <input type="file" id="new-images-input" multiple accept="image/*" style="display: none;" onchange="handleNewImages(this)" />
                         <div id="new-images-preview" class="new-images-preview"></div>
+                        <input type="hidden" id="edit-main-image-id" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Restaurant Categories</label>
+                        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.5rem;">Select categories for the restaurant</p>
+                        <div id="edit-categories-container" class="categories-select">
+                            <span style="color: var(--text-muted); font-size: 0.875rem;">Loading...</span>
+                        </div>
                     </div>
                     
                     <div class="form-group">
@@ -425,7 +507,7 @@
                     </div>
                     
                     <div class="form-group">
-                        <label class="form-label">Meal Cost ($)</label>
+                        <label class="form-label">Meal Cost ($) <span style="color: #ef4444;">*</span></label>
                         <input type="number" id="edit-meal-cost" class="form-control" step="0.01" min="0" />
                         <div class="form-error"></div>
                     </div>
@@ -577,6 +659,10 @@ function renderDishes() {
     }).join('');
 }
 
+let editMainImageId = null;
+let editCategories = [];
+let restaurantCategories = [];
+
 function openEditModal(dishId) {
     const dish = dishes.find(d => d.id === dishId);
     if (!dish) return;
@@ -584,6 +670,7 @@ function openEditModal(dishId) {
     currentEditDishId = dishId;
     imagesToRemove = [];
     newImageFiles = [];
+    editMainImageId = null;
     
     document.getElementById('edit-dish-id').value = dish.id;
     document.getElementById('edit-name').value = dish.name || '';
@@ -602,8 +689,57 @@ function openEditModal(dishId) {
     document.getElementById('new-images-preview').innerHTML = '';
     document.getElementById('new-images-input').value = '';
     
+    // Load categories for edit form
+    loadEditCategories(dish.restaurant?.id);
+    
     document.getElementById('edit-modal').classList.add('show');
     document.body.style.overflow = 'hidden';
+}
+
+async function loadEditCategories(restaurantId) {
+    const container = document.getElementById('edit-categories-container');
+    
+    try {
+        // Fetch all categories
+        const res = await fetch('/api/categories');
+        const allCategories = await res.json();
+        
+        // Get restaurant's current categories if available
+        if (restaurantId) {
+            const restRes = await fetch(`/api/restaurants/${restaurantId}`);
+            const restaurant = await restRes.json();
+            restaurantCategories = restaurant.categories?.map(c => c.id) || [];
+        } else {
+            restaurantCategories = [];
+        }
+        
+        // Render category chips
+        container.innerHTML = allCategories.map(cat => {
+            const isSelected = restaurantCategories.includes(cat.id);
+            return `<span class="category-chip ${isSelected ? 'selected' : ''}" 
+                        data-category-id="${cat.id}" 
+                        onclick="toggleEditCategory(${cat.id})">${cat.name}</span>`;
+        }).join('');
+        
+        editCategories = [...restaurantCategories];
+        
+    } catch (err) {
+        container.innerHTML = '<span style="color: var(--text-muted); font-size: 0.875rem;">Failed to load categories</span>';
+    }
+}
+
+function toggleEditCategory(catId) {
+    const chip = document.querySelector(`#edit-categories-container .category-chip[data-category-id="${catId}"]`);
+    if (!chip) return;
+    
+    const index = editCategories.indexOf(catId);
+    if (index > -1) {
+        editCategories.splice(index, 1);
+        chip.classList.remove('selected');
+    } else {
+        editCategories.push(catId);
+        chip.classList.add('selected');
+    }
 }
 
 let currentEditDishId = null;
@@ -619,20 +755,39 @@ function renderCurrentImages(dish) {
         return;
     }
     
+    // Find current main image
+    const mainImage = images.find(img => img.is_primary);
+    if (mainImage && !editMainImageId) {
+        editMainImageId = mainImage.id;
+    }
+    
     container.innerHTML = images.map(img => {
         const isMarked = imagesToRemove.includes(img.id);
+        const isMain = editMainImageId === img.id || (!editMainImageId && img.is_primary);
         const imagePath = img.image_path.startsWith('http') ? img.image_path : '/storage/' + img.image_path;
         
         return `
-            <div class="current-image-item ${isMarked ? 'marked-for-removal' : ''}" data-image-id="${img.id}">
+            <div class="current-image-item ${isMarked ? 'marked-for-removal' : ''} ${isMain ? 'is-main' : ''}" 
+                 data-image-id="${img.id}"
+                 onclick="setEditMainImage(${img.id}, event)">
                 <img src="${imagePath}" alt="Dish image" />
                 <button type="button" class="${isMarked ? 'remove-image-btn undo-remove-btn' : 'remove-image-btn'}" 
-                        onclick="toggleImageRemoval(${img.id})">
+                        onclick="toggleImageRemoval(${img.id}); event.stopPropagation();">
                     ${isMarked ? '↺' : '×'}
                 </button>
             </div>
         `;
     }).join('');
+    
+    document.getElementById('edit-main-image-id').value = editMainImageId || '';
+}
+
+function setEditMainImage(imageId, event) {
+    if (event) event.stopPropagation();
+    editMainImageId = imageId;
+    
+    const dish = dishes.find(d => d.id === currentEditDishId);
+    if (dish) renderCurrentImages(dish);
 }
 
 function toggleImageRemoval(imageId) {
@@ -716,6 +871,27 @@ function validateEditForm() {
     const V = window.SmartValidator;
     let isValid = true;
     
+    // Validate categories
+    if (editCategories.length === 0) {
+        const container = document.getElementById('edit-categories-container');
+        const formGroup = container.closest('.form-group');
+        formGroup.classList.add('has-error');
+        let errorDiv = formGroup.querySelector('.form-error');
+        if (!errorDiv) {
+            errorDiv = document.createElement('div');
+            errorDiv.className = 'form-error';
+            formGroup.appendChild(errorDiv);
+        }
+        errorDiv.textContent = 'Please select at least one category';
+        isValid = false;
+    } else {
+        const container = document.getElementById('edit-categories-container');
+        const formGroup = container.closest('.form-group');
+        formGroup.classList.remove('has-error');
+        const errorDiv = formGroup.querySelector('.form-error');
+        if (errorDiv) errorDiv.textContent = '';
+    }
+    
     // Validate dish name
     const nameInput = document.getElementById('edit-name');
     if (!nameInput.value.trim()) {
@@ -746,13 +922,16 @@ function validateEditForm() {
         V.clearError(phoneInput);
     }
     
-    // Validate meal cost (optional)
+    // Validate meal cost (required)
     const mealCostInput = document.getElementById('edit-meal-cost');
-    if (mealCostInput.value && parseFloat(mealCostInput.value) < 0) {
+    if (!mealCostInput.value) {
+        V.setError(mealCostInput, 'Meal cost is required');
+        isValid = false;
+    } else if (parseFloat(mealCostInput.value) < 0) {
         V.setError(mealCostInput, 'Meal cost cannot be negative');
         isValid = false;
     } else {
-        V.clearError(mealCostInput);
+        V.setSuccess(mealCostInput);
     }
     
     return isValid;
@@ -788,6 +967,17 @@ document.getElementById('edit-phone').addEventListener('blur', function() {
     }
 });
 
+document.getElementById('edit-meal-cost').addEventListener('blur', function() {
+    const V = window.SmartValidator;
+    if (!this.value) {
+        V.setError(this, 'Meal cost is required');
+    } else if (parseFloat(this.value) < 0) {
+        V.setError(this, 'Meal cost cannot be negative');
+    } else {
+        V.setSuccess(this);
+    }
+});
+
 document.getElementById('edit-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     
@@ -815,6 +1005,16 @@ document.getElementById('edit-form').addEventListener('submit', async function(e
     formData.append('phone', document.getElementById('edit-phone').value || '');
     formData.append('good_date_spot', document.querySelector('input[name="edit-date-spot"]:checked').value === '1' ? '1' : '0');
     formData.append('reservation', document.querySelector('input[name="edit-reservation"]:checked').value === '1' ? '1' : '0');
+    
+    // Add categories
+    editCategories.forEach(catId => {
+        formData.append('categories[]', catId);
+    });
+    
+    // Add main image ID if changed
+    if (editMainImageId) {
+        formData.append('set_main_image_id', editMainImageId);
+    }
     
     // Add images to remove
     imagesToRemove.forEach(id => {

@@ -77,6 +77,13 @@ class DishController extends Controller
                         'name' => $dish->restaurant->name,
                         'city' => $dish->restaurant->city,
                     ] : null,
+                    'images' => $dish->images->map(function ($image) {
+                        return [
+                            'id' => $image->id,
+                            'image_path' => $image->path,
+                            'is_primary' => $image->is_primary,
+                        ];
+                    }),
                     'image_url' => $dish->images->first()?->path 
                         ? '/storage/' . $dish->images->first()->path 
                         : null,
@@ -115,9 +122,28 @@ class DishController extends Controller
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'remove_images' => 'nullable|array',
             'remove_images.*' => 'integer',
+            'categories' => 'nullable|array',
+            'categories.*' => 'integer|exists:categories,id',
+            'set_main_image_id' => 'nullable|integer',
         ]);
 
-        $dish->update(collect($validated)->except(['images', 'remove_images'])->toArray());
+        $dish->update(collect($validated)->except(['images', 'remove_images', 'categories', 'set_main_image_id'])->toArray());
+
+        // Sync categories to restaurant if provided
+        if ($request->has('categories') && $dish->restaurant) {
+            $dish->restaurant->categories()->syncWithoutDetaching($request->input('categories'));
+        }
+
+        // Set main image if specified
+        if ($request->has('set_main_image_id')) {
+            $mainImageId = $request->input('set_main_image_id');
+            // Reset all images to not primary
+            DishImage::where('dish_id', $dish->id)->update(['is_primary' => false]);
+            // Set the specified image as primary
+            DishImage::where('dish_id', $dish->id)
+                ->where('id', $mainImageId)
+                ->update(['is_primary' => true]);
+        }
 
         // Remove images if requested
         if ($request->has('remove_images')) {
@@ -126,23 +152,67 @@ class DishController extends Controller
                 ->get();
             
             foreach ($imagesToRemove as $image) {
-                Storage::disk('public')->delete($image->image_path);
+                Storage::disk('public')->delete($image->path);
                 $image->delete();
             }
         }
 
         // Add new images
         if ($request->hasFile('images')) {
+            // Get image resize settings from admin settings
+            $imageWidth = null;
+            $imageHeight = null;
+            $widthSetting = \App\Models\AdminSetting::where('key', 'image_width')->first();
+            $heightSetting = \App\Models\AdminSetting::where('key', 'image_height')->first();
+            if ($widthSetting && $widthSetting->value) {
+                $imageWidth = (int) $widthSetting->value;
+            }
+            if ($heightSetting && $heightSetting->value) {
+                $imageHeight = (int) $heightSetting->value;
+            }
+            
             foreach ($request->file('images') as $image) {
-                $path = $image->store('dishes', 'public');
+                // Resize image if settings are provided
+                if ($imageWidth && $imageHeight) {
+                    $imageContent = file_get_contents($image->getRealPath());
+                    $srcImage = imagecreatefromstring($imageContent);
+                    if ($srcImage) {
+                        $srcWidth = imagesx($srcImage);
+                        $srcHeight = imagesy($srcImage);
+                        
+                        // Calculate new dimensions maintaining aspect ratio
+                        $ratio = min($imageWidth / $srcWidth, $imageHeight / $srcHeight);
+                        $newWidth = (int) ($srcWidth * $ratio);
+                        $newHeight = (int) ($srcHeight * $ratio);
+                        
+                        // Create resized image
+                        $dstImage = imagecreatetruecolor($newWidth, $newHeight);
+                        imagecopyresampled($dstImage, $srcImage, 0, 0, 0, 0, $newWidth, $newHeight, $srcWidth, $srcHeight);
+                        
+                        // Save to temp file
+                        $tempPath = sys_get_temp_dir() . '/' . uniqid() . '.jpg';
+                        imagejpeg($dstImage, $tempPath, 90);
+                        imagedestroy($srcImage);
+                        imagedestroy($dstImage);
+                        
+                        // Store resized image
+                        $path = Storage::disk('public')->putFile('dishes', new \Illuminate\Http\File($tempPath));
+                        unlink($tempPath);
+                    } else {
+                        $path = $image->store('dishes', 'public');
+                    }
+                } else {
+                    $path = $image->store('dishes', 'public');
+                }
+                
                 DishImage::create([
                     'dish_id' => $dish->id,
-                    'image_path' => $path,
+                    'path' => $path,
                 ]);
             }
         }
 
-        return response()->json($dish->load(['restaurant', 'images']));
+        return response()->json($dish->load(['restaurant.categories', 'images']));
     }
 
     /**
@@ -236,12 +306,73 @@ class DishController extends Controller
                 Restaurant::query()->where('id', $restaurantId)->update($restaurantUpdates);
             }
 
+            // Attach categories to restaurant
+            if ($request->has('categories')) {
+                $categoryIds = $request->input('categories', []);
+                $restaurant = Restaurant::find($restaurantId);
+                if ($restaurant && !empty($categoryIds)) {
+                    $restaurant->categories()->syncWithoutDetaching($categoryIds);
+                }
+            }
+
+            // Get main image index (default to 0)
+            $mainImageIndex = $request->integer('main_image_index', 0);
+
+            // Get image dimensions from admin settings
+            $imageWidth = null;
+            $imageHeight = null;
+            $widthSetting = \App\Models\AdminSetting::where('key', 'image_width')->first();
+            $heightSetting = \App\Models\AdminSetting::where('key', 'image_height')->first();
+            if ($widthSetting && $widthSetting->value) {
+                $imageWidth = (int) $widthSetting->value;
+            }
+            if ($heightSetting && $heightSetting->value) {
+                $imageHeight = (int) $heightSetting->value;
+            }
+
             foreach ($request->file('images', []) as $index => $image) {
+                // Store the image
+                $path = $image->store('dishes', 'public');
+                
+                // Resize if dimensions are set
+                if ($imageWidth && $imageHeight) {
+                    $storagePath = storage_path('app/public/' . $path);
+                    if (function_exists('imagecreatefromstring') && file_exists($storagePath)) {
+                        $imgData = file_get_contents($storagePath);
+                        $src = imagecreatefromstring($imgData);
+                        if ($src) {
+                            $srcWidth = imagesx($src);
+                            $srcHeight = imagesy($src);
+                            
+                            // Calculate resize dimensions maintaining aspect ratio
+                            $ratio = min($imageWidth / $srcWidth, $imageHeight / $srcHeight);
+                            $newWidth = (int) ($srcWidth * $ratio);
+                            $newHeight = (int) ($srcHeight * $ratio);
+                            
+                            $dst = imagecreatetruecolor($newWidth, $newHeight);
+                            imagecopyresampled($dst, $src, 0, 0, 0, 0, $newWidth, $newHeight, $srcWidth, $srcHeight);
+                            
+                            // Save based on original extension
+                            $ext = strtolower($image->getClientOriginalExtension());
+                            if ($ext === 'png') {
+                                imagepng($dst, $storagePath);
+                            } elseif ($ext === 'gif') {
+                                imagegif($dst, $storagePath);
+                            } else {
+                                imagejpeg($dst, $storagePath, 90);
+                            }
+                            
+                            imagedestroy($src);
+                            imagedestroy($dst);
+                        }
+                    }
+                }
+                
                 DishImage::query()->create([
                     'dish_id' => $dish->id,
-                    'path' => $image->store('dishes', 'public'),
+                    'path' => $path,
                     'alt_text' => $dish->name,
-                    'is_primary' => $index === 0,
+                    'is_primary' => $index === $mainImageIndex,
                 ]);
             }
 
