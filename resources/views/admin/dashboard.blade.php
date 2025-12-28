@@ -11,36 +11,36 @@
     </div>
 
     <div class="stats-grid" id="stats-grid">
-        <div class="stat-card">
+        <a href="/admin/categories" class="stat-card stat-card-link">
             <span class="stat-icon">📁</span>
             <div class="stat-value" id="stat-categories">—</div>
             <div class="stat-label">Categories</div>
-        </div>
-        <div class="stat-card">
+        </a>
+        <a href="/admin/restaurants" class="stat-card stat-card-link">
             <span class="stat-icon">🏪</span>
             <div class="stat-value" id="stat-restaurants">—</div>
             <div class="stat-label">Restaurants</div>
-        </div>
-        <div class="stat-card">
+        </a>
+        <a href="/admin/dishes" class="stat-card stat-card-link">
             <span class="stat-icon">🍽️</span>
             <div class="stat-value" id="stat-dishes">—</div>
             <div class="stat-label">Total Dishes</div>
-        </div>
-        <div class="stat-card">
+        </a>
+        <a href="/admin/disapprovals" class="stat-card stat-card-link">
             <span class="stat-icon">⏳</span>
             <div class="stat-value" id="stat-pending">—</div>
             <div class="stat-label">Pending Approval</div>
-        </div>
-        <div class="stat-card">
+        </a>
+        <a href="/admin/admins" class="stat-card stat-card-link">
             <span class="stat-icon">👑</span>
             <div class="stat-value" id="stat-admins">—</div>
             <div class="stat-label">Admin Users</div>
-        </div>
-        <div class="stat-card">
+        </a>
+        <a href="/admin/users" class="stat-card stat-card-link">
             <span class="stat-icon">👥</span>
             <div class="stat-value" id="stat-users">—</div>
             <div class="stat-label">Website Users</div>
-        </div>
+        </a>
     </div>
 
     <div class="dashboard-grid">
@@ -177,6 +177,18 @@
         text-align: center;
         padding: 2rem 1rem;
     }
+    
+    .stat-card-link {
+        text-decoration: none;
+        color: inherit;
+        transition: transform 0.15s, box-shadow 0.15s;
+    }
+    
+    .stat-card-link:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        border-color: var(--primary);
+    }
 </style>
 @endpush
 
@@ -184,9 +196,10 @@
 <script>
 async function loadDashboardStats() {
     try {
-        const [categories, restaurants, pendingDishes, admins, users] = await Promise.all([
+        const [categories, restaurants, allDishes, pendingDishes, admins, users] = await Promise.all([
             adminFetch('GET', '/admin/api/categories'),
             adminFetch('GET', '/admin/api/restaurants'),
+            adminFetch('GET', '/admin/api/dishes').catch(() => []),
             adminFetch('GET', '/admin/api/dishes/pending').catch(() => []),
             adminFetch('GET', '/admin/api/admins').catch(() => []),
             adminFetch('GET', '/admin/api/users').catch(() => [])
@@ -196,15 +209,7 @@ async function loadDashboardStats() {
         document.getElementById('stat-restaurants').textContent = restaurants?.length || 0;
         document.getElementById('stat-admins').textContent = admins?.length || 0;
         document.getElementById('stat-users').textContent = users?.length || 0;
-        
-        // Count total dishes from restaurants
-        let totalDishes = 0;
-        if (restaurants && restaurants.length) {
-            restaurants.forEach(r => {
-                if (r.dishes) totalDishes += r.dishes.length;
-            });
-        }
-        document.getElementById('stat-dishes').textContent = totalDishes;
+        document.getElementById('stat-dishes').textContent = allDishes?.length || 0;
         document.getElementById('stat-pending').textContent = pendingDishes?.length || 0;
         
         // Recent restaurants
