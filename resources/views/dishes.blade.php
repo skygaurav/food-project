@@ -1,0 +1,572 @@
+@extends('layouts.frontend')
+
+@section('meta_title', 'All Dishes - ' . ($seoSettings['site_name'] ?? 'FOODCITA'))
+@section('meta_description', 'Browse all delicious dishes from restaurants in your city. Find your next favorite meal.')
+
+@push('styles')
+<style>
+    .dishes-hero {
+        text-align: center;
+        padding: 3rem 0 2rem;
+    }
+    
+    .dishes-title {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 0 0 0.5rem 0;
+        color: var(--text-dark);
+    }
+    
+    .dishes-subtitle {
+        font-size: 1.1rem;
+        color: var(--text-muted);
+        margin: 0;
+    }
+    
+    .stats-bar {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-top: 1.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .stat-item {
+        text-align: center;
+    }
+    
+    .stat-value {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+    
+    .stat-label {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+    
+    .filter-section {
+        background: #fff;
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    
+    .filter-grid {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        align-items: flex-end;
+    }
+    
+    .filter-group {
+        flex: 1;
+        min-width: 150px;
+    }
+    
+    .filter-group label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+    }
+    
+    .filter-group select,
+    .filter-group input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        background: #fff;
+        cursor: pointer;
+    }
+    
+    .filter-group select:focus,
+    .filter-group input:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+    
+    .dishes-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .dish-card {
+        background: #fff;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .dish-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+    
+    .dish-card-image {
+        position: relative;
+        height: 200px;
+        background: #f1f5f9;
+    }
+    
+    .dish-card-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .dish-card-badge {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        background: var(--primary);
+        color: #fff;
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .dish-card-content {
+        padding: 1.25rem;
+    }
+    
+    .dish-card-title {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin: 0 0 0.5rem 0;
+        color: var(--text-dark);
+    }
+    
+    .dish-card-title a {
+        color: inherit;
+        text-decoration: none;
+    }
+    
+    .dish-card-title a:hover {
+        color: var(--primary);
+    }
+    
+    .dish-card-restaurant {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-bottom: 0.75rem;
+    }
+    
+    .dish-card-stats {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+    
+    .dish-card-stat {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    
+    .dish-card-categories {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+    }
+    
+    .category-tag {
+        background: #f1f5f9;
+        color: var(--text-muted);
+        padding: 0.25rem 0.6rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+    
+    .loader {
+        text-align: center;
+        padding: 3rem;
+    }
+    
+    .loader-spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid var(--primary);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin: 0 auto;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: #fff;
+        border-radius: 16px;
+    }
+    
+    .empty-state-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+    
+    .empty-state-title {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: 1.5rem;
+        margin: 0 0 0.5rem 0;
+        color: var(--text-dark);
+    }
+    
+    .empty-state-text {
+        color: var(--text-muted);
+        margin: 0;
+    }
+    
+    /* Pagination */
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    .pagination-btn {
+        padding: 0.5rem 1rem;
+        border: 1px solid #e2e8f0;
+        background: #fff;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+    }
+    
+    .pagination-btn:hover:not(:disabled) {
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+    
+    .pagination-btn.active {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: #fff;
+    }
+    
+    .pagination-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .dishes-title {
+            font-size: 2rem;
+        }
+        
+        .filter-grid {
+            flex-direction: column;
+        }
+        
+        .filter-group {
+            width: 100%;
+        }
+        
+        .dishes-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+@endpush
+
+@section('content')
+<div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;">
+    <!-- Hero Section -->
+    <div class="dishes-hero">
+        <h1 class="dishes-title">🥘 All Dishes</h1>
+        <p class="dishes-subtitle">Explore all delicious dishes from restaurants in your city</p>
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-value" id="total-dishes">0</div>
+                <div class="stat-label">Total Dishes</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="total-categories">0</div>
+                <div class="stat-label">Categories</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="total-restaurants">0</div>
+                <div class="stat-label">Restaurants</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Filters -->
+    <div class="filter-section">
+        <div class="filter-grid">
+            <div class="filter-group">
+                <label for="search">Search</label>
+                <input type="text" id="search" placeholder="Search dishes...">
+            </div>
+            <div class="filter-group">
+                <label for="category">Category</label>
+                <select id="category">
+                    <option value="">All Categories</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="sort">Sort By</label>
+                <select id="sort">
+                    <option value="latest">Latest</option>
+                    <option value="popular">Most Popular</option>
+                    <option value="rating">Highest Rated</option>
+                    <option value="name">Name (A-Z)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Loader -->
+    <div id="loader" class="loader">
+        <div class="loader-spinner"></div>
+    </div>
+    
+    <!-- Dishes Grid -->
+    <div id="dishes-grid" class="dishes-grid" style="display: none;"></div>
+    
+    <!-- Empty State -->
+    <div id="empty-state" class="empty-state" style="display: none;">
+        <div class="empty-state-icon">🍽️</div>
+        <h3 class="empty-state-title">No dishes found</h3>
+        <p class="empty-state-text">Try adjusting your filters or check back later!</p>
+    </div>
+    
+    <!-- Pagination -->
+    <div id="pagination" class="pagination-container" style="display: none;"></div>
+</div>
+@endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let currentPage = 1;
+    let totalPages = 1;
+    let searchTimeout = null;
+    
+    const grid = document.getElementById('dishes-grid');
+    const loader = document.getElementById('loader');
+    const emptyState = document.getElementById('empty-state');
+    const pagination = document.getElementById('pagination');
+    const categorySelect = document.getElementById('category');
+    const sortSelect = document.getElementById('sort');
+    const searchInput = document.getElementById('search');
+    
+    // Load categories
+    async function loadCategories() {
+        try {
+            const response = await fetch('/api/categories');
+            const data = await response.json();
+            
+            document.getElementById('total-categories').textContent = data.data.length;
+            
+            data.data.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.id;
+                option.textContent = cat.name;
+                categorySelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error loading categories:', error);
+        }
+    }
+    
+    // Load dishes
+    async function loadDishes(page = 1) {
+        loader.style.display = 'block';
+        grid.style.display = 'none';
+        emptyState.style.display = 'none';
+        pagination.style.display = 'none';
+        
+        try {
+            const category = categorySelect.value;
+            const sort = sortSelect.value;
+            const search = searchInput.value;
+            
+            let url = `/api/dishes?page=${page}&per_page=12`;
+            if (category) url += `&category=${category}`;
+            if (sort) url += `&sort=${sort}`;
+            if (search) url += `&search=${encodeURIComponent(search)}`;
+            
+            const response = await fetch(url);
+            const data = await response.json();
+            
+            loader.style.display = 'none';
+            
+            if (data.data.length === 0) {
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            // Update stats
+            document.getElementById('total-dishes').textContent = data.meta.total;
+            
+            // Render dishes
+            grid.innerHTML = '';
+            data.data.forEach(dish => {
+                grid.innerHTML += renderDishCard(dish);
+            });
+            
+            grid.style.display = 'grid';
+            
+            // Update pagination
+            currentPage = data.meta.current_page;
+            totalPages = data.meta.last_page;
+            renderPagination();
+            
+        } catch (error) {
+            console.error('Error loading dishes:', error);
+            loader.style.display = 'none';
+            emptyState.style.display = 'block';
+        }
+    }
+    
+    // Render dish card
+    function renderDishCard(dish) {
+        const image = dish.images?.[0]?.image_path 
+            ? `/storage/${dish.images[0].image_path}`
+            : 'https://via.placeholder.com/300x200?text=No+Image';
+        
+        const categories = dish.categories?.map(c => 
+            `<span class="category-tag">${c.name}</span>`
+        ).join('') || '';
+        
+        return `
+            <div class="dish-card">
+                <div class="dish-card-image">
+                    <img src="${image}" alt="${dish.name}" loading="lazy">
+                    ${dish.price ? `<span class="dish-card-badge">$${parseFloat(dish.price).toFixed(2)}</span>` : ''}
+                </div>
+                <div class="dish-card-content">
+                    <h3 class="dish-card-title">
+                        <a href="/dishes/${dish.slug}">${dish.name}</a>
+                    </h3>
+                    <p class="dish-card-restaurant">📍 ${dish.restaurant?.name || 'Unknown Restaurant'}</p>
+                    <div class="dish-card-stats">
+                        <span class="dish-card-stat">⭐ ${dish.average_rating ? parseFloat(dish.average_rating).toFixed(1) : 'N/A'}</span>
+                        <span class="dish-card-stat">💬 ${dish.reviews_count || 0}</span>
+                        <span class="dish-card-stat">👍 ${dish.likes || 0}</span>
+                    </div>
+                    ${categories ? `<div class="dish-card-categories">${categories}</div>` : ''}
+                </div>
+            </div>
+        `;
+    }
+    
+    // Render pagination
+    function renderPagination() {
+        if (totalPages <= 1) {
+            pagination.style.display = 'none';
+            return;
+        }
+        
+        pagination.style.display = 'flex';
+        pagination.innerHTML = '';
+        
+        // Previous button
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'pagination-btn';
+        prevBtn.textContent = '← Prev';
+        prevBtn.disabled = currentPage === 1;
+        prevBtn.onclick = () => loadDishes(currentPage - 1);
+        pagination.appendChild(prevBtn);
+        
+        // Page numbers
+        const maxVisible = 5;
+        let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+        let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+        
+        if (endPage - startPage < maxVisible - 1) {
+            startPage = Math.max(1, endPage - maxVisible + 1);
+        }
+        
+        if (startPage > 1) {
+            addPageButton(1);
+            if (startPage > 2) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                ellipsis.style.padding = '0.5rem';
+                pagination.appendChild(ellipsis);
+            }
+        }
+        
+        for (let i = startPage; i <= endPage; i++) {
+            addPageButton(i);
+        }
+        
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+                const ellipsis = document.createElement('span');
+                ellipsis.textContent = '...';
+                ellipsis.style.padding = '0.5rem';
+                pagination.appendChild(ellipsis);
+            }
+            addPageButton(totalPages);
+        }
+        
+        // Next button
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'pagination-btn';
+        nextBtn.textContent = 'Next →';
+        nextBtn.disabled = currentPage === totalPages;
+        nextBtn.onclick = () => loadDishes(currentPage + 1);
+        pagination.appendChild(nextBtn);
+    }
+    
+    function addPageButton(page) {
+        const btn = document.createElement('button');
+        btn.className = 'pagination-btn' + (page === currentPage ? ' active' : '');
+        btn.textContent = page;
+        btn.onclick = () => loadDishes(page);
+        pagination.appendChild(btn);
+    }
+    
+    // Load restaurant count
+    async function loadRestaurantCount() {
+        try {
+            const response = await fetch('/api/restaurants');
+            const data = await response.json();
+            document.getElementById('total-restaurants').textContent = data.data?.length || 0;
+        } catch (error) {
+            console.error('Error loading restaurants:', error);
+        }
+    }
+    
+    // Event listeners
+    categorySelect.addEventListener('change', () => loadDishes(1));
+    sortSelect.addEventListener('change', () => loadDishes(1));
+    searchInput.addEventListener('input', () => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => loadDishes(1), 300);
+    });
+    
+    // Initial load
+    loadCategories();
+    loadRestaurantCount();
+    loadDishes();
+});
+</script>
+@endpush

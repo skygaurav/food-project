@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'home');
 Route::view('/popular', 'popular');
+Route::view('/dishes', 'dishes');
 Route::get('/dishes/{dish:slug}', function (\App\Models\Dish $dish) {
     return view('dish', ['dishSlug' => $dish->slug]);
 });

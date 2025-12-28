@@ -20,9 +20,9 @@
 
     <!-- Popular Dishes Section -->
     <section class="home-section" id="popular">
-        <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <div class="section-header" style="text-align: center; margin-bottom: 1.5rem;">
             <h2 class="section-title">🔥 Popular Dishes</h2>
-            <a href="/popular" class="btn btn-outline" style="padding: 0.5rem 1rem; font-size: 0.85rem;">View All</a>
+            <a href="/popular" class="btn btn-outline" style="padding: 0.5rem 1rem; font-size: 0.9rem; margin-top: 0.5rem; display: inline-block;">View All →</a>
         </div>
         <div id="popular-loader" class="loader">
             <div class="loader-spinner"></div>
@@ -35,7 +35,7 @@
 
     <!-- Categories Section -->
     <section class="home-section" id="categories">
-        <div class="section-header" style="margin-bottom: 1.5rem;">
+        <div class="section-header" style="text-align: center; margin-bottom: 1.5rem;">
             <h2 class="section-title">🍽️ Browse by Category</h2>
         </div>
         <div id="categories-grid" class="categories-grid"></div>
@@ -43,7 +43,7 @@
 
     <!-- All Dishes Section -->
     <section class="home-section" id="dishes">
-        <div class="section-header" style="margin-bottom: 1.5rem;">
+        <div class="section-header" style="text-align: center; margin-bottom: 1.5rem;">
             <h2 class="section-title">🥘 All Dishes</h2>
         </div>
         
@@ -94,7 +94,7 @@
 
     <!-- Recent Reviews Section -->
     <section class="home-section" id="reviews">
-        <div class="section-header" style="margin-bottom: 1.5rem;">
+        <div class="section-header" style="text-align: center; margin-bottom: 1.5rem;">
             <h2 class="section-title">⭐ Recent Reviews</h2>
         </div>
         <div id="reviews-loader" class="loader">

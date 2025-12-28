@@ -812,6 +812,7 @@
             
             <nav class="nav-links">
                 <a href="/">Home</a>
+                <a href="/dishes">All Dishes</a>
                 <a href="/popular">🔥 Popular</a>
                 <a href="/#categories">Categories</a>
             </nav>
@@ -849,6 +850,7 @@
     <!-- Mobile Menu -->
     <nav class="mobile-menu" id="mobileMenu">
         <a href="/" onclick="toggleMobileMenu()">Home</a>
+        <a href="/dishes" onclick="toggleMobileMenu()">All Dishes</a>
         <a href="/popular" onclick="toggleMobileMenu()">🔥 Popular</a>
         <a href="/#categories" onclick="toggleMobileMenu()">Categories</a>
         
@@ -892,6 +894,7 @@
                     <h4>Explore</h4>
                     <ul>
                         <li><a href="/">Home</a></li>
+                        <li><a href="/dishes">All Dishes</a></li>
                         <li><a href="/popular">🔥 Popular Dishes</a></li>
                         <li><a href="/#categories">Categories</a></li>
                         <li><a href="/upload">Upload a Dish</a></li>
