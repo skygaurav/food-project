@@ -474,11 +474,13 @@
     @stack('styles')
 </head>
 <body>
+    @include('partials.icons')
+    
     <!-- Header -->
     <header class="site-header">
         <div class="header-container">
             <a href="/" class="logo">
-                <span class="logo-icon">🍽️</span>
+                <svg class="icon icon-lg"><use href="#icon-utensils"></use></svg>
                 FOODCITA
             </a>
             
@@ -517,7 +519,7 @@
         <div class="footer-container">
             <div class="footer-grid">
                 <div class="footer-section">
-                    <h4>🍽️ FOODCITA</h4>
+                    <h4><svg class="icon"><use href="#icon-utensils"></use></svg> FOODCITA</h4>
                     <p>Discover and share the best dishes from restaurants in your city. Join our community of food lovers!</p>
                 </div>
                 
@@ -541,10 +543,10 @@
                 <div class="footer-section">
                     <h4>Connect</h4>
                     <ul>
-                        <li><a href="#">📘 Facebook</a></li>
-                        <li><a href="#">📸 Instagram</a></li>
-                        <li><a href="#">🐦 Twitter</a></li>
-                        <li><a href="#">📧 Newsletter</a></li>
+                        <li><a href="#"><svg class="icon icon-sm"><use href="#icon-globe"></use></svg> Facebook</a></li>
+                        <li><a href="#"><svg class="icon icon-sm"><use href="#icon-camera"></use></svg> Instagram</a></li>
+                        <li><a href="#"><svg class="icon icon-sm"><use href="#icon-comment"></use></svg> Twitter</a></li>
+                        <li><a href="#"><svg class="icon icon-sm"><use href="#icon-external-link"></use></svg> Newsletter</a></li>
                     </ul>
                 </div>
             </div>
@@ -552,9 +554,9 @@
             <div class="footer-bottom">
                 <p>&copy; {{ date('Y') }} FOODCITA. All rights reserved.</p>
                 <div class="social-links">
-                    <a href="#">📘</a>
-                    <a href="#">📸</a>
-                    <a href="#">🐦</a>
+                    <a href="#"><svg class="icon"><use href="#icon-globe"></use></svg></a>
+                    <a href="#"><svg class="icon"><use href="#icon-camera"></use></svg></a>
+                    <a href="#"><svg class="icon"><use href="#icon-comment"></use></svg></a>
                 </div>
             </div>
         </div>

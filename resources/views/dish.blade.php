@@ -381,10 +381,10 @@
                 
                 <div class="dish-actions">
                     <button id="like-btn" class="dish-action-btn">
-                        <span>👍</span> Like
+                        <svg class="icon"><use href="#icon-thumbs-up"></use></svg> Like
                     </button>
                     <button id="dislike-btn" class="dish-action-btn">
-                        <span>👎</span> Dislike
+                        <svg class="icon" style="transform: scaleY(-1)"><use href="#icon-thumbs-up"></use></svg> Dislike
                     </button>
                 </div>
             </div>
@@ -408,11 +408,11 @@
                     <div class="review-form-group">
                         <label>Rating</label>
                         <select id="review-rating" required>
-                            <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
-                            <option value="4">⭐⭐⭐⭐ Great</option>
-                            <option value="3">⭐⭐⭐ Good</option>
-                            <option value="2">⭐⭐ Fair</option>
-                            <option value="1">⭐ Poor</option>
+                            <option value="5">★★★★★ Excellent</option>
+                            <option value="4">★★★★ Great</option>
+                            <option value="3">★★★ Good</option>
+                            <option value="2">★★ Fair</option>
+                            <option value="1">★ Poor</option>
                         </select>
                     </div>
                     <div class="review-form-group">
@@ -518,7 +518,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Stats
-        document.getElementById('dish-rating').textContent = dish.reviews_avg_rating ? '⭐ ' + parseFloat(dish.reviews_avg_rating).toFixed(1) : '-';
+        document.getElementById('dish-rating').innerHTML = dish.reviews_avg_rating ? '<svg class="icon icon-sm icon-warning icon-filled"><use href="#icon-star-filled"></use></svg> ' + parseFloat(dish.reviews_avg_rating).toFixed(1) : '-';
         document.getElementById('dish-reviews').textContent = dish.reviews ? dish.reviews.length : 0;
         document.getElementById('dish-likes').textContent = dish.reactions ? dish.reactions.filter(r => r.type === 'like').length : 0;
         
@@ -528,7 +528,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         document.getElementById('dish-cost').textContent = dish.meal_cost ? '$' + parseFloat(dish.meal_cost).toFixed(2) : '-';
-        document.getElementById('dish-date-spot').textContent = dish.good_date_spot ? 'Yes ❤️' : 'No';
+        document.getElementById('dish-date-spot').innerHTML = dish.good_date_spot ? 'Yes <svg class="icon icon-sm icon-danger icon-filled"><use href="#icon-heart-filled"></use></svg>' : 'No';
         
         if (dish.website) {
             document.getElementById('dish-website').innerHTML = `<a href="${dish.website}" target="_blank" style="color: var(--primary);">Visit</a>`;
@@ -571,7 +571,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="review-item">
                 <div class="review-header">
                     <span class="review-author">User #${review.user_id || 'Anonymous'}</span>
-                    <span class="review-rating">${'⭐'.repeat(review.rating)}</span>
+                    <span class="review-rating">${'★'.repeat(review.rating)}</span>
                 </div>
                 <p class="review-text">${review.comment || ''}</p>
             </div>

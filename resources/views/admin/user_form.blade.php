@@ -102,7 +102,7 @@ form.addEventListener('submit', async function(e) {
     
     const submitBtn = document.getElementById('submit-btn');
     submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span>⏳</span> Saving...';
+    submitBtn.innerHTML = '<svg class="icon icon-spin"><use href="#icon-loader"></use></svg> Saving...';
     
     try {
         const data = { name, email };

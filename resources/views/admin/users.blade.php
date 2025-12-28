@@ -22,7 +22,7 @@
             </div>
             <div class="column-toggle">
                 <button class="btn btn-secondary btn-sm" id="column-toggle-btn">
-                    <span>⚙️</span> Columns
+                    <svg class="icon icon-sm"><use href="#icon-info"></use></svg> Columns
                 </button>
                 <div class="column-toggle-menu" id="column-menu">
                     <label class="column-toggle-item">

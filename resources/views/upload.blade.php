@@ -338,12 +338,12 @@
 @section('content')
     <div class="upload-container">
         <div class="upload-header">
-            <h1 class="upload-title">📷 Upload a Dish</h1>
+            <h1 class="upload-title"><svg class="icon icon-lg icon-primary"><use href="#icon-camera"></use></svg> Upload a Dish</h1>
             <p class="upload-subtitle">Share your favorite dish with the FOODCITA community</p>
         </div>
 
         <div id="success-message" class="success-message" style="display: none;">
-            <div class="success-icon">🎉</div>
+            <div class="success-icon"><svg class="icon icon-4xl icon-success"><use href="#icon-check"></use></svg></div>
             <h2 class="success-title">Dish Submitted Successfully!</h2>
             <p class="success-text">Your dish has been submitted and is pending admin approval.</p>
             <a href="/" class="btn btn-primary" style="margin-top: 1rem;">Back to Home</a>
@@ -351,7 +351,7 @@
 
         <form id="upload-form" class="upload-form" enctype="multipart/form-data">
             <div class="form-section">
-                <h3 class="form-section-title">📍 Restaurant Details</h3>
+                <h3 class="form-section-title"><svg class="icon"><use href="#icon-location"></use></svg> Restaurant Details</h3>
                 
                 <div class="form-group">
                     <label class="form-label">Restaurant Name <span class="required">*</span></label>
@@ -371,7 +371,7 @@
                 
                 <div id="new-restaurant-fields" class="new-restaurant-fields">
                     <p style="margin: 0 0 1rem 0; font-size: 0.875rem; color: var(--text-muted);">
-                        📝 Restaurant not found? Enter the address details below:
+                        <svg class="icon icon-sm"><use href="#icon-edit"></use></svg> Restaurant not found? Enter the address details below:
                     </p>
                     <div class="form-group">
                         <label class="form-label">Street Address</label>
@@ -402,7 +402,7 @@
             </div>
             
             <div class="form-section">
-                <h3 class="form-section-title">🍽️ Dish Information</h3>
+                <h3 class="form-section-title"><svg class="icon"><use href="#icon-dish"></use></svg> Dish Information</h3>
                 
                 <div class="form-group">
                     <label class="form-label">Dish Name <span class="required">*</span></label>
@@ -417,7 +417,7 @@
                 <div class="form-group">
                     <label class="form-label">Photos <span class="required">*</span></label>
                     <div class="file-upload" onclick="document.getElementById('images').click()">
-                        <div class="file-upload-icon">📸</div>
+                        <div class="file-upload-icon"><svg class="icon icon-3xl icon-muted"><use href="#icon-image"></use></svg></div>
                         <div class="file-upload-text">Click to upload photos or drag & drop</div>
                         <div class="file-upload-text" style="font-size: 0.8rem; margin-top: 0.25rem;">PNG, JPG up to 5MB each</div>
                         <input type="file" id="images" name="images[]" accept="image/*" multiple required />
@@ -427,7 +427,7 @@
             </div>
             
             <div class="form-section">
-                <h3 class="form-section-title">ℹ️ Additional Details</h3>
+                <h3 class="form-section-title"><svg class="icon"><use href="#icon-info"></use></svg> Additional Details</h3>
                 
                 <div class="form-row">
                     <div class="form-group">
@@ -446,7 +446,7 @@
                     <div class="radio-group">
                         <label class="radio-option">
                             <input type="radio" name="good_date_spot" value="1" />
-                            <span>Yes ❤️</span>
+                            <span>Yes <svg class="icon icon-sm icon-danger icon-filled"><use href="#icon-heart-filled"></use></svg></span>
                         </label>
                         <label class="radio-option">
                             <input type="radio" name="good_date_spot" value="0" checked />
@@ -457,7 +457,7 @@
             </div>
             
             <button type="submit" id="submit-btn" class="btn btn-primary submit-btn">
-                <span>🚀</span> Submit Dish
+                <svg class="icon"><use href="#icon-rocket"></use></svg> Submit Dish
             </button>
         </form>
     </div>
@@ -517,7 +517,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Always show "Add new restaurant" option
                 html += `
                     <div class="autocomplete-new" data-new="true">
-                        <span>➕ Add "${query}" as new restaurant</span>
+                        <span><svg class="icon icon-sm"><use href="#icon-plus"></use></svg> Add "${query}" as new restaurant</span>
                     </div>
                 `;
                 
@@ -635,7 +635,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span>⏳</span> Uploading...';
+        submitBtn.innerHTML = '<svg class="icon icon-spin"><use href="#icon-loader"></use></svg> Uploading...';
         
         const formData = new FormData(form);
         
@@ -661,7 +661,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (err) {
             alert('Error: ' + err.message);
             submitBtn.disabled = false;
-            submitBtn.innerHTML = '<span>🚀</span> Submit Dish';
+            submitBtn.innerHTML = '<svg class="icon"><use href="#icon-rocket"></use></svg> Submit Dish';
         }
     });
 });

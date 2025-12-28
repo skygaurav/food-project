@@ -112,7 +112,7 @@
     <div class="auth-container">
         <div class="auth-card">
             <div class="auth-header">
-                <div class="auth-icon">👋</div>
+                <div class="auth-icon"><svg class="icon icon-3xl icon-primary"><use href="#icon-wave"></use></svg></div>
                 <h1 class="auth-title">Welcome Back!</h1>
                 <p class="auth-subtitle">Sign in to continue to FOODCITA</p>
             </div>
@@ -141,7 +141,7 @@
                 </div>
                 
                 <button type="submit" class="btn btn-primary auth-btn">
-                    🔐 Sign In
+                    <svg class="icon"><use href="#icon-lock"></use></svg> Sign In
                 </button>
             </form>
             

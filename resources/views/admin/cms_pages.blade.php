@@ -22,7 +22,7 @@
             </div>
             <div class="column-toggle">
                 <button class="btn btn-secondary btn-sm" id="column-toggle-btn">
-                    <span>⚙️</span> Columns
+                    <svg class="icon icon-sm"><use href="#icon-info"></use></svg> Columns
                 </button>
                 <div class="column-toggle-menu" id="column-menu">
                     <label class="column-toggle-item">
@@ -179,7 +179,7 @@ function render() {
                 <td data-col="slug"><code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px;">/page/${p.slug}</code></td>
                 <td data-col="footer">
                     ${p.show_in_footer 
-                        ? '<span style="color: #10b981;">✓ Yes</span>' 
+                        ? '<span style="color: #10b981;"><svg class="icon icon-sm"><use href="#icon-check"></use></svg> Yes</span>' 
                         : '<span style="color: #94a3b8;">No</span>'}
                 </td>
                 <td data-col="status">

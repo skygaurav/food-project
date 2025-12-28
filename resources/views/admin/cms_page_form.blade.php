@@ -145,7 +145,7 @@ form.addEventListener('submit', async (e) => {
     
     const submitBtn = form.querySelector('button[type="submit"]');
     submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span>⏳</span> Saving...';
+    submitBtn.innerHTML = '<svg class="icon icon-spin"><use href="#icon-loader"></use></svg> Saving...';
     
     const data = {
         title: document.getElementById('title').value,

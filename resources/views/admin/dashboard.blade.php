@@ -12,32 +12,32 @@
 
     <div class="stats-grid" id="stats-grid">
         <a href="/admin/categories" class="stat-card stat-card-link">
-            <span class="stat-icon">📁</span>
+            <span class="stat-icon"><svg class="icon icon-xl"><use href="#icon-star"></use></svg></span>
             <div class="stat-value" id="stat-categories">—</div>
             <div class="stat-label">Categories</div>
         </a>
         <a href="/admin/restaurants" class="stat-card stat-card-link">
-            <span class="stat-icon">🏪</span>
+            <span class="stat-icon"><svg class="icon icon-xl"><use href="#icon-map-pin"></use></svg></span>
             <div class="stat-value" id="stat-restaurants">—</div>
             <div class="stat-label">Restaurants</div>
         </a>
         <a href="/admin/dishes" class="stat-card stat-card-link">
-            <span class="stat-icon">🍽️</span>
+            <span class="stat-icon"><svg class="icon icon-xl"><use href="#icon-dish"></use></svg></span>
             <div class="stat-value" id="stat-dishes">—</div>
             <div class="stat-label">Total Dishes</div>
         </a>
         <a href="/admin/disapprovals" class="stat-card stat-card-link">
-            <span class="stat-icon">⏳</span>
+            <span class="stat-icon"><svg class="icon icon-xl"><use href="#icon-clock"></use></svg></span>
             <div class="stat-value" id="stat-pending">—</div>
             <div class="stat-label">Pending Approval</div>
         </a>
         <a href="/admin/admins" class="stat-card stat-card-link">
-            <span class="stat-icon">👑</span>
+            <span class="stat-icon"><svg class="icon icon-xl"><use href="#icon-user"></use></svg></span>
             <div class="stat-value" id="stat-admins">—</div>
             <div class="stat-label">Admin Users</div>
         </a>
         <a href="/admin/users" class="stat-card stat-card-link">
-            <span class="stat-icon">👥</span>
+            <span class="stat-icon"><svg class="icon icon-xl"><use href="#icon-users"></use></svg></span>
             <div class="stat-value" id="stat-users">—</div>
             <div class="stat-label">Website Users</div>
         </a>
@@ -51,19 +51,19 @@
             <div class="card-body">
                 <div class="quick-actions">
                     <a href="/admin/categories/create" class="quick-action-btn">
-                        <span class="quick-action-icon">📁</span>
+                        <span class="quick-action-icon"><svg class="icon"><use href="#icon-star"></use></svg></span>
                         <span>Add Category</span>
                     </a>
                     <a href="/admin/restaurants/create" class="quick-action-btn">
-                        <span class="quick-action-icon">🏪</span>
+                        <span class="quick-action-icon"><svg class="icon"><use href="#icon-map-pin"></use></svg></span>
                         <span>Add Restaurant</span>
                     </a>
                     <a href="/admin/disapprovals" class="quick-action-btn">
-                        <span class="quick-action-icon">📋</span>
+                        <span class="quick-action-icon"><svg class="icon"><use href="#icon-clock"></use></svg></span>
                         <span>Review Pending</span>
                     </a>
                     <a href="/admin/cms-pages/create" class="quick-action-btn">
-                        <span class="quick-action-icon">📄</span>
+                        <span class="quick-action-icon"><svg class="icon"><use href="#icon-edit"></use></svg></span>
                         <span>Add CMS Page</span>
                     </a>
                 </div>
@@ -218,7 +218,7 @@ async function loadDashboardStats() {
             const recentItems = restaurants.slice(0, 5).map(r => `
                 <div class="recent-item">
                     <div class="recent-item-info">
-                        <div class="recent-item-icon">🏪</div>
+                        <div class="recent-item-icon"><svg class="icon"><use href="#icon-map-pin"></use></svg></div>
                         <div>
                             <div class="recent-item-name">${r.name}</div>
                             <div class="recent-item-meta">${r.city || r.address || 'No location'}</div>

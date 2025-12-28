@@ -118,7 +118,7 @@
     <div class="auth-container">
         <div class="auth-card">
             <div class="auth-header">
-                <div class="auth-icon">🍽️</div>
+                <div class="auth-icon"><svg class="icon icon-3xl icon-primary"><use href="#icon-utensils"></use></svg></div>
                 <h1 class="auth-title">Join FOODCITA</h1>
                 <p class="auth-subtitle">Create an account to share your favorite dishes</p>
             </div>
@@ -160,7 +160,7 @@
                 </div>
                 
                 <button type="submit" class="btn btn-primary auth-btn">
-                    🚀 Create Account
+                    <svg class="icon"><use href="#icon-rocket"></use></svg> Create Account
                 </button>
             </form>
             

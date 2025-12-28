@@ -38,7 +38,7 @@
                 
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">
-                        <span>💾</span> {{ isset($category) ? 'Update Category' : 'Create Category' }}
+                        <svg class="icon"><use href="#icon-save"></use></svg> {{ isset($category) ? 'Update Category' : 'Create Category' }}
                     </button>
                     <a href="/admin/categories" class="btn btn-secondary">Cancel</a>
                 </div>

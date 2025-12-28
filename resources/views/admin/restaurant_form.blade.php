@@ -105,7 +105,7 @@
                 
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">
-                        <span>💾</span> {{ $restaurant->exists ? 'Update Restaurant' : 'Create Restaurant' }}
+                        <svg class="icon"><use href="#icon-save"></use></svg> {{ $restaurant->exists ? 'Update Restaurant' : 'Create Restaurant' }}
                     </button>
                     <a href="/admin/restaurants" class="btn btn-secondary">Cancel</a>
                 </div>

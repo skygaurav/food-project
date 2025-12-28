@@ -41,7 +41,7 @@
                 
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">
-                        <span>💾</span> Save Settings
+                        <svg class="icon"><use href="#icon-save"></use></svg> Save Settings
                     </button>
                 </div>
             </form>

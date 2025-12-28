@@ -19,7 +19,7 @@
             </div>
             <div class="column-toggle">
                 <button class="btn btn-secondary btn-sm" id="column-toggle-btn">
-                    <span>⚙️</span> Columns
+                    <svg class="icon icon-sm"><use href="#icon-info"></use></svg> Columns
                 </button>
                 <div class="column-toggle-menu" id="column-menu">
                     <label class="column-toggle-item">
@@ -181,7 +181,7 @@ function render() {
         tbody.innerHTML = pageData.map(d => {
             const imgHtml = d.image_url 
                 ? `<img src="${d.image_url}" alt="" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">`
-                : `<div style="width: 50px; height: 50px; background: #f1f5f9; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">🍽️</div>`;
+                : `<div style="width: 50px; height: 50px; background: #f1f5f9; border-radius: 4px; display: flex; align-items: center; justify-content: center;"><svg class="icon icon-xl icon-muted"><use href="#icon-dish"></use></svg></div>`;
             
             return `
             <tr>

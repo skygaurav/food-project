@@ -55,7 +55,7 @@
                                 @if($d->images && $d->images->count())
                                     <img src="{{ $d->images->first()->url ?? '' }}" alt="" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
                                 @else
-                                    <div style="width: 50px; height: 50px; background: #f1f5f9; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">🍽️</div>
+                                    <div style="width: 50px; height: 50px; background: #f1f5f9; border-radius: 4px; display: flex; align-items: center; justify-content: center;"><svg class="icon icon-xl icon-muted"><use href="#icon-dish"></use></svg></div>
                                 @endif
                             </td>
                             <td><strong>{{ $d->name }}</strong></td>
@@ -90,7 +90,7 @@
                         <tr>
                             <td colspan="9" style="text-align: center; padding: 2rem;">
                                 <div style="color: #64748b;">
-                                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🍽️</div>
+                                    <div style="margin-bottom: 0.5rem;"><svg class="icon icon-3xl icon-muted"><use href="#icon-dish"></use></svg></div>
                                     <div>No dishes have been submitted for this restaurant yet.</div>
                                 </div>
                             </td>

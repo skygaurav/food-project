@@ -128,7 +128,13 @@
 <body>
     <div class="login-container">
         <div class="login-header">
-            <div class="login-logo">🍽️</div>
+            <div class="login-logo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
+                    <path d="M7 2v20"></path>
+                    <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
+                </svg>
+            </div>
             <h1 class="login-title">FOODCITA</h1>
             <p class="login-subtitle">Admin Control Panel</p>
         </div>

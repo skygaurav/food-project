@@ -53,10 +53,6 @@
             align-items: center;
             gap: 0.5rem;
         }
-        .admin-header h1::before {
-            content: '🍽️';
-            font-size: 1.5rem;
-        }
         .header-actions {
             display: flex;
             align-items: center;
@@ -289,14 +285,14 @@
             min-width: 250px;
             position: relative;
         }
-        .search-input-wrapper::before {
-            content: '🔍';
+        .search-input-wrapper .search-icon {
             position: absolute;
             left: 0.75rem;
             top: 50%;
             transform: translateY(-50%);
-            font-size: 0.875rem;
             opacity: 0.5;
+            width: 1rem;
+            height: 1rem;
         }
         .search-input {
             width: 100%;
@@ -587,11 +583,13 @@
     </style>
 </head>
 <body>
+    @include('partials.icons')
+    
     <header class="admin-header">
-        <h1>FOODCITA Admin</h1>
+        <h1><svg class="icon icon-lg" style="color: var(--primary);"><use href="#icon-utensils"></use></svg> FOODCITA Admin</h1>
         <div class="header-actions">
             <div class="header-user">
-                <span>👤</span>
+                <svg class="icon"><use href="#icon-user"></use></svg>
                 <span>Admin</span>
             </div>
             <form method="POST" action="{{ url('/admin/logout') }}" style="margin:0">

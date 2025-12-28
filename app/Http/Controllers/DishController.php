@@ -92,6 +92,13 @@ class DishController extends Controller
                 'website' => $request->string('website')->toString(),
             ]);
 
+            // Update restaurant with good_date_spot if set to true
+            if ($request->boolean('good_date_spot')) {
+                Restaurant::query()->where('id', $restaurantId)->update([
+                    'good_date_spot' => true,
+                ]);
+            }
+
             foreach ($request->file('images', []) as $index => $image) {
                 DishImage::query()->create([
                     'dish_id' => $dish->id,

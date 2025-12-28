@@ -9,11 +9,11 @@
         <p class="hero-subtitle">Share your favorite meals and explore dishes loved by food enthusiasts in your city</p>
         @auth
             <a href="/upload" class="btn btn-primary">
-                <span>📷</span> Upload a Dish
+                <svg class="icon"><use href="#icon-camera"></use></svg> Upload a Dish
             </a>
         @else
             <a href="/register" class="btn btn-primary">
-                <span>🍴</span> Join Our Community
+                <svg class="icon"><use href="#icon-utensils"></use></svg> Join Our Community
             </a>
         @endauth
     </section>
@@ -52,7 +52,7 @@
         <div id="dishes-grid" class="dishes-grid" style="display: none;"></div>
         
         <div id="dishes-empty" class="empty-state" style="display: none;">
-            <div class="empty-state-icon">🍽️</div>
+            <div class="empty-state-icon"><svg class="icon icon-4xl icon-muted"><use href="#icon-dish"></use></svg></div>
             <h3 class="empty-state-title">No dishes found</h3>
             <p class="empty-state-text">Be the first to share a delicious dish!</p>
             @auth
@@ -198,8 +198,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                         <p class="dish-card-restaurant">${restaurant}</p>
                         <div class="dish-card-meta">
-                            <span class="dish-card-rating">⭐ ${rating}</span>
-                            <span class="dish-card-likes">❤️ ${likes} likes</span>
+                            <span class="dish-card-rating"><svg class="icon icon-sm icon-warning icon-filled"><use href="#icon-star-filled"></use></svg> ${rating}</span>
+                            <span class="dish-card-likes"><svg class="icon icon-sm icon-danger icon-filled"><use href="#icon-heart-filled"></use></svg> ${likes} likes</span>
                         </div>
                     </div>
                 </article>
