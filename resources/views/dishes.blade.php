@@ -371,6 +371,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     let currentPage = 1;
     let totalPages = 1;
+    let totalDishes = 0;
+    let allDishes = [];
+    let cities = new Set();
     let searchTimeout = null;
     
     const grid = document.getElementById('dishes-grid');
@@ -382,17 +385,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const sortSelect = document.getElementById('sort');
     const searchInput = document.getElementById('search');
     
-    // Load categories
+    // Load categories (API returns array directly or {data: []})
     async function loadCategories() {
         try {
             const response = await fetch('/api/categories');
-            const data = await response.json();
+            const result = await response.json();
+            const categories = result.data || result;
             
-            document.getElementById('total-categories').textContent = data.data.length;
+            document.getElementById('total-categories').textContent = categories.length;
             
-            data.data.forEach(cat => {
+            categories.forEach(cat => {
                 const option = document.createElement('option');
-                option.value = cat.id;
+                option.value = cat.slug;
                 option.textContent = cat.name;
                 categorySelect.appendChild(option);
             });
@@ -401,21 +405,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Load cities
-    async function loadCities() {
-        try {
-            const response = await fetch('/api/restaurants/cities');
-            const data = await response.json();
-            
-            data.data.forEach(city => {
-                const option = document.createElement('option');
-                option.value = city;
-                option.textContent = city;
-                citySelect.appendChild(option);
-            });
-        } catch (error) {
-            console.error('Error loading cities:', error);
-        }
+    // Update cities filter from dishes data
+    function updateCitiesFilter() {
+        const currentValue = citySelect.value;
+        citySelect.innerHTML = '<option value="">All Cities</option>';
+        
+        Array.from(cities).sort().forEach(city => {
+            const option = document.createElement('option');
+            option.value = city;
+            option.textContent = city;
+            if (city === currentValue) option.selected = true;
+            citySelect.appendChild(option);
+        });
     }
     
     // Load dishes
@@ -426,41 +427,42 @@ document.addEventListener('DOMContentLoaded', function() {
         pagination.style.display = 'none';
         
         try {
-            const category = categorySelect.value;
-            const city = citySelect.value;
-            const sort = sortSelect.value;
-            const search = searchInput.value;
+            const params = new URLSearchParams();
+            params.set('page', page);
+            params.set('per_page', 12);
             
-            let url = `/api/dishes?page=${page}&per_page=12`;
-            if (category) url += `&category=${category}`;
-            if (city) url += `&city=${encodeURIComponent(city)}`;
-            if (sort) url += `&sort=${sort}`;
-            if (search) url += `&search=${encodeURIComponent(search)}`;
+            if (categorySelect.value) params.set('category', categorySelect.value);
+            if (citySelect.value) params.set('city', citySelect.value);
+            if (sortSelect.value) params.set('sort', sortSelect.value);
+            if (searchInput.value) params.set('search', searchInput.value);
             
-            const response = await fetch(url);
+            const response = await fetch('/api/dishes?' + params.toString());
             const data = await response.json();
+            
+            allDishes = data.data || [];
+            currentPage = data.current_page || 1;
+            totalPages = data.last_page || 1;
+            totalDishes = data.total || allDishes.length;
             
             loader.style.display = 'none';
             
-            if (data.data.length === 0) {
+            // Extract cities from dishes for filter
+            allDishes.forEach(dish => {
+                if (dish.restaurant && dish.restaurant.city) {
+                    cities.add(dish.restaurant.city);
+                }
+            });
+            updateCitiesFilter();
+            
+            // Update stats
+            document.getElementById('total-dishes').textContent = totalDishes;
+            
+            if (allDishes.length === 0) {
                 emptyState.style.display = 'block';
                 return;
             }
             
-            // Update stats
-            document.getElementById('total-dishes').textContent = data.total || data.data.length;
-            
-            // Render dishes
-            grid.innerHTML = '';
-            data.data.forEach(dish => {
-                grid.innerHTML += renderDishCard(dish);
-            });
-            
-            grid.style.display = 'grid';
-            
-            // Update pagination
-            currentPage = data.current_page || 1;
-            totalPages = data.last_page || 1;
+            renderDishes();
             renderPagination();
             
         } catch (error) {
@@ -470,112 +472,109 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Render dish card
-    function renderDishCard(dish) {
-        const image = dish.images?.[0]?.image_path 
-            ? `/storage/${dish.images[0].image_path}`
-            : 'https://via.placeholder.com/300x200?text=No+Image';
-        
-        const categories = dish.categories?.map(c => 
-            `<span class="category-tag">${c.name}</span>`
-        ).join('') || '';
-        
-        return `
-            <div class="dish-card">
-                <div class="dish-card-image">
-                    <img src="${image}" alt="${dish.name}" loading="lazy">
-                    ${dish.price ? `<span class="dish-card-badge">$${parseFloat(dish.price).toFixed(2)}</span>` : ''}
-                </div>
-                <div class="dish-card-content">
-                    <h3 class="dish-card-title">
-                        <a href="/dishes/${dish.slug}">${dish.name}</a>
-                    </h3>
-                    <p class="dish-card-restaurant">📍 ${dish.restaurant?.name || 'Unknown Restaurant'}</p>
-                    <div class="dish-card-stats">
-                        <span class="dish-card-stat">⭐ ${dish.average_rating ? parseFloat(dish.average_rating).toFixed(1) : 'N/A'}</span>
-                        <span class="dish-card-stat">💬 ${dish.reviews_count || 0}</span>
-                        <span class="dish-card-stat">👍 ${dish.likes || 0}</span>
+    // Render dishes - same format as home page
+    function renderDishes() {
+        grid.innerHTML = allDishes.map(dish => {
+            // Find primary image or use first one
+            let primaryImage = null;
+            if (dish.images && dish.images.length > 0) {
+                primaryImage = dish.images.find(img => img.is_primary) || dish.images[0];
+            }
+            let image = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80';
+            if (primaryImage) {
+                const imgPath = primaryImage.path || primaryImage.image_path;
+                if (imgPath) {
+                    image = imgPath.startsWith('http') ? imgPath : '/storage/' + imgPath;
+                }
+            }
+            
+            const rating = dish.reviews_avg_rating ? parseFloat(dish.reviews_avg_rating).toFixed(1) : 'N/A';
+            const likes = dish.likes_count || 0;
+            const city = dish.restaurant ? dish.restaurant.city : '';
+            const restaurant = dish.restaurant ? dish.restaurant.name : 'Unknown Restaurant';
+            
+            // Categories from restaurant
+            const categories = dish.restaurant?.categories?.map(c => 
+                `<span class="category-tag">${c.name}</span>`
+            ).join('') || '';
+            
+            return `
+                <div class="dish-card">
+                    <div class="dish-card-image">
+                        <a href="/dishes/${dish.slug}">
+                            <img src="${image}" alt="${dish.name}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'">
+                        </a>
+                        ${city ? `<span class="dish-card-badge">${city}</span>` : ''}
                     </div>
-                    ${categories ? `<div class="dish-card-categories">${categories}</div>` : ''}
+                    <div class="dish-card-content">
+                        <h3 class="dish-card-title">
+                            <a href="/dishes/${dish.slug}">${dish.name}</a>
+                        </h3>
+                        <p class="dish-card-restaurant">📍 ${restaurant}</p>
+                        <div class="dish-card-stats">
+                            <span class="dish-card-stat">⭐ ${rating}</span>
+                            <span class="dish-card-stat">💬 ${dish.reviews_count || 0}</span>
+                            <span class="dish-card-stat">👍 ${likes}</span>
+                        </div>
+                        ${categories ? `<div class="dish-card-categories">${categories}</div>` : ''}
+                    </div>
                 </div>
-            </div>
-        `;
+            `;
+        }).join('');
+        
+        grid.style.display = 'grid';
     }
     
     // Render pagination
     function renderPagination() {
         if (totalPages <= 1) {
-            pagination.style.display = 'none';
+            if (totalDishes > 0) {
+                pagination.innerHTML = `<span style="color: var(--text-muted);">Showing all ${totalDishes} dish(es)</span>`;
+                pagination.style.display = 'flex';
+            } else {
+                pagination.style.display = 'none';
+            }
             return;
         }
         
         pagination.style.display = 'flex';
-        pagination.innerHTML = '';
+        let html = '';
         
         // Previous button
-        const prevBtn = document.createElement('button');
-        prevBtn.className = 'pagination-btn';
-        prevBtn.textContent = '← Prev';
-        prevBtn.disabled = currentPage === 1;
-        prevBtn.onclick = () => loadDishes(currentPage - 1);
-        pagination.appendChild(prevBtn);
+        html += `<button class="pagination-btn" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>← Prev</button>`;
         
         // Page numbers
-        const maxVisible = 5;
-        let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
-        let endPage = Math.min(totalPages, startPage + maxVisible - 1);
-        
-        if (endPage - startPage < maxVisible - 1) {
-            startPage = Math.max(1, endPage - maxVisible + 1);
-        }
-        
-        if (startPage > 1) {
-            addPageButton(1);
-            if (startPage > 2) {
-                const ellipsis = document.createElement('span');
-                ellipsis.textContent = '...';
-                ellipsis.style.padding = '0.5rem';
-                pagination.appendChild(ellipsis);
+        for (let i = 1; i <= totalPages; i++) {
+            if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                html += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+            } else if (i === currentPage - 2 || i === currentPage + 2) {
+                html += '<span style="padding: 0 0.5rem; color: var(--text-muted);">...</span>';
             }
-        }
-        
-        for (let i = startPage; i <= endPage; i++) {
-            addPageButton(i);
-        }
-        
-        if (endPage < totalPages) {
-            if (endPage < totalPages - 1) {
-                const ellipsis = document.createElement('span');
-                ellipsis.textContent = '...';
-                ellipsis.style.padding = '0.5rem';
-                pagination.appendChild(ellipsis);
-            }
-            addPageButton(totalPages);
         }
         
         // Next button
-        const nextBtn = document.createElement('button');
-        nextBtn.className = 'pagination-btn';
-        nextBtn.textContent = 'Next →';
-        nextBtn.disabled = currentPage === totalPages;
-        nextBtn.onclick = () => loadDishes(currentPage + 1);
-        pagination.appendChild(nextBtn);
+        html += `<button class="pagination-btn" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next →</button>`;
+        
+        // Info
+        html += `<span style="margin-left: 1rem; color: var(--text-muted);">Page ${currentPage} of ${totalPages} (${totalDishes} dishes)</span>`;
+        
+        pagination.innerHTML = html;
     }
     
-    function addPageButton(page) {
-        const btn = document.createElement('button');
-        btn.className = 'pagination-btn' + (page === currentPage ? ' active' : '');
-        btn.textContent = page;
-        btn.onclick = () => loadDishes(page);
-        pagination.appendChild(btn);
-    }
+    // Go to page function (global)
+    window.goToPage = function(page) {
+        if (page < 1 || page > totalPages) return;
+        loadDishes(page);
+        document.getElementById('dishes-grid').scrollIntoView({ behavior: 'smooth' });
+    };
     
     // Load restaurant count
     async function loadRestaurantCount() {
         try {
             const response = await fetch('/api/restaurants');
-            const data = await response.json();
-            document.getElementById('total-restaurants').textContent = data.data?.length || 0;
+            const result = await response.json();
+            const restaurants = result.data || result;
+            document.getElementById('total-restaurants').textContent = Array.isArray(restaurants) ? restaurants.length : 0;
         } catch (error) {
             console.error('Error loading restaurants:', error);
         }
@@ -592,7 +591,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initial load
     loadCategories();
-    loadCities();
     loadRestaurantCount();
     loadDishes();
 });

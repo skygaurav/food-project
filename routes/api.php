@@ -18,6 +18,7 @@ Route::prefix('admin')->middleware(['auth:web'])->group(function (): void {
     Route::patch('dishes/{dish}', [DishApprovalController::class, 'update']);
 });
 
+Route::get('categories', [AdminCategoryController::class, 'index']);
 Route::get('restaurants', [RestaurantController::class, 'index']);
 Route::get('restaurants/cities', [RestaurantController::class, 'cities']);
 Route::get('restaurants/{restaurant}', [RestaurantController::class, 'show']);

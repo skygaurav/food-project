@@ -14,7 +14,7 @@ class CategoryController extends Controller
 {
     public function index(): JsonResponse
     {
-        return response()->json(Category::query()->orderBy('name')->get());
+        return response()->json(['data' => Category::query()->orderBy('name')->get()]);
     }
 
     public function store(StoreCategoryRequest $request): JsonResponse

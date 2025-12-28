@@ -1919,3 +1919,23 @@
 #64 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php(16): require_once('...')
 #65 {main}
 "} 
+[2025-12-28 20:08:57] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [] is not defined. at /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Log/LogManager.php:210)
+[stacktrace]
+#0 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(135): Illuminate\\Log\\LogManager->resolve()
+#1 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(122): Illuminate\\Log\\LogManager->get()
+#2 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(645): Illuminate\\Log\\LogManager->driver()
+#3 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(274): Illuminate\\Log\\LogManager->error()
+#4 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(454): Illuminate\\Foundation\\Exceptions\\Handler->report()
+#5 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(157): Illuminate\\Foundation\\Console\\Kernel->reportException()
+#6 /workspaces/food-project/artisan(8): Illuminate\\Foundation\\Console\\Kernel->handle()
+#7 {main}
+"} 
+[2025-12-28 20:08:57] laravel.ERROR: Command "tinker" is not defined. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\CommandNotFoundException(code: 0): Command \"tinker\" is not defined. at /workspaces/food-project/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /workspaces/food-project/vendor/symfony/console/Application.php(259): Symfony\\Component\\Console\\Application->find()
+#1 /workspaces/food-project/vendor/symfony/console/Application.php(171): Symfony\\Component\\Console\\Application->doRun()
+#2 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Console/Application.php(102): Symfony\\Component\\Console\\Application->run()
+#3 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(155): Illuminate\\Console\\Application->run()
+#4 /workspaces/food-project/artisan(8): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 {main}
+"} 
