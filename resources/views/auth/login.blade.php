@@ -1,58 +1,153 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login - FOODCITA</title>
-    <link rel="stylesheet" href="/app.css">
-</head>
-<body class="font-serif text-slate-900 bg-slate-50">
-    <div class="min-h-screen flex flex-col">
-        <header class="bg-black py-6 text-center text-white">
-            <a href="/" class="text-3xl font-semibold tracking-wide">FOODCITA</a>
-        </header>
-        
-        <main class="flex-1 flex items-center justify-center px-6 py-12">
-            <div class="w-full max-w-md">
-                <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-8">
-                    <h1 class="text-2xl font-semibold text-center mb-6">Login</h1>
-                    
-                    @if ($errors->any())
-                        <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded text-red-600 text-sm">
-                            @foreach ($errors->all() as $error)
-                                <p>{{ $error }}</p>
-                            @endforeach
-                        </div>
-                    @endif
-                    
-                    <form method="POST" action="/login" class="space-y-4">
-                        @csrf
-                        
-                        <div>
-                            <label for="email" class="block text-sm font-medium text-slate-700 mb-1">Email</label>
-                            <input type="email" id="email" name="email" value="{{ old('email') }}" required 
-                                   class="w-full px-3 py-2 border border-slate-300 rounded focus:outline-none focus:ring-2 focus:ring-slate-400">
-                        </div>
-                        
-                        <div>
-                            <label for="password" class="block text-sm font-medium text-slate-700 mb-1">Password</label>
-                            <input type="password" id="password" name="password" required 
-                                   class="w-full px-3 py-2 border border-slate-300 rounded focus:outline-none focus:ring-2 focus:ring-slate-400">
-                        </div>
-                        
-                        <button type="submit" 
-                                class="w-full bg-black text-white py-2 px-4 rounded font-medium hover:bg-slate-800 transition">
-                            Login
-                        </button>
-                    </form>
-                    
-                    <p class="mt-6 text-center text-sm text-slate-600">
-                        Don't have an account? 
-                        <a href="/register" class="text-black font-medium underline">Register</a>
-                    </p>
-                </div>
+@extends('layouts.frontend')
+
+@section('title', 'Login')
+
+@push('styles')
+<style>
+    .auth-container {
+        max-width: 420px;
+        margin: 0 auto;
+    }
+    
+    .auth-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 2.5rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    
+    .auth-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .auth-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+    
+    .auth-title {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0;
+    }
+    
+    .auth-subtitle {
+        color: var(--text-muted);
+        margin: 0.5rem 0 0 0;
+        font-size: 0.95rem;
+    }
+    
+    .auth-form .form-group {
+        margin-bottom: 1.25rem;
+    }
+    
+    .auth-form .form-label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+    }
+    
+    .auth-form .form-control {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        color: var(--text-dark);
+        background: #fff;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    
+    .auth-form .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(232, 93, 4, 0.1);
+    }
+    
+    .auth-btn {
+        width: 100%;
+        padding: 1rem;
+        font-size: 1rem;
+        font-weight: 600;
+        margin-top: 0.5rem;
+    }
+    
+    .auth-error {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        color: #dc2626;
+        font-size: 0.875rem;
+    }
+    
+    .auth-footer {
+        text-align: center;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e2e8f0;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+    
+    .auth-footer a {
+        color: var(--primary);
+        font-weight: 600;
+        text-decoration: none;
+    }
+    
+    .auth-footer a:hover {
+        text-decoration: underline;
+    }
+</style>
+@endpush
+
+@section('content')
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-icon">👋</div>
+                <h1 class="auth-title">Welcome Back!</h1>
+                <p class="auth-subtitle">Sign in to continue to FOODCITA</p>
             </div>
-        </main>
+            
+            @if ($errors->any())
+                <div class="auth-error">
+                    @foreach ($errors->all() as $error)
+                        <p style="margin: 0;">{{ $error }}</p>
+                    @endforeach
+                </div>
+            @endif
+            
+            <form method="POST" action="/login" class="auth-form">
+                @csrf
+                
+                <div class="form-group">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input type="email" id="email" name="email" value="{{ old('email') }}" 
+                           class="form-control" placeholder="you@example.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" id="password" name="password" 
+                           class="form-control" placeholder="••••••••" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary auth-btn">
+                    🔐 Sign In
+                </button>
+            </form>
+            
+            <div class="auth-footer">
+                Don't have an account? <a href="/register">Create one</a>
+            </div>
+        </div>
     </div>
-</body>
-</html>
+@endsection

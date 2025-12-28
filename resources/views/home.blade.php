@@ -1,192 +1,248 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Foodcita</title>
-    <link rel="stylesheet" href="/app.css">
-</head>
-<body class="font-serif text-slate-900 bg-white">
-    <div>
-        <header class="bg-black py-6 text-white">
-            <div class="mx-auto max-w-6xl px-6 flex items-center justify-between">
-                <a href="/" class="text-3xl font-semibold tracking-wide">FOODCITA</a>
-                <div class="flex items-center gap-4">
-                    @auth
-                        <span class="text-sm">Welcome, {{ auth()->user()->name }}</span>
-                        <form method="POST" action="/logout" class="inline">
-                            @csrf
-                            <button type="submit" class="text-sm underline hover:text-slate-300">Logout</button>
-                        </form>
-                    @else
-                        <a href="/login" class="text-sm underline hover:text-slate-300">Login</a>
-                        <a href="/register" class="text-sm bg-white text-black px-4 py-1 rounded hover:bg-slate-200">Register</a>
-                    @endauth
-                </div>
+@extends('layouts.frontend')
+
+@section('title', 'Home')
+
+@section('content')
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <h1 class="hero-title">Discover Delicious Dishes</h1>
+        <p class="hero-subtitle">Share your favorite meals and explore dishes loved by food enthusiasts in your city</p>
+        @auth
+            <a href="/upload" class="btn btn-primary">
+                <span>📷</span> Upload a Dish
+            </a>
+        @else
+            <a href="/register" class="btn btn-primary">
+                <span>🍴</span> Join Our Community
+            </a>
+        @endauth
+    </section>
+
+    <!-- Filter Section -->
+    <section class="filter-section" id="dishes">
+        <div class="filter-grid">
+            <div class="filter-group">
+                <label>Category</label>
+                <select id="filter-category">
+                    <option value="">All Categories</option>
+                </select>
             </div>
-        </header>
-        <main class="mx-auto w-full max-w-6xl px-6 pb-16 pt-10">
-            <section class="space-y-10">
-                <div class="rounded border border-slate-300 bg-white p-6 text-center">
-                    <h1 class="text-2xl font-medium">Upload a Dish or Drink!</h1>
-                    @auth
-                        <a
-                            href="/upload"
-                            class="mt-4 inline-flex items-center justify-center rounded bg-black text-white px-8 py-2 text-lg hover:bg-slate-800"
-                        >
-                            Upload
-                        </a>
-                    @else
-                        <p class="mt-2 text-sm text-slate-600">Login to share your favorite dishes with the community</p>
-                        <a
-                            href="/login"
-                            class="mt-4 inline-flex items-center justify-center rounded border border-slate-500 px-8 py-2 text-lg hover:bg-slate-100"
-                        >
-                            Login to Upload
-                        </a>
-                    @endauth
-                </div>
+            <div class="filter-group">
+                <label>City</label>
+                <select id="filter-city">
+                    <option value="">All Cities</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Sort By</label>
+                <select id="filter-sort">
+                    <option value="">Newest First</option>
+                    <option value="top-reviewed">Top Reviewed</option>
+                </select>
+            </div>
+        </div>
+    </section>
 
-                <div class="rounded border border-slate-300 bg-white p-6 text-center">
-                    <h2 class="text-xl font-medium">Filters (in the future)</h2>
-                    <div class="mt-6 grid gap-4 md:grid-cols-3">
-                        <label class="flex flex-col gap-2 text-left">
-                            <span class="text-sm font-semibold">Category</span>
-                            <select class="rounded border border-slate-300 px-3 py-2">
-                                <option>All</option>
-                                <option>American</option>
-                                <option>Asian</option>
-                                <option>Mexican</option>
-                                <option>Italian</option>
-                                <option>Mediterranean</option>
-                            </select>
-                        </label>
-                        <label class="flex flex-col gap-2 text-left">
-                            <span class="text-sm font-semibold">Near by me</span>
-                            <select class="rounded border border-slate-300 px-3 py-2">
-                                <option>Use my city</option>
-                                <option>Portland</option>
-                                <option>Austin</option>
-                                <option>Chicago</option>
-                            </select>
-                        </label>
-                        <label class="flex flex-col gap-2 text-left">
-                            <span class="text-sm font-semibold">Top reviewed</span>
-                            <select class="rounded border border-slate-300 px-3 py-2">
-                                <option>Newest</option>
-                                <option>Highest rating</option>
-                                <option>Most liked</option>
-                            </select>
-                        </label>
+    <!-- Dishes Grid -->
+    <section>
+        <div id="dishes-loader" class="loader">
+            <div class="loader-spinner"></div>
+        </div>
+        
+        <div id="dishes-grid" class="dishes-grid" style="display: none;"></div>
+        
+        <div id="dishes-empty" class="empty-state" style="display: none;">
+            <div class="empty-state-icon">🍽️</div>
+            <h3 class="empty-state-title">No dishes found</h3>
+            <p class="empty-state-text">Be the first to share a delicious dish!</p>
+            @auth
+                <a href="/upload" class="btn btn-primary" style="margin-top: 1rem;">Upload a Dish</a>
+            @endauth
+        </div>
+        
+        <!-- Load More -->
+        <div id="load-more-container" style="text-align: center; margin-top: 2rem; display: none;">
+            <button id="load-more-btn" class="btn btn-outline">Load More Dishes</button>
+        </div>
+    </section>
+@endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let currentPage = 1;
+    let lastPage = 1;
+    let allDishes = [];
+    let categories = [];
+    let cities = new Set();
+    
+    const dishesGrid = document.getElementById('dishes-grid');
+    const dishesLoader = document.getElementById('dishes-loader');
+    const dishesEmpty = document.getElementById('dishes-empty');
+    const loadMoreContainer = document.getElementById('load-more-container');
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    
+    const filterCategory = document.getElementById('filter-category');
+    const filterCity = document.getElementById('filter-city');
+    const filterSort = document.getElementById('filter-sort');
+    
+    // Load categories
+    async function loadCategories() {
+        try {
+            const res = await fetch('/api/categories');
+            categories = await res.json();
+            
+            filterCategory.innerHTML = '<option value="">All Categories</option>';
+            categories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.slug;
+                option.textContent = cat.name;
+                filterCategory.appendChild(option);
+            });
+        } catch (e) {
+            console.error('Failed to load categories:', e);
+        }
+    }
+    
+    // Load dishes
+    async function loadDishes(append = false) {
+        if (!append) {
+            dishesLoader.style.display = 'flex';
+            dishesGrid.style.display = 'none';
+            dishesEmpty.style.display = 'none';
+            loadMoreContainer.style.display = 'none';
+        } else {
+            loadMoreBtn.disabled = true;
+            loadMoreBtn.textContent = 'Loading...';
+        }
+        
+        try {
+            const params = new URLSearchParams();
+            params.set('page', currentPage);
+            
+            if (filterCategory.value) params.set('category', filterCategory.value);
+            if (filterCity.value) params.set('city', filterCity.value);
+            if (filterSort.value) params.set('sort', filterSort.value);
+            
+            const res = await fetch('/api/dishes?' + params.toString());
+            const data = await res.json();
+            
+            if (!append) {
+                allDishes = data.data || [];
+            } else {
+                allDishes = [...allDishes, ...(data.data || [])];
+            }
+            
+            lastPage = data.last_page || 1;
+            
+            // Extract cities for filter
+            allDishes.forEach(dish => {
+                if (dish.restaurant && dish.restaurant.city) {
+                    cities.add(dish.restaurant.city);
+                }
+            });
+            updateCitiesFilter();
+            
+            renderDishes();
+            
+        } catch (e) {
+            console.error('Failed to load dishes:', e);
+            dishesLoader.style.display = 'none';
+            dishesEmpty.style.display = 'block';
+        }
+    }
+    
+    function updateCitiesFilter() {
+        const currentValue = filterCity.value;
+        filterCity.innerHTML = '<option value="">All Cities</option>';
+        
+        Array.from(cities).sort().forEach(city => {
+            const option = document.createElement('option');
+            option.value = city;
+            option.textContent = city;
+            if (city === currentValue) option.selected = true;
+            filterCity.appendChild(option);
+        });
+    }
+    
+    function renderDishes() {
+        dishesLoader.style.display = 'none';
+        
+        if (allDishes.length === 0) {
+            dishesGrid.style.display = 'none';
+            dishesEmpty.style.display = 'block';
+            loadMoreContainer.style.display = 'none';
+            return;
+        }
+        
+        dishesGrid.innerHTML = allDishes.map(dish => {
+            const image = dish.images && dish.images.length > 0 
+                ? '/storage/' + dish.images[0].path 
+                : 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80';
+            const rating = dish.reviews_avg_rating ? parseFloat(dish.reviews_avg_rating).toFixed(1) : 'N/A';
+            const likes = dish.likes_count || 0;
+            const city = dish.restaurant ? dish.restaurant.city : '';
+            const restaurant = dish.restaurant ? dish.restaurant.name : 'Unknown Restaurant';
+            
+            return `
+                <article class="dish-card">
+                    <a href="/dishes/${dish.id}">
+                        <img src="${image}" alt="${dish.name}" class="dish-card-image" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'" />
+                    </a>
+                    <div class="dish-card-body">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.25rem;">
+                            <a href="/dishes/${dish.id}" style="text-decoration: none; color: inherit;">
+                                <h3 class="dish-card-title">${dish.name}</h3>
+                            </a>
+                            ${city ? `<span style="font-size: 0.75rem; color: var(--text-muted); background: #f1f5f9; padding: 0.25rem 0.5rem; border-radius: 4px;">${city}</span>` : ''}
+                        </div>
+                        <p class="dish-card-restaurant">${restaurant}</p>
+                        <div class="dish-card-meta">
+                            <span class="dish-card-rating">⭐ ${rating}</span>
+                            <span class="dish-card-likes">❤️ ${likes} likes</span>
+                        </div>
                     </div>
-                </div>
-
-                <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    <article class="overflow-hidden rounded border border-slate-200 bg-white shadow-sm">
-                        <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80" alt="Chili Garlic Ramen" class="h-48 w-full object-cover" />
-                        <div class="space-y-2 p-4">
-                            <div class="flex items-center justify-between">
-                                <h3 class="text-lg font-semibold">Chili Garlic Ramen</h3>
-                                <span class="text-sm text-slate-500">Portland</span>
-                            </div>
-                            <p class="text-sm text-slate-600">Kumar's Indian Grill</p>
-                            <div class="flex items-center justify-between text-sm">
-                                <span class="font-medium">⭐ 4.8</span>
-                                <span class="text-slate-500">164 likes</span>
-                            </div>
-                            <a class="inline-flex items-center text-sm font-semibold text-slate-800 underline" href="/dishes/1">
-                                View dish
-                            </a>
-                        </div>
-                    </article>
-                    <article class="overflow-hidden rounded border border-slate-200 bg-white shadow-sm">
-                        <img src="https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=600&q=80" alt="Truffle Carbonara" class="h-48 w-full object-cover" />
-                        <div class="space-y-2 p-4">
-                            <div class="flex items-center justify-between">
-                                <h3 class="text-lg font-semibold">Truffle Carbonara</h3>
-                                <span class="text-sm text-slate-500">Austin</span>
-                            </div>
-                            <p class="text-sm text-slate-600">Violet &amp; Co.</p>
-                            <div class="flex items-center justify-between text-sm">
-                                <span class="font-medium">⭐ 4.6</span>
-                                <span class="text-slate-500">130 likes</span>
-                            </div>
-                            <a class="inline-flex items-center text-sm font-semibold text-slate-800 underline" href="/dishes/1">
-                                View dish
-                            </a>
-                        </div>
-                    </article>
-                    <article class="overflow-hidden rounded border border-slate-200 bg-white shadow-sm">
-                        <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=600&q=80" alt="Smoky Birria Tacos" class="h-48 w-full object-cover" />
-                        <div class="space-y-2 p-4">
-                            <div class="flex items-center justify-between">
-                                <h3 class="text-lg font-semibold">Smoky Birria Tacos</h3>
-                                <span class="text-sm text-slate-500">Chicago</span>
-                            </div>
-                            <p class="text-sm text-slate-600">Casa Naranja</p>
-                            <div class="flex items-center justify-between text-sm">
-                                <span class="font-medium">⭐ 4.9</span>
-                                <span class="text-slate-500">212 likes</span>
-                            </div>
-                            <a class="inline-flex items-center text-sm font-semibold text-slate-800 underline" href="/dishes/1">
-                                View dish
-                            </a>
-                        </div>
-                    </article>
-                    <article class="overflow-hidden rounded border border-slate-200 bg-white shadow-sm">
-                        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80" alt="Lemon Herb Salmon" class="h-48 w-full object-cover" />
-                        <div class="space-y-2 p-4">
-                            <div class="flex items-center justify-between">
-                                <h3 class="text-lg font-semibold">Lemon Herb Salmon</h3>
-                                <span class="text-sm text-slate-500">Seattle</span>
-                            </div>
-                            <p class="text-sm text-slate-600">Coastal Table</p>
-                            <div class="flex items-center justify-between text-sm">
-                                <span class="font-medium">⭐ 4.7</span>
-                                <span class="text-slate-500">98 likes</span>
-                            </div>
-                            <a class="inline-flex items-center text-sm font-semibold text-slate-800 underline" href="/dishes/1">
-                                View dish
-                            </a>
-                        </div>
-                    </article>
-                    <article class="overflow-hidden rounded border border-slate-200 bg-white shadow-sm">
-                        <img src="https://images.unsplash.com/photo-1481391032119-d89fee407e44?auto=format&fit=crop&w=600&q=80" alt="Matcha Tart" class="h-48 w-full object-cover" />
-                        <div class="space-y-2 p-4">
-                            <div class="flex items-center justify-between">
-                                <h3 class="text-lg font-semibold">Matcha Tart</h3>
-                                <span class="text-sm text-slate-500">San Jose</span>
-                            </div>
-                            <p class="text-sm text-slate-600">Kumo Sweets</p>
-                            <div class="flex items-center justify-between text-sm">
-                                <span class="font-medium">⭐ 4.5</span>
-                                <span class="text-slate-500">74 likes</span>
-                            </div>
-                            <a class="inline-flex items-center text-sm font-semibold text-slate-800 underline" href="/dishes/1">
-                                View dish
-                            </a>
-                        </div>
-                    </article>
-                    <article class="overflow-hidden rounded border border-slate-200 bg-white shadow-sm">
-                        <img src="https://images.unsplash.com/photo-1482049016688-2d3e1b311543?auto=format&fit=crop&w=600&q=80" alt="Seared Ribeye Bowl" class="h-48 w-full object-cover" />
-                        <div class="space-y-2 p-4">
-                            <div class="flex items-center justify-between">
-                                <h3 class="text-lg font-semibold">Seared Ribeye Bowl</h3>
-                                <span class="text-sm text-slate-500">Denver</span>
-                            </div>
-                            <p class="text-sm text-slate-600">Grill Union</p>
-                            <div class="flex items-center justify-between text-sm">
-                                <span class="font-medium">⭐ 4.4</span>
-                                <span class="text-slate-500">62 likes</span>
-                            </div>
-                            <a class="inline-flex items-center text-sm font-semibold text-slate-800 underline" href="/dishes/1">
-                                View dish
-                            </a>
-                        </div>
-                    </article>
-                </div>
-            </section>
-        </main>
-    </div>
-</body>
-</html>
+                </article>
+            `;
+        }).join('');
+        
+        dishesGrid.style.display = 'grid';
+        dishesEmpty.style.display = 'none';
+        
+        // Show/hide load more button
+        if (currentPage < lastPage) {
+            loadMoreContainer.style.display = 'block';
+            loadMoreBtn.disabled = false;
+            loadMoreBtn.textContent = 'Load More Dishes';
+        } else {
+            loadMoreContainer.style.display = 'none';
+        }
+    }
+    
+    // Event listeners
+    filterCategory.addEventListener('change', () => {
+        currentPage = 1;
+        loadDishes();
+    });
+    
+    filterCity.addEventListener('change', () => {
+        currentPage = 1;
+        loadDishes();
+    });
+    
+    filterSort.addEventListener('change', () => {
+        currentPage = 1;
+        loadDishes();
+    });
+    
+    loadMoreBtn.addEventListener('click', () => {
+        currentPage++;
+        loadDishes(true);
+    });
+    
+    // Initial load
+    loadCategories();
+    loadDishes();
+});
+</script>
+@endpush
