@@ -11,4 +11,4 @@ db_version: '8.0'
 
 hooks:
   post-start:
-    - exec: ["bash", "-lc", "if [ -f package.json ]; then npm ci --no-audit --no-fund; fi"]
+    - exec: "if [ -f package.json ]; then npm ci --no-audit --no-fund; fi"
