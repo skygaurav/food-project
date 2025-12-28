@@ -23,6 +23,7 @@ class DishController extends Controller
         $query = Dish::query()
             ->with(['restaurant.categories', 'images'])
             ->where('status', 'approved')
+            ->whereHas('restaurant', fn ($q) => $q->where('is_approved', true))
             ->withCount([
                 'reviews as reviews_count',
                 'reactions as likes_count' => fn ($relation) => $relation->where('type', 'like'),
@@ -60,6 +61,7 @@ class DishController extends Controller
         $query = Dish::query()
             ->with(['restaurant.categories', 'images'])
             ->where('status', 'approved')
+            ->whereHas('restaurant', fn ($q) => $q->where('is_approved', true))
             ->withCount([
                 'reviews as reviews_count',
                 'reactions as likes_count' => fn ($relation) => $relation->where('type', 'like'),

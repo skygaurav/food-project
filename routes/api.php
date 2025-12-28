@@ -23,6 +23,7 @@ Route::get('restaurants/{restaurant}', [RestaurantController::class, 'show']);
 Route::get('dishes', [DishController::class, 'index']);
 Route::get('dishes/popular', [DishController::class, 'popular']);
 Route::get('dishes/{dish:slug}', [DishController::class, 'show'])->where('dish', '^(?!popular$).*');
+Route::get('reviews/recent', [ReviewController::class, 'recent']);
 
 Route::middleware(['auth:web'])->group(function (): void {
     Route::post('dishes', [DishController::class, 'store']);
