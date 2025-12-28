@@ -414,7 +414,7 @@ class DishController extends Controller
         $dish->load([
             'restaurant.categories',
             'images',
-            'reviews',
+            'reviews.user',
             'reactions',
         ]);
         

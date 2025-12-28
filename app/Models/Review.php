@@ -23,4 +23,9 @@ class Review extends Model
     {
         return $this->belongsTo(Dish::class);
     }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 }

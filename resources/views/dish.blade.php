@@ -1021,15 +1021,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         noReviews.style.display = 'none';
-        list.innerHTML = reviews.map(review => `
+        list.innerHTML = reviews.map(review => {
+            const reviewerName = review.user?.name || 'Anonymous';
+            return `
             <div class="review-item">
                 <div class="review-header">
-                    <span class="review-author">User #${review.user_id || 'Anonymous'}</span>
+                    <span class="review-author">${reviewerName}</span>
                     <span class="review-rating">${'★'.repeat(review.rating)}</span>
                 </div>
                 <p class="review-text">${review.comment || ''}</p>
             </div>
-        `).join('');
+        `;
+        }).join('');
     }
     
     async function loadRelatedDishes() {
