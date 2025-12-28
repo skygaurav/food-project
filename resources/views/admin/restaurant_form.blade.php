@@ -3,45 +3,162 @@
 @section('title', isset($restaurant) ? 'Edit Restaurant' : 'New Restaurant')
 
 @section('content')
-    <h2 class="text-2xl font-semibold mb-4">{{ isset($restaurant) ? 'Edit' : 'Create' }} Restaurant</h2>
+    <div class="breadcrumb">
+        <a href="/admin">Dashboard</a>
+        <span>›</span>
+        <a href="/admin/restaurants">Restaurants</a>
+        <span>›</span>
+        <span>{{ isset($restaurant) ? 'Edit' : 'New' }}</span>
+    </div>
 
-    <form id="restaurant-form" class="space-y-4">
-        <input type="hidden" name="id" value="{{ $restaurant->id ?? '' }}" />
-        <label class="block">
-            <div class="text-sm font-medium">Name</div>
-            <input name="name" value="{{ $restaurant->name ?? '' }}" class="rounded border px-3 py-2 w-full" />
-        </label>
-        <label class="block">
-            <div class="text-sm font-medium">Address</div>
-            <input name="address" value="{{ $restaurant->address ?? '' }}" class="rounded border px-3 py-2 w-full" />
-        </label>
-        <label class="block">
-            <div class="text-sm font-medium">Website</div>
-            <input name="website" value="{{ $restaurant->website ?? '' }}" class="rounded border px-3 py-2 w-full" />
-        </label>
+    <div class="page-header">
         <div>
-            <button type="submit" class="rounded border px-4 py-2">Save</button>
-            <a href="/admin/restaurants" class="ml-2">Cancel</a>
+            <h1 class="page-title">{{ isset($restaurant) ? 'Edit Restaurant' : 'Create New Restaurant' }}</h1>
+            <p class="page-subtitle">{{ isset($restaurant) ? 'Update restaurant details' : 'Add a new restaurant to the platform' }}</p>
         </div>
-    </form>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form id="restaurant-form">
+                <input type="hidden" name="id" value="{{ $restaurant->id ?? '' }}" />
+                
+                <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: #475569;">Basic Information</h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Name <span style="color: #ef4444;">*</span></label>
+                        <input type="text" name="name" value="{{ $restaurant->name ?? '' }}" class="form-control" placeholder="Restaurant name" required />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Website</label>
+                        <input type="url" name="website" value="{{ $restaurant->website ?? '' }}" class="form-control" placeholder="https://example.com" />
+                    </div>
+                </div>
+                
+                <h3 style="font-size: 1rem; font-weight: 600; margin: 1.5rem 0 1rem; color: #475569;">Location</h3>
+                
+                <div class="form-group">
+                    <label class="form-label">Address <span style="color: #ef4444;">*</span></label>
+                    <input type="text" name="address" value="{{ $restaurant->address ?? '' }}" class="form-control" placeholder="Street address" required />
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">City <span style="color: #ef4444;">*</span></label>
+                        <input type="text" name="city" value="{{ $restaurant->city ?? '' }}" class="form-control" placeholder="City" required />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Region / State <span style="color: #ef4444;">*</span></label>
+                        <input type="text" name="region" value="{{ $restaurant->region ?? '' }}" class="form-control" placeholder="Region or state" required />
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Country <span style="color: #ef4444;">*</span></label>
+                        <input type="text" name="country" value="{{ $restaurant->country ?? '' }}" class="form-control" placeholder="Country" required />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Postcode <span style="color: #ef4444;">*</span></label>
+                        <input type="text" name="postcode" value="{{ $restaurant->postcode ?? '' }}" class="form-control" placeholder="ZIP / Postcode" required />
+                    </div>
+                </div>
+                
+                <h3 style="font-size: 1rem; font-weight: 600; margin: 1.5rem 0 1rem; color: #475569;">Additional Details</h3>
+                
+                <div class="form-group">
+                    <label class="form-label">Opening Hours</label>
+                    <textarea name="opening_hours" class="form-control" rows="3" placeholder="e.g., Mon-Fri: 9am-10pm, Sat-Sun: 10am-11pm">{{ $restaurant->opening_hours ?? '' }}</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Categories</label>
+                    <div id="categories-checkboxes" style="display: flex; flex-wrap: wrap; gap: 0.75rem; padding: 0.5rem 0;">
+                        <span class="text-muted">Loading categories...</span>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <span>💾</span> {{ isset($restaurant) ? 'Update Restaurant' : 'Create Restaurant' }}
+                    </button>
+                    <a href="/admin/restaurants" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
 <script>
 const form = document.getElementById('restaurant-form');
-form.addEventListener('submit', async e=>{
+const existingCategoryIds = @json($restaurant->categories->pluck('id') ?? []);
+
+async function loadCategories() {
+    try {
+        const categories = await adminFetch('GET', '/admin/api/categories');
+        const container = document.getElementById('categories-checkboxes');
+        
+        if (!categories || !categories.length) {
+            container.innerHTML = '<span class="text-muted">No categories available. <a href="/admin/categories/create" style="color: var(--primary);">Create one</a></span>';
+            return;
+        }
+        
+        container.innerHTML = categories.map(c => `
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                <input type="checkbox" name="category_ids" value="${c.id}" ${existingCategoryIds.includes(c.id) ? 'checked' : ''} style="accent-color: var(--primary);">
+                <span>${c.name}</span>
+            </label>
+        `).join('');
+    } catch (e) {
+        document.getElementById('categories-checkboxes').innerHTML = '<span style="color: #ef4444;">Failed to load categories</span>';
+    }
+}
+
+form.addEventListener('submit', async e => {
     e.preventDefault();
+    
     const id = form.id.value;
-    const payload = { name: form.name.value.trim(), address: form.address.value.trim(), website: form.website.value.trim() };
-    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    try{
-        if(id){
-            await fetch('/admin/api/restaurants/'+id, {method:'PUT', credentials:'same-origin', headers:{'Content-Type':'application/json','X-CSRF-TOKEN':token}, body:JSON.stringify(payload)});
+    const categoryCheckboxes = form.querySelectorAll('input[name="category_ids"]:checked');
+    const categoryIds = Array.from(categoryCheckboxes).map(cb => parseInt(cb.value));
+    
+    const payload = {
+        name: form.name.value.trim(),
+        address: form.address.value.trim(),
+        city: form.city.value.trim(),
+        region: form.region.value.trim(),
+        country: form.country.value.trim(),
+        postcode: form.postcode.value.trim(),
+        website: form.website.value.trim() || null,
+        opening_hours: form.opening_hours.value.trim() || null,
+        category_ids: categoryIds
+    };
+    
+    // Validate required fields
+    const required = ['name', 'address', 'city', 'region', 'country', 'postcode'];
+    for (const field of required) {
+        if (!payload[field]) {
+            alert(`${field.charAt(0).toUpperCase() + field.slice(1).replace('_', ' ')} is required`);
+            return;
+        }
+    }
+    
+    try {
+        if (id) {
+            await adminFetch('PUT', '/admin/api/restaurants/' + id, payload);
         } else {
-            await fetch('/admin/api/restaurants', {method:'POST', credentials:'same-origin', headers:{'Content-Type':'application/json','X-CSRF-TOKEN':token}, body:JSON.stringify(payload)});
+            await adminFetch('POST', '/admin/api/restaurants', payload);
         }
         location.href = '/admin/restaurants';
-    }catch(err){ alert('Save failed'); }
+    } catch (err) {
+        alert('Save failed: ' + err.message);
+    }
 });
+
+loadCategories();
 </script>
 @endpush

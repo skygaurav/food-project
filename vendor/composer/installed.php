@@ -3,7 +3,7 @@
         'name' => 'skygaurav/food-project',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '1062e229376532961676b8f90280babf757d1a2d',
+        'reference' => '877cb5b7afa60703eefeb0ea933b77eae418fbe9',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -527,7 +527,7 @@
         'skygaurav/food-project' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '1062e229376532961676b8f90280babf757d1a2d',
+            'reference' => '877cb5b7afa60703eefeb0ea933b77eae418fbe9',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

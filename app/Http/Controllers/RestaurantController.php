@@ -18,4 +18,15 @@ class RestaurantController extends Controller
 
         return response()->json($restaurants);
     }
+
+    public function show(Restaurant $restaurant): JsonResponse
+    {
+        $restaurant->load([
+            'categories',
+            'images',
+            'dishes' => fn($query) => $query->with('images')->where('status', 'approved')
+        ]);
+
+        return response()->json($restaurant);
+    }
 }

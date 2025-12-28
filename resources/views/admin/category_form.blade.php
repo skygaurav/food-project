@@ -3,37 +3,91 @@
 @section('title', isset($category) ? 'Edit Category' : 'New Category')
 
 @section('content')
-    <h2 class="text-2xl font-semibold mb-4">{{ isset($category) ? 'Edit' : 'Create' }} Category</h2>
+    <div class="breadcrumb">
+        <a href="/admin">Dashboard</a>
+        <span>›</span>
+        <a href="/admin/categories">Categories</a>
+        <span>›</span>
+        <span>{{ isset($category) ? 'Edit' : 'New' }}</span>
+    </div>
 
-    <form id="category-form" class="space-y-4">
-        <input type="hidden" name="id" value="{{ $category->id ?? '' }}" />
-        <label class="block">
-            <div class="text-sm font-medium">Name</div>
-            <input name="name" value="{{ $category->name ?? '' }}" class="rounded border px-3 py-2 w-full" />
-        </label>
+    <div class="page-header">
         <div>
-            <button type="submit" class="rounded border px-4 py-2">Save</button>
-            <a href="/admin/categories" class="ml-2">Cancel</a>
+            <h1 class="page-title">{{ isset($category) ? 'Edit Category' : 'Create New Category' }}</h1>
+            <p class="page-subtitle">{{ isset($category) ? 'Update category details' : 'Add a new food category' }}</p>
         </div>
-    </form>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form id="category-form">
+                <input type="hidden" name="id" value="{{ $category->id ?? '' }}" />
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Name <span style="color: #ef4444;">*</span></label>
+                        <input type="text" name="name" value="{{ $category->name ?? '' }}" class="form-control" placeholder="e.g., Italian, Mexican, Asian" required />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Slug</label>
+                        <input type="text" name="slug" value="{{ $category->slug ?? '' }}" class="form-control" placeholder="auto-generated from name" />
+                        <small class="text-muted text-sm">Leave empty to auto-generate from name</small>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <span>💾</span> {{ isset($category) ? 'Update Category' : 'Create Category' }}
+                    </button>
+                    <a href="/admin/categories" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
 <script>
 const form = document.getElementById('category-form');
-form.addEventListener('submit', async e=>{
+
+// Auto-generate slug from name
+form.name.addEventListener('input', () => {
+    if (!form.id.value && !form.slug.dataset.manual) {
+        form.slug.value = form.name.value
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-|-$/g, '');
+    }
+});
+
+form.slug.addEventListener('input', () => {
+    form.slug.dataset.manual = 'true';
+});
+
+form.addEventListener('submit', async e => {
     e.preventDefault();
     const id = form.id.value;
-    const payload = { name: form.name.value.trim() };
-    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-    try{
-        if(id){
-            await fetch('/admin/api/categories/'+id, {method:'PUT', credentials:'same-origin', headers:{'Content-Type':'application/json','X-CSRF-TOKEN':token}, body:JSON.stringify(payload)});
+    const payload = {
+        name: form.name.value.trim(),
+        slug: form.slug.value.trim() || form.name.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+    };
+    
+    if (!payload.name) {
+        alert('Name is required');
+        return;
+    }
+    
+    try {
+        if (id) {
+            await adminFetch('PUT', '/admin/api/categories/' + id, payload);
         } else {
-            await fetch('/admin/api/categories', {method:'POST', credentials:'same-origin', headers:{'Content-Type':'application/json','X-CSRF-TOKEN':token}, body:JSON.stringify(payload)});
+            await adminFetch('POST', '/admin/api/categories', payload);
         }
         location.href = '/admin/categories';
-    }catch(err){ alert('Save failed'); }
+    } catch (err) {
+        alert('Save failed: ' + err.message);
+    }
 });
 </script>
 @endpush

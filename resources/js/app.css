@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   color: #0f172a;
   font-family: 'Georgia', serif;
@@ -19,34 +23,6 @@ a {
 
 img {
   display: block;
-}
-
-.bg-black {
-  background-color: #000000;
-}
-
-.bg-white {
-  background-color: #ffffff;
-}
-
-.bg-slate-200 {
-  background-color: #e2e8f0;
-}
-
-.text-white {
-  color: #ffffff;
-}
-
-.text-slate-900 {
-  color: #0f172a;
-}
-
-.text-slate-600 {
-  color: #475569;
-}
-
-.text-slate-800 {
-  color: #1e293b;
 }
 
 .text-slate-500 {

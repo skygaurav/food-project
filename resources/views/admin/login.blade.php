@@ -3,57 +3,181 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Admin Login</title>
-    <link rel="stylesheet" href="/app.css">
+    <title>Admin Login — FOODCITA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #eb5202;
+            --primary-dark: #c94400;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+        }
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .login-logo {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .login-title {
+            color: #fff;
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+        .login-subtitle {
+            color: #94a3b8;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+        .login-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .login-card h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 0.5rem;
+        }
+        .login-card p {
+            color: #64748b;
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+        }
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #334155;
+            margin-bottom: 0.5rem;
+        }
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(235, 82, 2, 0.15);
+        }
+        .form-control::placeholder {
+            color: #94a3b8;
+        }
+        .btn-login {
+            width: 100%;
+            padding: 0.875rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+            background: var(--primary);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.15s;
+            margin-top: 0.5rem;
+        }
+        .btn-login:hover {
+            background: var(--primary-dark);
+        }
+        .error-box {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            margin-bottom: 1.25rem;
+        }
+        .login-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #94a3b8;
+            font-size: 0.75rem;
+        }
+        .login-footer a {
+            color: #fff;
+            text-decoration: none;
+        }
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
-<body class="font-serif bg-white text-slate-900">
-    <div class="min-h-screen bg-white">
-        <header class="bg-black py-6 text-center text-white">
-            <h1 class="text-3xl font-semibold tracking-wide">FOODCITA ADMIN</h1>
-        </header>
-        <main class="mx-auto w-full max-w-3xl px-6 pb-16 pt-10">
-            <div class="rounded border border-slate-200 bg-white p-6 shadow-sm">
-                <h2 class="text-2xl font-semibold text-center">Administrator Login</h2>
-                <p class="mt-2 text-center text-slate-600">
-                    Use your admin username and password to manage restaurants, categories, and dish approvals.
-                </p>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <div class="login-logo">🍽️</div>
+            <h1 class="login-title">FOODCITA</h1>
+            <p class="login-subtitle">Admin Control Panel</p>
+        </div>
+        
+        <div class="login-card">
+            <h2>Welcome back</h2>
+            <p>Sign in to manage restaurants, categories, and dish approvals.</p>
 
-                @if ($errors->any())
-                    <div class="mt-4 rounded border border-slate-400 bg-white p-4 text-sm text-slate-900">
-                        <p>{{ $errors->first() }}</p>
-                    </div>
-                @endif
+            @if ($errors->any())
+                <div class="error-box">
+                    {{ $errors->first() }}
+                </div>
+            @endif
 
-                <form method="POST" action="{{ url('/admin/login') }}" class="mt-6 space-y-6">
-                    @csrf
-                    <label class="flex flex-col gap-2">
-                        <span class="text-sm font-semibold">Username</span>
-                        <input
-                            class="rounded border border-slate-300 px-3 py-2"
-                            name="username"
-                            value="{{ old('username') }}"
-                            placeholder="admin"
-                            required
-                        />
-                    </label>
+            <form method="POST" action="{{ url('/admin/login') }}">
+                @csrf
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input
+                        class="form-control"
+                        name="username"
+                        value="{{ old('username') }}"
+                        placeholder="Enter your username"
+                        required
+                        autocomplete="username"
+                    />
+                </div>
 
-                    <label class="flex flex-col gap-2">
-                        <span class="text-sm font-semibold">Password</span>
-                        <input
-                            type="password"
-                            class="rounded border border-slate-300 px-3 py-2"
-                            name="password"
-                            placeholder="••••••••"
-                            required
-                        />
-                    </label>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input
+                        type="password"
+                        class="form-control"
+                        name="password"
+                        placeholder="Enter your password"
+                        required
+                        autocomplete="current-password"
+                    />
+                </div>
 
-                    <button type="submit" class="w-full rounded border border-slate-500 px-6 py-3 text-lg">
-                        Sign in
-                    </button>
-                </form>
-            </div>
-        </main>
+                <button type="submit" class="btn-login">
+                    Sign In
+                </button>
+            </form>
+        </div>
+        
+        <div class="login-footer">
+            <a href="/">← Back to website</a>
+        </div>
     </div>
 </body>
 </html>

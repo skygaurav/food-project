@@ -23,7 +23,9 @@ Route::get('/admin/restaurants/{restaurant}/edit', [AdminPagesController::class,
 Route::get('/admin/restaurants/{restaurant}/dishes', [AdminPagesController::class, 'restaurantDishes']);
 Route::get('/admin/categories/create', [AdminPagesController::class, 'categoryForm']);
 Route::get('/admin/categories/{category}/edit', [AdminPagesController::class, 'categoryForm']);
+Route::get('/admin/dishes', [AdminPagesController::class, 'dishes']);
 Route::get('/admin/disapprovals', [AdminPagesController::class, 'disapprovals']);
+Route::get('/admin/settings', [AdminPagesController::class, 'settings']);
 
 // Admin web API (session based)
 Route::prefix('admin/api')->middleware(['web','admin.auth'])->group(function (): void {
@@ -41,7 +43,22 @@ Route::prefix('admin/api')->middleware(['web','admin.auth'])->group(function ():
 	Route::get('settings', [\App\Http\Controllers\Admin\AdminSettingController::class, 'get']);
 	Route::post('settings', [\App\Http\Controllers\Admin\AdminSettingController::class, 'save']);
 
+	// All dishes
+	Route::get('dishes', [\App\Http\Controllers\Admin\DishApprovalController::class, 'all']);
 	Route::get('dishes/pending', [\App\Http\Controllers\Admin\DishApprovalController::class, 'index']);
 	Route::post('dishes/{dish}/approve', [\App\Http\Controllers\Admin\DishApprovalController::class, 'approve']);
 	Route::post('dishes/{dish}/disapprove', [\App\Http\Controllers\Admin\DishApprovalController::class, 'disapprove']);
+});
+
+Route::get('/admin/spa', function () {
+    return view('admin.spa');
+})->middleware(['web', 'admin.auth']);
+
+// Public API for frontend
+Route::prefix('api')->group(function (): void {
+    Route::get('dishes', [\App\Http\Controllers\DishController::class, 'index']);
+    Route::get('dishes/{dish}', [\App\Http\Controllers\DishController::class, 'show']);
+    Route::get('restaurants', [\App\Http\Controllers\RestaurantController::class, 'index']);
+    Route::get('restaurants/{restaurant}', [\App\Http\Controllers\RestaurantController::class, 'show']);
+    Route::get('categories', [\App\Http\Controllers\Admin\CategoryController::class, 'index']);
 });
