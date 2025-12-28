@@ -1,0 +1,44 @@
+#!/bin/bash
+set -euo pipefail
+
+url="${DDEV_PRIMARY_URL:-}"
+
+if [ -z "${url}" ]; then
+  url="$(
+    ddev describe -j | python - <<'PY'
+import json
+import sys
+
+def find_primary_url(data):
+    if isinstance(data, dict):
+        if "primary_url" in data:
+            return data["primary_url"]
+        for value in data.values():
+            found = find_primary_url(value)
+            if found:
+                return found
+    elif isinstance(data, list):
+        for item in data:
+            found = find_primary_url(item)
+            if found:
+                return found
+    return None
+
+payload = json.load(sys.stdin)
+primary_url = find_primary_url(payload)
+if not primary_url:
+    sys.exit("Unable to determine primary URL from ddev describe -j output.")
+print(primary_url)
+PY
+  )"
+fi
+
+if command -v xdg-open >/dev/null 2>&1; then
+  xdg-open "${url}"
+elif command -v open >/dev/null 2>&1; then
+  open "${url}"
+elif command -v wslview >/dev/null 2>&1; then
+  wslview "${url}"
+else
+  echo "Open ${url} in your browser."
+fi
