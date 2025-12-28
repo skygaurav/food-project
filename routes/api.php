@@ -19,6 +19,7 @@ Route::prefix('admin')->middleware(['auth:web'])->group(function (): void {
 });
 
 Route::get('restaurants', [RestaurantController::class, 'index']);
+Route::get('restaurants/cities', [RestaurantController::class, 'cities']);
 Route::get('restaurants/{restaurant}', [RestaurantController::class, 'show']);
 Route::get('dishes', [DishController::class, 'index']);
 Route::get('dishes/popular', [DishController::class, 'popular']);

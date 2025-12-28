@@ -31,8 +31,14 @@ class DishController extends Controller
             ->withAvg('reviews', 'rating');
 
         if ($request->filled('category')) {
-            $query->whereHas('restaurant.categories', function ($relation) use ($request): void {
-                $relation->where('slug', $request->string('category')->toString());
+            $categoryValue = $request->string('category')->toString();
+            $query->whereHas('restaurant.categories', function ($relation) use ($categoryValue): void {
+                // Support both ID and slug
+                if (is_numeric($categoryValue)) {
+                    $relation->where('id', $categoryValue);
+                } else {
+                    $relation->where('slug', $categoryValue);
+                }
             });
         }
 
@@ -42,13 +48,33 @@ class DishController extends Controller
             });
         }
 
-        if ($request->string('sort')->toString() === 'top-reviewed') {
-            $query->orderByDesc('reviews_avg_rating');
-        } else {
-            $query->latest();
+        if ($request->filled('search')) {
+            $search = $request->string('search')->toString();
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('comment', 'like', "%{$search}%")
+                  ->orWhereHas('restaurant', fn ($r) => $r->where('name', 'like', "%{$search}%"));
+            });
         }
 
-        return response()->json($query->paginate(12));
+        $sort = $request->string('sort')->toString();
+        switch ($sort) {
+            case 'popular':
+                $query->orderByDesc('likes_count');
+                break;
+            case 'rating':
+            case 'top-reviewed':
+                $query->orderByDesc('reviews_avg_rating');
+                break;
+            case 'name':
+                $query->orderBy('name');
+                break;
+            default:
+                $query->latest();
+        }
+
+        $perPage = $request->integer('per_page', 12);
+        return response()->json($query->paginate($perPage));
     }
 
     /**

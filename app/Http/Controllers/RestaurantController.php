@@ -18,7 +18,23 @@ class RestaurantController extends Controller
             ->orderBy('name')
             ->get();
 
-        return response()->json($restaurants);
+        return response()->json(['data' => $restaurants]);
+    }
+
+    /**
+     * Get list of cities with approved restaurants
+     */
+    public function cities(): JsonResponse
+    {
+        $cities = Restaurant::query()
+            ->where('is_approved', true)
+            ->whereNotNull('city')
+            ->where('city', '!=', '')
+            ->distinct()
+            ->orderBy('city')
+            ->pluck('city');
+
+        return response()->json(['data' => $cities]);
     }
 
     /**

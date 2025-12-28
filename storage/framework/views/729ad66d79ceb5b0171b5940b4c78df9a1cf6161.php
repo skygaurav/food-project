@@ -1,9 +1,7 @@
-@extends('layouts.frontend')
+<?php $__env->startSection('meta_title', 'All Dishes - ' . ($seoSettings['site_name'] ?? 'FOODCITA')); ?>
+<?php $__env->startSection('meta_description', 'Browse all delicious dishes from restaurants in your city. Find your next favorite meal.'); ?>
 
-@section('meta_title', 'All Dishes - ' . ($seoSettings['site_name'] ?? 'FOODCITA'))
-@section('meta_description', 'Browse all delicious dishes from restaurants in your city. Find your next favorite meal.')
-
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <style>
     .dishes-hero {
         text-align: center;
@@ -291,9 +289,9 @@
         }
     }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;">
     <!-- Hero Section -->
     <div class="dishes-hero">
@@ -329,12 +327,6 @@
                 </select>
             </div>
             <div class="filter-group">
-                <label for="city">City</label>
-                <select id="city">
-                    <option value="">All Cities</option>
-                </select>
-            </div>
-            <div class="filter-group">
                 <label for="sort">Sort By</label>
                 <select id="sort">
                     <option value="latest">Latest</option>
@@ -364,9 +356,9 @@
     <!-- Pagination -->
     <div id="pagination" class="pagination-container" style="display: none;"></div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     let currentPage = 1;
@@ -378,7 +370,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const emptyState = document.getElementById('empty-state');
     const pagination = document.getElementById('pagination');
     const categorySelect = document.getElementById('category');
-    const citySelect = document.getElementById('city');
     const sortSelect = document.getElementById('sort');
     const searchInput = document.getElementById('search');
     
@@ -401,23 +392,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Load cities
-    async function loadCities() {
-        try {
-            const response = await fetch('/api/restaurants/cities');
-            const data = await response.json();
-            
-            data.data.forEach(city => {
-                const option = document.createElement('option');
-                option.value = city;
-                option.textContent = city;
-                citySelect.appendChild(option);
-            });
-        } catch (error) {
-            console.error('Error loading cities:', error);
-        }
-    }
-    
     // Load dishes
     async function loadDishes(page = 1) {
         loader.style.display = 'block';
@@ -427,13 +401,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         try {
             const category = categorySelect.value;
-            const city = citySelect.value;
             const sort = sortSelect.value;
             const search = searchInput.value;
             
             let url = `/api/dishes?page=${page}&per_page=12`;
             if (category) url += `&category=${category}`;
-            if (city) url += `&city=${encodeURIComponent(city)}`;
             if (sort) url += `&sort=${sort}`;
             if (search) url += `&search=${encodeURIComponent(search)}`;
             
@@ -448,7 +420,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Update stats
-            document.getElementById('total-dishes').textContent = data.total || data.data.length;
+            document.getElementById('total-dishes').textContent = data.meta.total;
             
             // Render dishes
             grid.innerHTML = '';
@@ -459,8 +431,8 @@ document.addEventListener('DOMContentLoaded', function() {
             grid.style.display = 'grid';
             
             // Update pagination
-            currentPage = data.current_page || 1;
-            totalPages = data.last_page || 1;
+            currentPage = data.meta.current_page;
+            totalPages = data.meta.last_page;
             renderPagination();
             
         } catch (error) {
@@ -583,7 +555,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Event listeners
     categorySelect.addEventListener('change', () => loadDishes(1));
-    citySelect.addEventListener('change', () => loadDishes(1));
     sortSelect.addEventListener('change', () => loadDishes(1));
     searchInput.addEventListener('input', () => {
         clearTimeout(searchTimeout);
@@ -592,9 +563,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initial load
     loadCategories();
-    loadCities();
     loadRestaurantCount();
     loadDishes();
 });
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('layouts.frontend', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /workspaces/food-project/resources/views/dishes.blade.php ENDPATH**/ ?>
