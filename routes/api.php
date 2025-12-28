@@ -21,6 +21,7 @@ Route::prefix('admin')->middleware(['auth:sanctum'])->group(function (): void {
 Route::get('restaurants', [RestaurantController::class, 'index']);
 Route::get('restaurants/{restaurant}', [RestaurantController::class, 'show']);
 Route::get('dishes', [DishController::class, 'index']);
+Route::get('dishes/popular', [DishController::class, 'popular']);
 Route::get('dishes/{dish:slug}', [DishController::class, 'show']);
 
 Route::middleware(['auth:sanctum'])->group(function (): void {

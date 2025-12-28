@@ -542,6 +542,7 @@
             
             <nav class="nav-links">
                 <a href="/">Home</a>
+                <a href="/popular">🔥 Popular</a>
                 <a href="/#dishes">Dishes</a>
                 <a href="/#categories">Categories</a>
             </nav>
@@ -584,7 +585,8 @@
                     <h4>Explore</h4>
                     <ul>
                         <li><a href="/">Home</a></li>
-                        <li><a href="/#dishes">Popular Dishes</a></li>
+                        <li><a href="/popular">🔥 Popular Dishes</a></li>
+                        <li><a href="/#dishes">All Dishes</a></li>
                         <li><a href="/#categories">Categories</a></li>
                         <li><a href="/upload">Upload a Dish</a></li>
                     </ul>

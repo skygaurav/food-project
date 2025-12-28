@@ -51,6 +51,44 @@ class DishController extends Controller
     }
 
     /**
+     * Get popular dishes sorted by likes and reviews.
+     */
+    public function popular(Request $request): JsonResponse
+    {
+        $perPage = $request->integer('per_page', 12);
+        
+        $query = Dish::query()
+            ->with(['restaurant.categories', 'images'])
+            ->where('status', 'approved')
+            ->withCount([
+                'reviews as reviews_count',
+                'reactions as likes_count' => fn ($relation) => $relation->where('type', 'like'),
+                'reactions as dislikes_count' => fn ($relation) => $relation->where('type', 'dislike'),
+            ])
+            ->withAvg('reviews', 'rating');
+
+        // Filter by category if provided
+        if ($request->filled('category')) {
+            $query->whereHas('restaurant.categories', function ($relation) use ($request): void {
+                $relation->where('slug', $request->string('category')->toString());
+            });
+        }
+
+        // Filter by city if provided
+        if ($request->filled('city')) {
+            $query->whereHas('restaurant', function ($relation) use ($request): void {
+                $relation->where('city', $request->string('city')->toString());
+            });
+        }
+
+        // Sort by popularity score (likes + reviews count + average rating)
+        // Using raw expression to create a popularity score
+        $query->orderByRaw('(COALESCE(likes_count, 0) * 2 + COALESCE(reviews_count, 0) + COALESCE(reviews_avg_rating, 0)) DESC');
+
+        return response()->json($query->paginate($perPage));
+    }
+
+    /**
      * Get current user's dishes (all statuses).
      */
     public function myDishes(Request $request): JsonResponse

@@ -19,11 +19,19 @@ class RouteServiceProvider extends ServiceProvider
 
     protected function loadRoutes(): void
     {
-        $routesPath = base_path('routes/web.php');
-        if (file_exists($routesPath)) {
+        $webRoutesPath = base_path('routes/web.php');
+        if (file_exists($webRoutesPath)) {
             // Load web routes within the 'web' middleware so session/cookie middleware runs
-            Route::middleware('web')->group(function () use ($routesPath) {
-                require $routesPath;
+            Route::middleware('web')->group(function () use ($webRoutesPath) {
+                require $webRoutesPath;
+            });
+        }
+        
+        $apiRoutesPath = base_path('routes/api.php');
+        if (file_exists($apiRoutesPath)) {
+            // Load api routes with 'api' prefix and 'api' middleware
+            Route::prefix('api')->middleware('api')->group(function () use ($apiRoutesPath) {
+                require $apiRoutesPath;
             });
         }
     }
