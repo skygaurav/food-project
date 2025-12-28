@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="/app.css">
 </head>
 <body class="font-serif text-slate-900 bg-white">
-    <div>
+    <div id="frontend-upload">
         <header class="bg-black py-6 text-center text-white">
             <a href="/" class="text-3xl font-semibold tracking-wide">FOODCITA</a>
         </header>
@@ -26,20 +26,24 @@
                     <div class="mx-auto mt-6 max-w-xl space-y-6 text-left">
                         <label class="flex flex-col gap-2">
                             <span class="text-sm font-semibold">What Restaurant Are You At?</span>
-                            <input class="rounded border border-slate-300 px-3 py-2" value="Kumar's Indian Grill" />
+                            <select class="rounded border border-slate-300 px-3 py-2" v-model="selectedRestaurantId">
+                                <option v-for="restaurant in restaurants" :key="restaurant.id" :value="restaurant.id">
+                                    {{ restaurant.name }}
+                                </option>
+                            </select>
                         </label>
 
                         <div class="space-y-2 text-sm text-slate-600">
                             <p>Please review the following information we found to see if it is accurate:</p>
                             <div class="text-slate-900">
-                                <p class="font-semibold">Kumar's Indian Grill</p>
-                                <p>123 Street Name</p>
-                                <p>Portland, OR 97025</p>
-                                <p>XXX-XXX-XXXX</p>
-                                <p>www.XXXX.com</p>
-                                <p>Cuisine Type: Indian</p>
-                                <p>Reservations: Yes</p>
-                                <p>Good Date Spot: Yes</p>
+                                <p class="font-semibold">{{ selectedRestaurant.name }}</p>
+                                <p>{{ selectedRestaurant.address }}</p>
+                                <p>{{ selectedRestaurant.city }}, {{ selectedRestaurant.region }} {{ selectedRestaurant.postcode }}</p>
+                                <p>{{ selectedRestaurant.phone }}</p>
+                                <p>{{ selectedRestaurant.website }}</p>
+                                <p>Cuisine Type: {{ selectedRestaurant.cuisine }}</p>
+                                <p>Reservations: {{ selectedRestaurant.reservations }}</p>
+                                <p>Good Date Spot: {{ selectedRestaurant.dateSpot }}</p>
                             </div>
                         </div>
 
@@ -56,5 +60,51 @@
             </section>
         </main>
     </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    selectedRestaurantId: 1,
+                    restaurants: [
+                        {
+                            id: 1,
+                            name: \"Kumar's Indian Grill\",
+                            address: '123 Street Name',
+                            city: 'Portland',
+                            region: 'OR',
+                            postcode: '97025',
+                            phone: 'XXX-XXX-XXXX',
+                            website: 'www.XXXX.com',
+                            cuisine: 'Indian',
+                            reservations: 'Yes',
+                            dateSpot: 'Yes',
+                        },
+                        {
+                            id: 2,
+                            name: 'Violet & Co.',
+                            address: '45 Main Road',
+                            city: 'Austin',
+                            region: 'TX',
+                            postcode: '73301',
+                            phone: 'XXX-XXX-XXXX',
+                            website: 'www.violetco.com',
+                            cuisine: 'American',
+                            reservations: 'No',
+                            dateSpot: 'Yes',
+                        },
+                    ],
+                };
+            },
+            computed: {
+                selectedRestaurant() {
+                    return this.restaurants.find((restaurant) => restaurant.id === this.selectedRestaurantId);
+                },
+            },
+        }).mount('#frontend-upload');
+    </script>
 </body>
 </html>

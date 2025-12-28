@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="/app.css">
 </head>
 <body class="font-serif text-slate-900 bg-white">
-    <div>
+    <div id="frontend-home">
         <header class="bg-black py-6 text-center text-white">
             <a href="/" class="text-3xl font-semibold tracking-wide">FOODCITA</a>
         </header>
@@ -30,11 +30,7 @@
                             <span class="text-sm font-semibold">Category</span>
                             <select class="rounded border border-slate-300 px-3 py-2">
                                 <option>All</option>
-                                <option>American</option>
-                                <option>Asian</option>
-                                <option>Mexican</option>
-                                <option>Italian</option>
-                                <option>Mediterranean</option>
+                                <option v-for="category in categories" :key="category">{{ category }}</option>
                             </select>
                         </label>
                         <label class="flex flex-col gap-2 text-left">
@@ -58,104 +54,23 @@
                 </div>
 
                 <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    <article class="overflow-hidden rounded border border-slate-200 bg-white shadow-sm">
-                        <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80" alt="Chili Garlic Ramen" class="h-48 w-full object-cover" />
+                    <article
+                        v-for="dish in dishes"
+                        :key="dish.id"
+                        class="overflow-hidden rounded border border-slate-200 bg-white shadow-sm"
+                    >
+                        <img :src="dish.image" :alt="dish.name" class="h-48 w-full object-cover" />
                         <div class="space-y-2 p-4">
                             <div class="flex items-center justify-between">
-                                <h3 class="text-lg font-semibold">Chili Garlic Ramen</h3>
-                                <span class="text-sm text-slate-500">Portland</span>
+                                <h3 class="text-lg font-semibold">{{ dish.name }}</h3>
+                                <span class="text-sm text-slate-500">{{ dish.city }}</span>
                             </div>
-                            <p class="text-sm text-slate-600">Kumar's Indian Grill</p>
+                            <p class="text-sm text-slate-600">{{ dish.restaurant }}</p>
                             <div class="flex items-center justify-between text-sm">
-                                <span class="font-medium">⭐ 4.8</span>
-                                <span class="text-slate-500">164 likes</span>
+                                <span class="font-medium">⭐ {{ dish.rating }}</span>
+                                <span class="text-slate-500">{{ dish.likes }} likes</span>
                             </div>
-                            <a class="inline-flex items-center text-sm font-semibold text-slate-800 underline" href="/dishes/1">
-                                View dish
-                            </a>
-                        </div>
-                    </article>
-                    <article class="overflow-hidden rounded border border-slate-200 bg-white shadow-sm">
-                        <img src="https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=600&q=80" alt="Truffle Carbonara" class="h-48 w-full object-cover" />
-                        <div class="space-y-2 p-4">
-                            <div class="flex items-center justify-between">
-                                <h3 class="text-lg font-semibold">Truffle Carbonara</h3>
-                                <span class="text-sm text-slate-500">Austin</span>
-                            </div>
-                            <p class="text-sm text-slate-600">Violet &amp; Co.</p>
-                            <div class="flex items-center justify-between text-sm">
-                                <span class="font-medium">⭐ 4.6</span>
-                                <span class="text-slate-500">130 likes</span>
-                            </div>
-                            <a class="inline-flex items-center text-sm font-semibold text-slate-800 underline" href="/dishes/1">
-                                View dish
-                            </a>
-                        </div>
-                    </article>
-                    <article class="overflow-hidden rounded border border-slate-200 bg-white shadow-sm">
-                        <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=600&q=80" alt="Smoky Birria Tacos" class="h-48 w-full object-cover" />
-                        <div class="space-y-2 p-4">
-                            <div class="flex items-center justify-between">
-                                <h3 class="text-lg font-semibold">Smoky Birria Tacos</h3>
-                                <span class="text-sm text-slate-500">Chicago</span>
-                            </div>
-                            <p class="text-sm text-slate-600">Casa Naranja</p>
-                            <div class="flex items-center justify-between text-sm">
-                                <span class="font-medium">⭐ 4.9</span>
-                                <span class="text-slate-500">212 likes</span>
-                            </div>
-                            <a class="inline-flex items-center text-sm font-semibold text-slate-800 underline" href="/dishes/1">
-                                View dish
-                            </a>
-                        </div>
-                    </article>
-                    <article class="overflow-hidden rounded border border-slate-200 bg-white shadow-sm">
-                        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80" alt="Lemon Herb Salmon" class="h-48 w-full object-cover" />
-                        <div class="space-y-2 p-4">
-                            <div class="flex items-center justify-between">
-                                <h3 class="text-lg font-semibold">Lemon Herb Salmon</h3>
-                                <span class="text-sm text-slate-500">Seattle</span>
-                            </div>
-                            <p class="text-sm text-slate-600">Coastal Table</p>
-                            <div class="flex items-center justify-between text-sm">
-                                <span class="font-medium">⭐ 4.7</span>
-                                <span class="text-slate-500">98 likes</span>
-                            </div>
-                            <a class="inline-flex items-center text-sm font-semibold text-slate-800 underline" href="/dishes/1">
-                                View dish
-                            </a>
-                        </div>
-                    </article>
-                    <article class="overflow-hidden rounded border border-slate-200 bg-white shadow-sm">
-                        <img src="https://images.unsplash.com/photo-1481391032119-d89fee407e44?auto=format&fit=crop&w=600&q=80" alt="Matcha Tart" class="h-48 w-full object-cover" />
-                        <div class="space-y-2 p-4">
-                            <div class="flex items-center justify-between">
-                                <h3 class="text-lg font-semibold">Matcha Tart</h3>
-                                <span class="text-sm text-slate-500">San Jose</span>
-                            </div>
-                            <p class="text-sm text-slate-600">Kumo Sweets</p>
-                            <div class="flex items-center justify-between text-sm">
-                                <span class="font-medium">⭐ 4.5</span>
-                                <span class="text-slate-500">74 likes</span>
-                            </div>
-                            <a class="inline-flex items-center text-sm font-semibold text-slate-800 underline" href="/dishes/1">
-                                View dish
-                            </a>
-                        </div>
-                    </article>
-                    <article class="overflow-hidden rounded border border-slate-200 bg-white shadow-sm">
-                        <img src="https://images.unsplash.com/photo-1482049016688-2d3e1b311543?auto=format&fit=crop&w=600&q=80" alt="Seared Ribeye Bowl" class="h-48 w-full object-cover" />
-                        <div class="space-y-2 p-4">
-                            <div class="flex items-center justify-between">
-                                <h3 class="text-lg font-semibold">Seared Ribeye Bowl</h3>
-                                <span class="text-sm text-slate-500">Denver</span>
-                            </div>
-                            <p class="text-sm text-slate-600">Grill Union</p>
-                            <div class="flex items-center justify-between text-sm">
-                                <span class="font-medium">⭐ 4.4</span>
-                                <span class="text-slate-500">62 likes</span>
-                            </div>
-                            <a class="inline-flex items-center text-sm font-semibold text-slate-800 underline" href="/dishes/1">
+                            <a class="inline-flex items-center text-sm font-semibold text-slate-800 underline" :href="`/dishes/${dish.id}`">
                                 View dish
                             </a>
                         </div>
@@ -164,5 +79,74 @@
             </section>
         </main>
     </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    categories: ['American', 'Asian', 'Mexican', 'Italian', 'Mediterranean'],
+                    dishes: [
+                        {
+                            id: 1,
+                            name: 'Chili Garlic Ramen',
+                            restaurant: \"Kumar's Indian Grill\",
+                            city: 'Portland',
+                            rating: 4.8,
+                            likes: 164,
+                            image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80',
+                        },
+                        {
+                            id: 2,
+                            name: 'Truffle Carbonara',
+                            restaurant: 'Violet & Co.',
+                            city: 'Austin',
+                            rating: 4.6,
+                            likes: 130,
+                            image: 'https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=600&q=80',
+                        },
+                        {
+                            id: 3,
+                            name: 'Smoky Birria Tacos',
+                            restaurant: 'Casa Naranja',
+                            city: 'Chicago',
+                            rating: 4.9,
+                            likes: 212,
+                            image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=600&q=80',
+                        },
+                        {
+                            id: 4,
+                            name: 'Lemon Herb Salmon',
+                            restaurant: 'Coastal Table',
+                            city: 'Seattle',
+                            rating: 4.7,
+                            likes: 98,
+                            image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80',
+                        },
+                        {
+                            id: 5,
+                            name: 'Matcha Tart',
+                            restaurant: 'Kumo Sweets',
+                            city: 'San Jose',
+                            rating: 4.5,
+                            likes: 74,
+                            image: 'https://images.unsplash.com/photo-1481391032119-d89fee407e44?auto=format&fit=crop&w=600&q=80',
+                        },
+                        {
+                            id: 6,
+                            name: 'Seared Ribeye Bowl',
+                            restaurant: 'Grill Union',
+                            city: 'Denver',
+                            rating: 4.4,
+                            likes: 62,
+                            image: 'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?auto=format&fit=crop&w=600&q=80',
+                        },
+                    ],
+                };
+            },
+        }).mount('#frontend-home');
+    </script>
 </body>
 </html>

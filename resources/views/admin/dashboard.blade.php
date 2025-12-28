@@ -1,29 +1,32 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="/app.css">
-</head>
-<body class="font-serif bg-white text-slate-900">
-    <div class="min-h-screen bg-white">
-        <header class="bg-black py-6 text-center text-white">
-            <h1 class="text-3xl font-semibold tracking-wide">FOODCITA ADMIN</h1>
-        </header>
-@extends('admin.layout')
+@php($title = 'Admin Dashboard')
 
-@section('title','Dashboard')
-
-@section('content')
-    <h2 class="text-2xl font-semibold mb-2">Welcome back</h2>
-    <p class="text-slate-600 mb-4">You are signed in as an admin. Use the links to manage restaurants, categories, and approve submitted dishes.</p>
-
-    <form method="POST" action="{{ url('/admin/logout') }}">
-        @csrf
-        <button type="submit" class="rounded border border-slate-500 px-6 py-2 text-lg">Log out</button>
-    </form>
-@endsection
+<x-admin-layout :title="$title">
+    <div class="admin-header">
+        <div>
+            <h1 class="text-2xl font-semibold">Dashboard</h1>
+            <p class="text-slate-600">Monitor the latest submissions and manage the platform.</p>
+        </div>
+        <div class="admin-toolbar">
+            <a class="rounded border border-slate-500 px-4 py-2" href="/admin/restaurants">Manage restaurants</a>
+            <a class="rounded border border-slate-500 px-4 py-2" href="/admin/dishes">Review dishes</a>
+        </div>
     </div>
-</body>
-</html>
+
+    <div class="grid gap-6 md:grid-cols-3">
+        <div class="admin-card admin-card-body space-y-2">
+            <p class="text-sm text-slate-500">Pending approvals</p>
+            <p class="text-3xl font-semibold">18</p>
+            <span class="admin-pill">Needs attention</span>
+        </div>
+        <div class="admin-card admin-card-body space-y-2">
+            <p class="text-sm text-slate-500">Active restaurants</p>
+            <p class="text-3xl font-semibold">42</p>
+            <span class="admin-pill">Updated today</span>
+        </div>
+        <div class="admin-card admin-card-body space-y-2">
+            <p class="text-sm text-slate-500">New reviews</p>
+            <p class="text-3xl font-semibold">76</p>
+            <span class="admin-pill">Last 7 days</span>
+        </div>
+    </div>
+</x-admin-layout>
