@@ -45,11 +45,7 @@ class AdminAuthController extends Controller
             return redirect('/admin/login');
         }
 
-        $categories = Category::query()->orderBy('name')->get();
-        $restaurants = Restaurant::query()->with('categories')->orderBy('name')->get();
-        $pendingDishes = Dish::query()->where('status', 'pending')->with('restaurant')->orderBy('created_at', 'desc')->get();
-
-        return view('admin.grid', compact('categories', 'restaurants', 'pendingDishes'));
+        return view('admin.dashboard');
     }
 
     public function logout(Request $request): RedirectResponse
