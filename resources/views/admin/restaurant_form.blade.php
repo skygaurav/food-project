@@ -160,7 +160,8 @@ const existingCategoryIds = @json($restaurant->categories->pluck('id') ?? []);
 
 async function loadCategories() {
     try {
-        const categories = await adminFetch('GET', '/admin/api/categories');
+        const result = await adminFetch('GET', '/admin/api/categories');
+        const categories = result?.data || result || [];
         const container = document.getElementById('categories-checkboxes');
         
         if (!categories || !categories.length) {

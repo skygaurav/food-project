@@ -196,7 +196,7 @@
 <script>
 async function loadDashboardStats() {
     try {
-        const [categories, restaurants, allDishes, pendingDishes, admins, users] = await Promise.all([
+        const [categoriesResult, restaurants, allDishes, pendingDishes, admins, users] = await Promise.all([
             adminFetch('GET', '/admin/api/categories'),
             adminFetch('GET', '/admin/api/restaurants'),
             adminFetch('GET', '/admin/api/dishes').catch(() => []),
@@ -205,6 +205,7 @@ async function loadDashboardStats() {
             adminFetch('GET', '/admin/api/users').catch(() => [])
         ]);
         
+        const categories = categoriesResult?.data || categoriesResult || [];
         document.getElementById('stat-categories').textContent = categories?.length || 0;
         document.getElementById('stat-restaurants').textContent = restaurants?.length || 0;
         document.getElementById('stat-admins').textContent = admins?.length || 0;

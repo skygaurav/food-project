@@ -828,7 +828,8 @@ async function loadEditCategories(restaurantId) {
     try {
         // Fetch all categories
         const res = await fetch('/api/categories');
-        const allCategories = await res.json();
+        const result = await res.json();
+        const allCategories = result.data || result;
         
         // Get restaurant's current categories if available
         if (restaurantId) {

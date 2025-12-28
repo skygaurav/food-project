@@ -629,7 +629,8 @@ document.addEventListener('DOMContentLoaded', function() {
     async function loadCategories() {
         try {
             const res = await fetch('/api/categories');
-            const categories = await res.json();
+            const result = await res.json();
+            const categories = result.data || result;
             
             const container = document.getElementById('categories-container');
             container.innerHTML = categories.map(cat => `

@@ -99,99 +99,7 @@
         gap: 1.5rem;
     }
     
-    .dish-card {
-        background: #fff;
-        border-radius: 16px;
-        overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-    
-    .dish-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-    }
-    
-    .dish-card-image {
-        position: relative;
-        height: 200px;
-        background: #f1f5f9;
-    }
-    
-    .dish-card-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-    
-    .dish-card-badge {
-        position: absolute;
-        top: 12px;
-        left: 12px;
-        background: var(--primary);
-        color: #fff;
-        padding: 0.35rem 0.75rem;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 600;
-    }
-    
-    .dish-card-content {
-        padding: 1.25rem;
-    }
-    
-    .dish-card-title {
-        font-family: 'Playfair Display', Georgia, serif;
-        font-size: 1.25rem;
-        font-weight: 600;
-        margin: 0 0 0.5rem 0;
-        color: var(--text-dark);
-    }
-    
-    .dish-card-title a {
-        color: inherit;
-        text-decoration: none;
-    }
-    
-    .dish-card-title a:hover {
-        color: var(--primary);
-    }
-    
-    .dish-card-restaurant {
-        font-size: 0.9rem;
-        color: var(--text-muted);
-        margin-bottom: 0.75rem;
-    }
-    
-    .dish-card-stats {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        font-size: 0.85rem;
-        color: var(--text-muted);
-    }
-    
-    .dish-card-stat {
-        display: flex;
-        align-items: center;
-        gap: 0.25rem;
-    }
-    
-    .dish-card-categories {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-top: 0.75rem;
-    }
-    
-    .category-tag {
-        background: #f1f5f9;
-        color: var(--text-muted);
-        padding: 0.25rem 0.6rem;
-        border-radius: 12px;
-        font-size: 0.75rem;
-        font-weight: 500;
-    }
+    /* Use shared dish-card styles from frontend.blade.php */
     
     .loader {
         text-align: center;
@@ -493,32 +401,25 @@ document.addEventListener('DOMContentLoaded', function() {
             const city = dish.restaurant ? dish.restaurant.city : '';
             const restaurant = dish.restaurant ? dish.restaurant.name : 'Unknown Restaurant';
             
-            // Categories from restaurant
-            const categories = dish.restaurant?.categories?.map(c => 
-                `<span class="category-tag">${c.name}</span>`
-            ).join('') || '';
-            
             return `
-                <div class="dish-card">
-                    <div class="dish-card-image">
-                        <a href="/dishes/${dish.slug}">
-                            <img src="${image}" alt="${dish.name}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'">
-                        </a>
-                        ${city ? `<span class="dish-card-badge">${city}</span>` : ''}
-                    </div>
-                    <div class="dish-card-content">
-                        <h3 class="dish-card-title">
-                            <a href="/dishes/${dish.slug}">${dish.name}</a>
-                        </h3>
-                        <p class="dish-card-restaurant">📍 ${restaurant}</p>
-                        <div class="dish-card-stats">
-                            <span class="dish-card-stat">⭐ ${rating}</span>
-                            <span class="dish-card-stat">💬 ${dish.reviews_count || 0}</span>
-                            <span class="dish-card-stat">👍 ${likes}</span>
+                <article class="dish-card">
+                    <a href="/dishes/${dish.slug}">
+                        <img src="${image}" alt="${dish.name}" class="dish-card-image" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'" />
+                    </a>
+                    <div class="dish-card-body">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.25rem;">
+                            <a href="/dishes/${dish.slug}" style="text-decoration: none; color: inherit;">
+                                <h3 class="dish-card-title">${dish.name}</h3>
+                            </a>
+                            ${city ? `<span style="font-size: 0.75rem; color: var(--text-muted); background: #f1f5f9; padding: 0.25rem 0.5rem; border-radius: 4px;">${city}</span>` : ''}
                         </div>
-                        ${categories ? `<div class="dish-card-categories">${categories}</div>` : ''}
+                        <p class="dish-card-restaurant">${restaurant}</p>
+                        <div class="dish-card-meta">
+                            <span class="dish-card-rating"><svg class="icon icon-sm icon-warning icon-filled"><use href="#icon-star-filled"></use></svg> ${rating}</span>
+                            <span class="dish-card-likes"><svg class="icon icon-sm icon-danger icon-filled"><use href="#icon-heart-filled"></use></svg> ${likes} likes</span>
+                        </div>
                     </div>
-                </div>
+                </article>
             `;
         }).join('');
         

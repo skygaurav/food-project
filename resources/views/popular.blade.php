@@ -397,7 +397,8 @@ document.addEventListener('DOMContentLoaded', function() {
     async function loadCategories() {
         try {
             const res = await fetch('/api/categories');
-            categories = await res.json();
+            const result = await res.json();
+            categories = result.data || result;
             
             filterCategory.innerHTML = '<option value="">All Categories</option>';
             categories.forEach(cat => {

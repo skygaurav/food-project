@@ -217,7 +217,8 @@ window.deleteCategory = async function(id) {
 
 async function loadCategories() {
     try {
-        allData = await adminFetch('GET', '/admin/api/categories') || [];
+        const result = await adminFetch('GET', '/admin/api/categories') || [];
+        allData = result.data || result;
         filteredData = [...allData];
         sortData();
         render();

@@ -350,7 +350,8 @@ document.addEventListener('DOMContentLoaded', function() {
     async function loadCategories() {
         try {
             const res = await fetch('/api/categories');
-            categories = await res.json();
+            const result = await res.json();
+            categories = result.data || result;
             
             filterCategory.innerHTML = '<option value="">All Categories</option>';
             categories.forEach(cat => {
@@ -668,7 +669,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         try {
             const res = await fetch('/api/categories');
-            const cats = await res.json();
+            const result = await res.json();
+            const cats = result.data || result;
             
             if (cats.length === 0) {
                 categoriesGrid.innerHTML = '<p style="color: var(--text-muted);">No categories available</p>';
