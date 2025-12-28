@@ -80,6 +80,37 @@
                     <small class="text-muted">Comma-separated keywords</small>
                 </div>
                 
+                <h3 style="font-size: 1rem; font-weight: 600; margin: 1.5rem 0 1rem; color: #475569; border-top: 1px solid #e2e8f0; padding-top: 1.5rem;">
+                    <svg class="icon icon-sm" style="margin-right: 0.5rem;"><use href="#icon-globe"></use></svg>
+                    Social Media Links
+                </h3>
+                <p class="text-muted" style="font-size: 0.85rem; margin-bottom: 1rem;">Add your social media profile URLs. Leave empty to hide the link in the footer.</p>
+                
+                <div class="form-group">
+                    <label class="form-label">Facebook URL</label>
+                    <input type="url" name="social_facebook" class="form-control" placeholder="https://facebook.com/yourpage" />
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Instagram URL</label>
+                    <input type="url" name="social_instagram" class="form-control" placeholder="https://instagram.com/yourprofile" />
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Twitter / X URL</label>
+                    <input type="url" name="social_twitter" class="form-control" placeholder="https://twitter.com/yourhandle" />
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">YouTube URL</label>
+                    <input type="url" name="social_youtube" class="form-control" placeholder="https://youtube.com/@yourchannel" />
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">TikTok URL</label>
+                    <input type="url" name="social_tiktok" class="form-control" placeholder="https://tiktok.com/@yourprofile" />
+                </div>
+                
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">
                         <svg class="icon"><use href="#icon-save"></use></svg> Save Settings
@@ -119,6 +150,11 @@ async function loadSettings() {
             if (settings.meta_keywords) form.meta_keywords.value = settings.meta_keywords;
             if (settings.image_width) form.image_width.value = settings.image_width;
             if (settings.image_height) form.image_height.value = settings.image_height;
+            if (settings.social_facebook) form.social_facebook.value = settings.social_facebook;
+            if (settings.social_instagram) form.social_instagram.value = settings.social_instagram;
+            if (settings.social_twitter) form.social_twitter.value = settings.social_twitter;
+            if (settings.social_youtube) form.social_youtube.value = settings.social_youtube;
+            if (settings.social_tiktok) form.social_tiktok.value = settings.social_tiktok;
         }
     } catch (e) {
         // Ignore - settings may not exist yet
@@ -135,7 +171,12 @@ form.addEventListener('submit', async e => {
         meta_description: form.meta_description.value.trim(),
         meta_keywords: form.meta_keywords.value.trim(),
         image_width: form.image_width.value ? parseInt(form.image_width.value) : null,
-        image_height: form.image_height.value ? parseInt(form.image_height.value) : null
+        image_height: form.image_height.value ? parseInt(form.image_height.value) : null,
+        social_facebook: form.social_facebook.value.trim() || null,
+        social_instagram: form.social_instagram.value.trim() || null,
+        social_twitter: form.social_twitter.value.trim() || null,
+        social_youtube: form.social_youtube.value.trim() || null,
+        social_tiktok: form.social_tiktok.value.trim() || null
     };
     
     try {

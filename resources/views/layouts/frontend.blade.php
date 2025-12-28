@@ -600,20 +600,40 @@
                 <div class="footer-section">
                     <h4>Connect</h4>
                     <ul>
-                        <li><a href="#"><svg class="icon icon-sm"><use href="#icon-globe"></use></svg> Facebook</a></li>
-                        <li><a href="#"><svg class="icon icon-sm"><use href="#icon-camera"></use></svg> Instagram</a></li>
-                        <li><a href="#"><svg class="icon icon-sm"><use href="#icon-comment"></use></svg> Twitter</a></li>
-                        <li><a href="#"><svg class="icon icon-sm"><use href="#icon-external-link"></use></svg> Newsletter</a></li>
+                        @if($seoSettings['social_facebook'] ?? null)
+                        <li><a href="{{ $seoSettings['social_facebook'] }}" target="_blank" rel="noopener"><svg class="icon icon-sm"><use href="#icon-globe"></use></svg> Facebook</a></li>
+                        @endif
+                        @if($seoSettings['social_instagram'] ?? null)
+                        <li><a href="{{ $seoSettings['social_instagram'] }}" target="_blank" rel="noopener"><svg class="icon icon-sm"><use href="#icon-camera"></use></svg> Instagram</a></li>
+                        @endif
+                        @if($seoSettings['social_twitter'] ?? null)
+                        <li><a href="{{ $seoSettings['social_twitter'] }}" target="_blank" rel="noopener"><svg class="icon icon-sm"><use href="#icon-comment"></use></svg> Twitter / X</a></li>
+                        @endif
+                        @if($seoSettings['social_youtube'] ?? null)
+                        <li><a href="{{ $seoSettings['social_youtube'] }}" target="_blank" rel="noopener"><svg class="icon icon-sm"><use href="#icon-external-link"></use></svg> YouTube</a></li>
+                        @endif
+                        @if($seoSettings['social_tiktok'] ?? null)
+                        <li><a href="{{ $seoSettings['social_tiktok'] }}" target="_blank" rel="noopener"><svg class="icon icon-sm"><use href="#icon-external-link"></use></svg> TikTok</a></li>
+                        @endif
+                        @if(!($seoSettings['social_facebook'] ?? null) && !($seoSettings['social_instagram'] ?? null) && !($seoSettings['social_twitter'] ?? null) && !($seoSettings['social_youtube'] ?? null) && !($seoSettings['social_tiktok'] ?? null))
+                        <li><span style="color: var(--text-muted);">No social links configured</span></li>
+                        @endif
                     </ul>
                 </div>
             </div>
             
             <div class="footer-bottom">
-                <p>&copy; {{ date('Y') }} FOODCITA. All rights reserved.</p>
+                <p>&copy; {{ date('Y') }} {{ $seoSettings['site_name'] ?? 'FOODCITA' }}. All rights reserved.</p>
                 <div class="social-links">
-                    <a href="#"><svg class="icon"><use href="#icon-globe"></use></svg></a>
-                    <a href="#"><svg class="icon"><use href="#icon-camera"></use></svg></a>
-                    <a href="#"><svg class="icon"><use href="#icon-comment"></use></svg></a>
+                    @if($seoSettings['social_facebook'] ?? null)
+                    <a href="{{ $seoSettings['social_facebook'] }}" target="_blank" rel="noopener"><svg class="icon"><use href="#icon-globe"></use></svg></a>
+                    @endif
+                    @if($seoSettings['social_instagram'] ?? null)
+                    <a href="{{ $seoSettings['social_instagram'] }}" target="_blank" rel="noopener"><svg class="icon"><use href="#icon-camera"></use></svg></a>
+                    @endif
+                    @if($seoSettings['social_twitter'] ?? null)
+                    <a href="{{ $seoSettings['social_twitter'] }}" target="_blank" rel="noopener"><svg class="icon"><use href="#icon-comment"></use></svg></a>
+                    @endif
                 </div>
             </div>
         </div>

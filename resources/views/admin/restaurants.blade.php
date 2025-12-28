@@ -56,6 +56,9 @@
                         <input type="checkbox" data-column="categories" checked> Categories
                     </label>
                     <label class="column-toggle-item">
+                        <input type="checkbox" data-column="status" checked> Status
+                    </label>
+                    <label class="column-toggle-item">
                         <input type="checkbox" data-column="created_at"> Created At
                     </label>
                 </div>
@@ -76,6 +79,7 @@
                         <th data-col="website" class="hidden">Website</th>
                         <th data-col="opening_hours" class="hidden">Hours</th>
                         <th data-col="categories">Categories</th>
+                        <th data-col="status" class="sortable" data-sort="is_approved">Status</th>
                         <th data-col="created_at" class="hidden sortable" data-sort="created_at">Created</th>
                         <th>Actions</th>
                     </tr>
@@ -209,6 +213,7 @@ function render() {
                 <td data-col="website" class="hidden">${r.website ? `<a href="${r.website}" target="_blank" style="color: var(--primary);">Visit</a>` : '—'}</td>
                 <td data-col="opening_hours" class="hidden">${r.opening_hours || '—'}</td>
                 <td data-col="categories">${cats || '<span class="text-muted">None</span>'}</td>
+                <td data-col="status">${r.is_approved ? '<span class="badge badge-success">Approved</span>' : '<span class="badge badge-warning">Pending</span>'}</td>
                 <td data-col="created_at" class="hidden">${formatDate(r.created_at)}</td>
                 <td class="actions">
                     <a href="/admin/restaurants/${r.id}/edit" class="btn btn-secondary btn-sm">Edit</a>

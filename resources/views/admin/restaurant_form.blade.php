@@ -124,6 +124,24 @@
                     </div>
                 </div>
                 
+                @if($restaurant->exists)
+                <h3 style="font-size: 1rem; font-weight: 600; margin: 1.5rem 0 1rem; color: #475569; border-top: 1px solid #e2e8f0; padding-top: 1.5rem;">Status</h3>
+                
+                <div class="form-group">
+                    <label class="form-label">Approval Status</label>
+                    <div style="display: flex; gap: 1.5rem; padding: 0.75rem 0;">
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="radio" name="is_approved" value="1" {{ $restaurant->is_approved ? 'checked' : '' }} style="accent-color: var(--primary);">
+                            <span><span class="badge badge-success">Approved</span></span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="radio" name="is_approved" value="0" {{ !$restaurant->is_approved ? 'checked' : '' }} style="accent-color: var(--primary);">
+                            <span><span class="badge badge-warning">Pending</span></span>
+                        </label>
+                    </div>
+                </div>
+                @endif
+                
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">
                         <svg class="icon"><use href="#icon-save"></use></svg> {{ $restaurant->exists ? 'Update Restaurant' : 'Create Restaurant' }}
@@ -187,6 +205,12 @@ form.addEventListener('submit', async e => {
         reservation: reservationRadio ? reservationRadio.value === '1' : false,
         category_ids: categoryIds
     };
+    
+    // Add is_approved for existing restaurants
+    const isApprovedRadio = form.querySelector('input[name="is_approved"]:checked');
+    if (isApprovedRadio) {
+        payload.is_approved = isApprovedRadio.value === '1';
+    }
     
     // Validate required fields
     const required = ['name', 'address', 'city', 'region', 'country', 'postcode'];
