@@ -11,6 +11,7 @@ use App\Models\Restaurant;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class DishController extends Controller
 {
@@ -110,9 +111,36 @@ class DishController extends Controller
             'website' => 'nullable|url|max:255',
             'phone' => 'nullable|string|max:50',
             'reservation' => 'nullable|boolean',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'remove_images' => 'nullable|array',
+            'remove_images.*' => 'integer',
         ]);
 
-        $dish->update($validated);
+        $dish->update(collect($validated)->except(['images', 'remove_images'])->toArray());
+
+        // Remove images if requested
+        if ($request->has('remove_images')) {
+            $imagesToRemove = DishImage::where('dish_id', $dish->id)
+                ->whereIn('id', $request->input('remove_images'))
+                ->get();
+            
+            foreach ($imagesToRemove as $image) {
+                Storage::disk('public')->delete($image->image_path);
+                $image->delete();
+            }
+        }
+
+        // Add new images
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('dishes', 'public');
+                DishImage::create([
+                    'dish_id' => $dish->id,
+                    'image_path' => $path,
+                ]);
+            }
+        }
 
         return response()->json($dish->load(['restaurant', 'images']));
     }

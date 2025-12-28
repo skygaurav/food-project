@@ -232,6 +232,116 @@
         cursor: pointer;
     }
     
+    /* Image management styles */
+    .current-images {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .current-image-item {
+        position: relative;
+        aspect-ratio: 1;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .current-image-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .current-image-item.marked-for-removal {
+        opacity: 0.4;
+    }
+    
+    .current-image-item.marked-for-removal::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 5px,
+            rgba(220, 38, 38, 0.3) 5px,
+            rgba(220, 38, 38, 0.3) 10px
+        );
+    }
+    
+    .remove-image-btn {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        width: 24px;
+        height: 24px;
+        background: rgba(220, 38, 38, 0.9);
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        line-height: 1;
+    }
+    
+    .remove-image-btn:hover {
+        background: #dc2626;
+    }
+    
+    .undo-remove-btn {
+        background: rgba(34, 197, 94, 0.9);
+    }
+    
+    .undo-remove-btn:hover {
+        background: #22c55e;
+    }
+    
+    .image-upload-area {
+        border: 2px dashed #e2e8f0;
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-align: center;
+        cursor: pointer;
+        transition: border-color 0.2s, background 0.2s;
+    }
+    
+    .image-upload-area:hover {
+        border-color: var(--primary);
+        background: rgba(232, 93, 4, 0.05);
+    }
+    
+    .image-upload-area.dragover {
+        border-color: var(--primary);
+        background: rgba(232, 93, 4, 0.1);
+    }
+    
+    .new-images-preview {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+    }
+    
+    .new-image-preview {
+        position: relative;
+        aspect-ratio: 1;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .new-image-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
     .loader {
         text-align: center;
         padding: 4rem;
@@ -285,33 +395,51 @@
                 <h3 class="modal-title">Edit Dish</h3>
                 <button class="modal-close" onclick="closeEditModal()">&times;</button>
             </div>
-            <form id="edit-form">
+            <form id="edit-form" novalidate>
                 <div class="modal-body">
                     <input type="hidden" id="edit-dish-id" />
                     
+                    <!-- Image Management Section -->
                     <div class="form-group">
-                        <label class="form-label">Dish Name</label>
-                        <input type="text" id="edit-name" class="form-control" required />
+                        <label class="form-label">Images</label>
+                        <div id="current-images" class="current-images"></div>
+                        
+                        <div class="image-upload-area" id="image-upload-area" onclick="document.getElementById('new-images-input').click()">
+                            <svg class="icon icon-lg" style="color: var(--text-muted);"><use href="#icon-camera"></use></svg>
+                            <p style="margin: 0.5rem 0 0; color: var(--text-muted); font-size: 0.9rem;">Click to add new images</p>
+                        </div>
+                        <input type="file" id="new-images-input" multiple accept="image/*" style="display: none;" onchange="handleNewImages(this)" />
+                        <div id="new-images-preview" class="new-images-preview"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Dish Name <span style="color: #ef4444;">*</span></label>
+                        <input type="text" id="edit-name" class="form-control" />
+                        <div class="form-error"></div>
                     </div>
                     
                     <div class="form-group">
                         <label class="form-label">Comment</label>
                         <textarea id="edit-comment" class="form-control" rows="3"></textarea>
+                        <div class="form-error"></div>
                     </div>
                     
                     <div class="form-group">
                         <label class="form-label">Meal Cost ($)</label>
                         <input type="number" id="edit-meal-cost" class="form-control" step="0.01" min="0" />
+                        <div class="form-error"></div>
                     </div>
                     
                     <div class="form-group">
                         <label class="form-label">Website</label>
                         <input type="url" id="edit-website" class="form-control" placeholder="https://" />
+                        <div class="form-error"></div>
                     </div>
                     
                     <div class="form-group">
                         <label class="form-label">Phone</label>
                         <input type="tel" id="edit-phone" class="form-control" />
+                        <div class="form-error"></div>
                     </div>
                     
                     <div class="form-group">
@@ -340,7 +468,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="submit" class="btn btn-primary" id="edit-submit-btn">Save Changes</button>
                 </div>
             </form>
         </div>
@@ -453,6 +581,10 @@ function openEditModal(dishId) {
     const dish = dishes.find(d => d.id === dishId);
     if (!dish) return;
     
+    currentEditDishId = dishId;
+    imagesToRemove = [];
+    newImageFiles = [];
+    
     document.getElementById('edit-dish-id').value = dish.id;
     document.getElementById('edit-name').value = dish.name || '';
     document.getElementById('edit-comment').value = dish.comment || '';
@@ -463,38 +595,245 @@ function openEditModal(dishId) {
     document.querySelector(`input[name="edit-date-spot"][value="${dish.good_date_spot ? '1' : '0'}"]`).checked = true;
     document.querySelector(`input[name="edit-reservation"][value="${dish.reservation ? '1' : '0'}"]`).checked = true;
     
+    // Render current images
+    renderCurrentImages(dish);
+    
+    // Clear new images preview
+    document.getElementById('new-images-preview').innerHTML = '';
+    document.getElementById('new-images-input').value = '';
+    
     document.getElementById('edit-modal').classList.add('show');
     document.body.style.overflow = 'hidden';
+}
+
+let currentEditDishId = null;
+let imagesToRemove = [];
+let newImageFiles = [];
+
+function renderCurrentImages(dish) {
+    const container = document.getElementById('current-images');
+    const images = dish.images || [];
+    
+    if (images.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-muted); font-size: 0.875rem;">No images uploaded</p>';
+        return;
+    }
+    
+    container.innerHTML = images.map(img => {
+        const isMarked = imagesToRemove.includes(img.id);
+        const imagePath = img.image_path.startsWith('http') ? img.image_path : '/storage/' + img.image_path;
+        
+        return `
+            <div class="current-image-item ${isMarked ? 'marked-for-removal' : ''}" data-image-id="${img.id}">
+                <img src="${imagePath}" alt="Dish image" />
+                <button type="button" class="${isMarked ? 'remove-image-btn undo-remove-btn' : 'remove-image-btn'}" 
+                        onclick="toggleImageRemoval(${img.id})">
+                    ${isMarked ? '↺' : '×'}
+                </button>
+            </div>
+        `;
+    }).join('');
+}
+
+function toggleImageRemoval(imageId) {
+    const index = imagesToRemove.indexOf(imageId);
+    if (index > -1) {
+        imagesToRemove.splice(index, 1);
+    } else {
+        imagesToRemove.push(imageId);
+    }
+    
+    const dish = dishes.find(d => d.id === currentEditDishId);
+    if (dish) renderCurrentImages(dish);
+}
+
+function handleNewImages(input) {
+    newImageFiles = Array.from(input.files);
+    renderNewImagesPreview();
+}
+
+function renderNewImagesPreview() {
+    const container = document.getElementById('new-images-preview');
+    
+    if (newImageFiles.length === 0) {
+        container.innerHTML = '';
+        return;
+    }
+    
+    container.innerHTML = newImageFiles.map((file, index) => {
+        const url = URL.createObjectURL(file);
+        return `
+            <div class="new-image-preview">
+                <img src="${url}" alt="New image" />
+                <button type="button" class="remove-image-btn" onclick="removeNewImage(${index})">×</button>
+            </div>
+        `;
+    }).join('');
+}
+
+function removeNewImage(index) {
+    newImageFiles.splice(index, 1);
+    renderNewImagesPreview();
+}
+
+// Drag and drop support
+const uploadArea = document.getElementById('image-upload-area');
+if (uploadArea) {
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+    
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('dragover');
+    });
+    
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+        if (files.length) {
+            newImageFiles = [...newImageFiles, ...files];
+            renderNewImagesPreview();
+        }
+    });
 }
 
 function closeEditModal() {
     document.getElementById('edit-modal').classList.remove('show');
     document.body.style.overflow = '';
+    currentEditDishId = null;
+    imagesToRemove = [];
+    newImageFiles = [];
+    
+    // Clear any validation errors
+    document.querySelectorAll('#edit-form .form-group').forEach(g => {
+        g.classList.remove('has-error', 'has-success');
+    });
 }
+
+function validateEditForm() {
+    const V = window.SmartValidator;
+    let isValid = true;
+    
+    // Validate dish name
+    const nameInput = document.getElementById('edit-name');
+    if (!nameInput.value.trim()) {
+        V.setError(nameInput, 'Dish name is required');
+        isValid = false;
+    } else if (nameInput.value.trim().length < 2) {
+        V.setError(nameInput, 'Dish name must be at least 2 characters');
+        isValid = false;
+    } else {
+        V.setSuccess(nameInput);
+    }
+    
+    // Validate website (optional)
+    const websiteInput = document.getElementById('edit-website');
+    if (websiteInput.value && !websiteInput.value.match(/^https?:\/\/.+/)) {
+        V.setError(websiteInput, 'Please enter a valid URL (starting with http:// or https://)');
+        isValid = false;
+    } else {
+        V.clearError(websiteInput);
+    }
+    
+    // Validate phone (optional)
+    const phoneInput = document.getElementById('edit-phone');
+    if (phoneInput.value && !phoneInput.value.match(/^[\d\s\-\+\(\)\.]{7,}$/)) {
+        V.setError(phoneInput, 'Please enter a valid phone number');
+        isValid = false;
+    } else {
+        V.clearError(phoneInput);
+    }
+    
+    // Validate meal cost (optional)
+    const mealCostInput = document.getElementById('edit-meal-cost');
+    if (mealCostInput.value && parseFloat(mealCostInput.value) < 0) {
+        V.setError(mealCostInput, 'Meal cost cannot be negative');
+        isValid = false;
+    } else {
+        V.clearError(mealCostInput);
+    }
+    
+    return isValid;
+}
+
+// Attach live validation to edit form fields
+document.getElementById('edit-name').addEventListener('blur', function() {
+    const V = window.SmartValidator;
+    if (!this.value.trim()) {
+        V.setError(this, 'Dish name is required');
+    } else if (this.value.trim().length < 2) {
+        V.setError(this, 'Dish name must be at least 2 characters');
+    } else {
+        V.setSuccess(this);
+    }
+});
+
+document.getElementById('edit-website').addEventListener('blur', function() {
+    const V = window.SmartValidator;
+    if (this.value && !this.value.match(/^https?:\/\/.+/)) {
+        V.setError(this, 'Please enter a valid URL (starting with http:// or https://)');
+    } else {
+        V.clearError(this);
+    }
+});
+
+document.getElementById('edit-phone').addEventListener('blur', function() {
+    const V = window.SmartValidator;
+    if (this.value && !this.value.match(/^[\d\s\-\+\(\)\.]{7,}$/)) {
+        V.setError(this, 'Please enter a valid phone number');
+    } else {
+        V.clearError(this);
+    }
+});
 
 document.getElementById('edit-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     
+    // Validate form
+    if (!validateEditForm()) {
+        const firstError = this.querySelector('.form-group.has-error');
+        if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+    }
+    
     const dishId = document.getElementById('edit-dish-id').value;
-    const data = {
-        name: document.getElementById('edit-name').value,
-        comment: document.getElementById('edit-comment').value || null,
-        meal_cost: document.getElementById('edit-meal-cost').value || null,
-        website: document.getElementById('edit-website').value || null,
-        phone: document.getElementById('edit-phone').value || null,
-        good_date_spot: document.querySelector('input[name="edit-date-spot"]:checked').value === '1',
-        reservation: document.querySelector('input[name="edit-reservation"]:checked').value === '1',
-    };
+    const submitBtn = document.getElementById('edit-submit-btn');
+    const originalText = submitBtn.innerHTML;
+    
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = 'Saving...';
+    
+    // Use FormData to support file uploads
+    const formData = new FormData();
+    formData.append('_method', 'PUT');
+    formData.append('name', document.getElementById('edit-name').value);
+    formData.append('comment', document.getElementById('edit-comment').value || '');
+    formData.append('meal_cost', document.getElementById('edit-meal-cost').value || '');
+    formData.append('website', document.getElementById('edit-website').value || '');
+    formData.append('phone', document.getElementById('edit-phone').value || '');
+    formData.append('good_date_spot', document.querySelector('input[name="edit-date-spot"]:checked').value === '1' ? '1' : '0');
+    formData.append('reservation', document.querySelector('input[name="edit-reservation"]:checked').value === '1' ? '1' : '0');
+    
+    // Add images to remove
+    imagesToRemove.forEach(id => {
+        formData.append('remove_images[]', id);
+    });
+    
+    // Add new images
+    newImageFiles.forEach(file => {
+        formData.append('images[]', file);
+    });
     
     try {
         const res = await fetch(`/api/dishes/${dishId}`, {
-            method: 'PUT',
+            method: 'POST', // Use POST with _method override for file uploads
             headers: {
-                'Content-Type': 'application/json',
                 'Accept': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
             },
-            body: JSON.stringify(data)
+            body: formData
         });
         
         if (!res.ok) {
@@ -507,6 +846,8 @@ document.getElementById('edit-form').addEventListener('submit', async function(e
         
     } catch (e) {
         alert('Error: ' + e.message);
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
     }
 });
 

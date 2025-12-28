@@ -472,6 +472,60 @@
                 grid-template-columns: 1fr;
             }
         }
+        
+        /* Smart Validation Styles */
+        .form-group.has-error .form-control {
+            border-color: #dc2626;
+            background-color: #fef2f2;
+        }
+        
+        .form-group.has-error .form-control:focus {
+            border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+        
+        .form-group.has-success .form-control {
+            border-color: #10b981;
+        }
+        
+        .form-group.has-success .form-control:focus {
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        
+        .form-error {
+            display: none;
+            color: #dc2626;
+            font-size: 0.8rem;
+            margin-top: 0.35rem;
+            padding-left: 0.25rem;
+        }
+        
+        .form-error svg {
+            vertical-align: -2px;
+            margin-right: 0.25rem;
+        }
+        
+        .form-group.has-error .form-error {
+            display: block;
+            animation: fadeInUp 0.2s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
     </style>
     @stack('styles')
 </head>
@@ -564,6 +618,137 @@
             </div>
         </div>
     </footer>
+    
+    <script>
+    // Smart Form Validation Utility
+    window.SmartValidator = {
+        rules: {
+            required: (value, message) => ({
+                valid: value && value.toString().trim() !== '',
+                message: message || 'This field is required'
+            }),
+            email: (value, message) => ({
+                valid: !value || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
+                message: message || 'Please enter a valid email address'
+            }),
+            minLength: (value, length, message) => ({
+                valid: !value || value.length >= length,
+                message: message || `Must be at least ${length} characters`
+            }),
+            maxLength: (value, length, message) => ({
+                valid: !value || value.length <= length,
+                message: message || `Must be no more than ${length} characters`
+            }),
+            match: (value, targetValue, message) => ({
+                valid: value === targetValue,
+                message: message || 'Values do not match'
+            }),
+            url: (value, message) => ({
+                valid: !value || /^https?:\/\/.+/.test(value),
+                message: message || 'Please enter a valid URL (starting with http:// or https://)'
+            }),
+            number: (value, message) => ({
+                valid: !value || !isNaN(parseFloat(value)),
+                message: message || 'Please enter a valid number'
+            }),
+            min: (value, minVal, message) => ({
+                valid: !value || parseFloat(value) >= minVal,
+                message: message || `Value must be at least ${minVal}`
+            }),
+            phone: (value, message) => ({
+                valid: !value || /^[\d\s\-\+\(\)\.]{7,}$/.test(value),
+                message: message || 'Please enter a valid phone number'
+            }),
+            files: (input, message) => ({
+                valid: input && input.files && input.files.length > 0,
+                message: message || 'Please select at least one file'
+            })
+        },
+        
+        setError(input, message) {
+            const group = input.closest('.form-group');
+            if (!group) return;
+            
+            group.classList.remove('has-success');
+            group.classList.add('has-error');
+            
+            let errorEl = group.querySelector('.form-error');
+            if (!errorEl) {
+                errorEl = document.createElement('div');
+                errorEl.className = 'form-error';
+                input.parentNode.insertBefore(errorEl, input.nextSibling);
+            }
+            errorEl.innerHTML = `<svg class="icon icon-xs"><use href="#icon-x"></use></svg> ${message}`;
+        },
+        
+        clearError(input) {
+            const group = input.closest('.form-group');
+            if (!group) return;
+            
+            group.classList.remove('has-error');
+            const errorEl = group.querySelector('.form-error');
+            if (errorEl) errorEl.style.display = 'none';
+        },
+        
+        setSuccess(input) {
+            const group = input.closest('.form-group');
+            if (!group) return;
+            
+            group.classList.remove('has-error');
+            group.classList.add('has-success');
+            const errorEl = group.querySelector('.form-error');
+            if (errorEl) errorEl.style.display = 'none';
+        },
+        
+        validateField(input, validations) {
+            const value = input.value;
+            
+            for (const validation of validations) {
+                const result = validation(value, input);
+                if (!result.valid) {
+                    this.setError(input, result.message);
+                    return false;
+                }
+            }
+            
+            this.setSuccess(input);
+            return true;
+        },
+        
+        validateForm(form, fieldValidations) {
+            let isValid = true;
+            
+            for (const [fieldId, validations] of Object.entries(fieldValidations)) {
+                const input = form.querySelector(`#${fieldId}`) || form.querySelector(`[name="${fieldId}"]`);
+                if (input && !this.validateField(input, validations)) {
+                    isValid = false;
+                }
+            }
+            
+            return isValid;
+        },
+        
+        attachLiveValidation(form, fieldValidations) {
+            for (const [fieldId, validations] of Object.entries(fieldValidations)) {
+                const input = form.querySelector(`#${fieldId}`) || form.querySelector(`[name="${fieldId}"]`);
+                if (!input) continue;
+                
+                // Validate on blur
+                input.addEventListener('blur', () => {
+                    if (input.value) this.validateField(input, validations);
+                });
+                
+                // Clear error on input
+                input.addEventListener('input', () => {
+                    const group = input.closest('.form-group');
+                    if (group && group.classList.contains('has-error')) {
+                        this.validateField(input, validations);
+                    }
+                });
+            }
+        }
+    };
+    </script>
     
     <script>
     // Load CMS footer links

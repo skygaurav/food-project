@@ -349,7 +349,7 @@
             <a href="/" class="btn btn-primary" style="margin-top: 1rem;">Back to Home</a>
         </div>
 
-        <form id="upload-form" class="upload-form" enctype="multipart/form-data">
+        <form id="upload-form" class="upload-form" enctype="multipart/form-data" novalidate>
             <div class="form-section">
                 <h3 class="form-section-title"><svg class="icon"><use href="#icon-location"></use></svg> Restaurant Details</h3>
                 
@@ -362,6 +362,7 @@
                         <input type="hidden" id="restaurant_name" name="restaurant_name" />
                         <div id="autocomplete-results" class="autocomplete-results"></div>
                     </div>
+                    <div class="form-error"></div>
                     
                     <div id="selected-restaurant" class="selected-restaurant">
                         <span class="selected-restaurant-name" id="selected-restaurant-name"></span>
@@ -377,17 +378,20 @@
                         <label class="form-label">Street Address</label>
                         <input type="text" id="restaurant_address" name="restaurant_address" class="form-control" 
                                placeholder="e.g. 123 Main Street" />
+                        <div class="form-error"></div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label">City <span class="required">*</span></label>
                             <input type="text" id="restaurant_city" name="restaurant_city" class="form-control" 
                                    placeholder="e.g. Los Angeles" />
+                            <div class="form-error"></div>
                         </div>
                         <div class="form-group">
                             <label class="form-label">State <span class="required">*</span></label>
                             <input type="text" id="restaurant_state" name="restaurant_state" class="form-control" 
                                    placeholder="e.g. California" />
+                            <div class="form-error"></div>
                         </div>
                     </div>
                     <div class="form-row">
@@ -395,6 +399,7 @@
                             <label class="form-label">Postcode <span class="required">*</span></label>
                             <input type="text" id="restaurant_postcode" name="restaurant_postcode" class="form-control" 
                                    placeholder="e.g. 90001" />
+                            <div class="form-error"></div>
                         </div>
                         <div class="form-group"></div>
                     </div>
@@ -406,22 +411,25 @@
                 
                 <div class="form-group">
                     <label class="form-label">Dish Name <span class="required">*</span></label>
-                    <input type="text" id="name" name="name" class="form-control" placeholder="e.g. Spicy Tuna Roll, Margherita Pizza" required />
+                    <input type="text" id="name" name="name" class="form-control" placeholder="e.g. Spicy Tuna Roll, Margherita Pizza" />
+                    <div class="form-error"></div>
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label">Your Comment / Review</label>
                     <textarea id="comment" name="comment" class="form-control" placeholder="What did you love about this dish? Any recommendations?"></textarea>
+                    <div class="form-error"></div>
                 </div>
                 
-                <div class="form-group">
+                <div class="form-group" id="images-group">
                     <label class="form-label">Photos <span class="required">*</span></label>
                     <div class="file-upload" onclick="document.getElementById('images').click()">
                         <div class="file-upload-icon"><svg class="icon icon-3xl icon-muted"><use href="#icon-image"></use></svg></div>
                         <div class="file-upload-text">Click to upload photos or drag & drop</div>
                         <div class="file-upload-text" style="font-size: 0.8rem; margin-top: 0.25rem;">PNG, JPG up to 5MB each</div>
-                        <input type="file" id="images" name="images[]" accept="image/*" multiple required />
+                        <input type="file" id="images" name="images[]" accept="image/*" multiple />
                     </div>
+                    <div class="form-error"></div>
                     <div id="image-previews" class="image-previews"></div>
                 </div>
             </div>
@@ -433,11 +441,13 @@
                     <div class="form-group">
                         <label class="form-label">Meal Cost ($)</label>
                         <input type="number" id="meal_cost" name="meal_cost" class="form-control" step="0.01" min="0" placeholder="e.g. 25.00" />
+                        <div class="form-error"></div>
                     </div>
                     
                     <div class="form-group">
                         <label class="form-label">Restaurant Website</label>
                         <input type="url" id="website" name="website" class="form-control" placeholder="https://..." />
+                        <div class="form-error"></div>
                     </div>
                 </div>
                 
@@ -445,6 +455,7 @@
                     <div class="form-group">
                         <label class="form-label">Restaurant Phone</label>
                         <input type="tel" id="phone" name="phone" class="form-control" placeholder="e.g. (555) 123-4567" />
+                        <div class="form-error"></div>
                     </div>
                     
                     <div class="form-group">
@@ -637,22 +648,100 @@ document.addEventListener('DOMContentLoaded', function() {
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
         
+        const V = window.SmartValidator;
+        let isValid = true;
+        
         // Validate restaurant selection
+        const restaurantGroup = document.querySelector('#restaurant_search').closest('.form-group');
         if (!restaurantIdInput.value && !restaurantNameInput.value) {
-            alert('Please select or enter a restaurant name');
-            return;
+            V.setError(restaurantSearch, 'Please select or enter a restaurant name');
+            isValid = false;
+        } else {
+            V.clearError(restaurantSearch);
         }
         
         // Validate new restaurant fields
         if (isNewRestaurant) {
-            const city = document.getElementById('restaurant_city').value.trim();
-            const state = document.getElementById('restaurant_state').value.trim();
-            const postcode = document.getElementById('restaurant_postcode').value.trim();
+            const cityInput = document.getElementById('restaurant_city');
+            const stateInput = document.getElementById('restaurant_state');
+            const postcodeInput = document.getElementById('restaurant_postcode');
             
-            if (!city || !state || !postcode) {
-                alert('Please fill in City, State, and Postcode for the new restaurant');
-                return;
+            if (!cityInput.value.trim()) {
+                V.setError(cityInput, 'City is required for new restaurants');
+                isValid = false;
+            } else {
+                V.clearError(cityInput);
             }
+            
+            if (!stateInput.value.trim()) {
+                V.setError(stateInput, 'State is required for new restaurants');
+                isValid = false;
+            } else {
+                V.clearError(stateInput);
+            }
+            
+            if (!postcodeInput.value.trim()) {
+                V.setError(postcodeInput, 'Postcode is required for new restaurants');
+                isValid = false;
+            } else {
+                V.clearError(postcodeInput);
+            }
+        }
+        
+        // Validate dish name
+        const nameInput = document.getElementById('name');
+        if (!nameInput.value.trim()) {
+            V.setError(nameInput, 'Dish name is required');
+            isValid = false;
+        } else if (nameInput.value.trim().length < 2) {
+            V.setError(nameInput, 'Dish name must be at least 2 characters');
+            isValid = false;
+        } else {
+            V.setSuccess(nameInput);
+        }
+        
+        // Validate images
+        const imagesGroup = document.getElementById('images-group');
+        if (!imagesInput.files || imagesInput.files.length === 0) {
+            V.setError(imagesInput, 'Please upload at least one photo');
+            isValid = false;
+        } else {
+            V.clearError(imagesInput);
+        }
+        
+        // Validate optional URL fields
+        const websiteInput = document.getElementById('website');
+        if (websiteInput.value && !websiteInput.value.match(/^https?:\/\/.+/)) {
+            V.setError(websiteInput, 'Please enter a valid URL (starting with http:// or https://)');
+            isValid = false;
+        } else {
+            V.clearError(websiteInput);
+        }
+        
+        // Validate optional phone
+        const phoneInput = document.getElementById('phone');
+        if (phoneInput.value && !phoneInput.value.match(/^[\d\s\-\+\(\)\.]{7,}$/)) {
+            V.setError(phoneInput, 'Please enter a valid phone number');
+            isValid = false;
+        } else {
+            V.clearError(phoneInput);
+        }
+        
+        // Validate meal cost
+        const mealCostInput = document.getElementById('meal_cost');
+        if (mealCostInput.value && parseFloat(mealCostInput.value) < 0) {
+            V.setError(mealCostInput, 'Meal cost cannot be negative');
+            isValid = false;
+        } else {
+            V.clearError(mealCostInput);
+        }
+        
+        if (!isValid) {
+            const firstError = form.querySelector('.form-group.has-error');
+            if (firstError) {
+                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            return;
         }
         
         submitBtn.disabled = true;
@@ -683,6 +772,41 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Error: ' + err.message);
             submitBtn.disabled = false;
             submitBtn.innerHTML = '<svg class="icon"><use href="#icon-rocket"></use></svg> Submit Dish';
+        }
+    });
+    
+    // Live validation for key fields
+    const V = window.SmartValidator;
+    
+    document.getElementById('name').addEventListener('blur', function() {
+        if (!this.value.trim()) {
+            V.setError(this, 'Dish name is required');
+        } else if (this.value.trim().length < 2) {
+            V.setError(this, 'Dish name must be at least 2 characters');
+        } else {
+            V.setSuccess(this);
+        }
+    });
+    
+    document.getElementById('website').addEventListener('blur', function() {
+        if (this.value && !this.value.match(/^https?:\/\/.+/)) {
+            V.setError(this, 'Please enter a valid URL (starting with http:// or https://)');
+        } else {
+            V.clearError(this);
+        }
+    });
+    
+    document.getElementById('phone').addEventListener('blur', function() {
+        if (this.value && !this.value.match(/^[\d\s\-\+\(\)\.]{7,}$/)) {
+            V.setError(this, 'Please enter a valid phone number');
+        } else {
+            V.clearError(this);
+        }
+    });
+    
+    imagesInput.addEventListener('change', function() {
+        if (this.files && this.files.length > 0) {
+            V.clearError(this);
         }
     });
 });

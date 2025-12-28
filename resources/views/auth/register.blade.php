@@ -131,32 +131,36 @@
                 </div>
             @endif
             
-            <form method="POST" action="/register" class="auth-form">
+            <form method="POST" action="/register" class="auth-form" id="register-form" novalidate>
                 @csrf
                 
                 <div class="form-group">
                     <label for="name" class="form-label">Full Name</label>
                     <input type="text" id="name" name="name" value="{{ old('name') }}" 
-                           class="form-control" placeholder="John Doe" required>
+                           class="form-control" placeholder="John Doe">
+                    <div class="form-error"></div>
                 </div>
                 
                 <div class="form-group">
                     <label for="email" class="form-label">Email Address</label>
                     <input type="email" id="email" name="email" value="{{ old('email') }}" 
-                           class="form-control" placeholder="you@example.com" required>
+                           class="form-control" placeholder="you@example.com">
+                    <div class="form-error"></div>
                 </div>
                 
                 <div class="form-group">
                     <label for="password" class="form-label">Password</label>
                     <input type="password" id="password" name="password" 
-                           class="form-control" placeholder="••••••••" required minlength="6">
+                           class="form-control" placeholder="••••••••">
                     <p class="form-hint">Must be at least 6 characters</p>
+                    <div class="form-error"></div>
                 </div>
                 
                 <div class="form-group">
                     <label for="password_confirmation" class="form-label">Confirm Password</label>
                     <input type="password" id="password_confirmation" name="password_confirmation" 
-                           class="form-control" placeholder="••••••••" required>
+                           class="form-control" placeholder="••••••••">
+                    <div class="form-error"></div>
                 </div>
                 
                 <button type="submit" class="btn btn-primary auth-btn">
@@ -170,3 +174,41 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('register-form');
+    const V = window.SmartValidator;
+    
+    const validations = {
+        name: [
+            (v) => V.rules.required(v, 'Full name is required'),
+            (v) => V.rules.minLength(v, 2, 'Name must be at least 2 characters')
+        ],
+        email: [
+            (v) => V.rules.required(v, 'Email address is required'),
+            (v) => V.rules.email(v, 'Please enter a valid email address')
+        ],
+        password: [
+            (v) => V.rules.required(v, 'Password is required'),
+            (v) => V.rules.minLength(v, 6, 'Password must be at least 6 characters')
+        ],
+        password_confirmation: [
+            (v) => V.rules.required(v, 'Please confirm your password'),
+            (v) => V.rules.match(v, document.getElementById('password').value, 'Passwords do not match')
+        ]
+    };
+    
+    V.attachLiveValidation(form, validations);
+    
+    form.addEventListener('submit', function(e) {
+        if (!V.validateForm(form, validations)) {
+            e.preventDefault();
+            const firstError = form.querySelector('.form-group.has-error input');
+            if (firstError) firstError.focus();
+        }
+    });
+});
+</script>
+@endpush

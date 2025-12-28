@@ -125,19 +125,21 @@
                 </div>
             @endif
             
-            <form method="POST" action="/login" class="auth-form">
+            <form method="POST" action="/login" class="auth-form" id="login-form" novalidate>
                 @csrf
                 
                 <div class="form-group">
                     <label for="email" class="form-label">Email Address</label>
                     <input type="email" id="email" name="email" value="{{ old('email') }}" 
-                           class="form-control" placeholder="you@example.com" required>
+                           class="form-control" placeholder="you@example.com">
+                    <div class="form-error"></div>
                 </div>
                 
                 <div class="form-group">
                     <label for="password" class="form-label">Password</label>
                     <input type="password" id="password" name="password" 
-                           class="form-control" placeholder="••••••••" required>
+                           class="form-control" placeholder="••••••••">
+                    <div class="form-error"></div>
                 </div>
                 
                 <button type="submit" class="btn btn-primary auth-btn">
@@ -151,3 +153,33 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('login-form');
+    const V = window.SmartValidator;
+    
+    const validations = {
+        email: [
+            (v) => V.rules.required(v, 'Email address is required'),
+            (v) => V.rules.email(v, 'Please enter a valid email address')
+        ],
+        password: [
+            (v) => V.rules.required(v, 'Password is required')
+        ]
+    };
+    
+    V.attachLiveValidation(form, validations);
+    
+    form.addEventListener('submit', function(e) {
+        if (!V.validateForm(form, validations)) {
+            e.preventDefault();
+            // Focus first error field
+            const firstError = form.querySelector('.form-group.has-error input');
+            if (firstError) firstError.focus();
+        }
+    });
+});
+</script>
+@endpush
