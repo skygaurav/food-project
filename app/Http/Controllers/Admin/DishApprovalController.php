@@ -89,7 +89,28 @@ class DishApprovalController extends Controller
             ->with(['restaurant', 'images'])
             ->where('status', 'pending')
             ->latest()
-            ->get();
+            ->get()
+            ->map(function ($dish) {
+                return [
+                    'id' => $dish->id,
+                    'name' => $dish->name,
+                    'slug' => $dish->slug,
+                    'comment' => $dish->comment,
+                    'status' => $dish->status,
+                    'meal_cost' => $dish->meal_cost,
+                    'good_date_spot' => $dish->good_date_spot,
+                    'website' => $dish->website,
+                    'phone' => $dish->phone,
+                    'reservation' => $dish->reservation,
+                    'restaurant_id' => $dish->restaurant_id,
+                    'restaurant_name' => $dish->restaurant?->name,
+                    'image_url' => $dish->images->first()?->path 
+                        ? '/storage/' . $dish->images->first()->path 
+                        : null,
+                    'created_at' => $dish->created_at,
+                    'updated_at' => $dish->updated_at,
+                ];
+            });
 
         return response()->json($dishes);
     }
