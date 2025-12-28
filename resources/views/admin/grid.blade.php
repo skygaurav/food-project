@@ -42,7 +42,7 @@
                     <div class="p-3 mb-2 border rounded flex justify-between items-center">
                         <div>{{ $c->name }}</div>
                         <div style="display:flex;gap:.5rem">
-                            <button class="edit-category" data-id="{{ $c->id }}">Edit</button>
+                            <a class="rounded border px-2 py-1" href="/admin/categories/{{ $c->id }}/edit">Edit</a>
                             <button class="del-category" data-id="{{ $c->id }}">Delete</button>
                         </div>
                     </div>

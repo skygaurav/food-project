@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use App\Models\Restaurant;
+use App\Models\Category;
 
 class AdminPagesController extends Controller
 {
@@ -30,6 +31,11 @@ class AdminPagesController extends Controller
     {
         $dishes = $restaurant->dishes()->with('images')->get();
         return view('admin.restaurant_dishes', compact('restaurant', 'dishes'));
+    }
+
+    public function categoryForm(Request $request, ?Category $category = null): View
+    {
+        return view('admin.category_form', ['category' => $category]);
     }
 
     public function disapprovals(Request $request): View

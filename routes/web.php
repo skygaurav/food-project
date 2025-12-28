@@ -21,6 +21,8 @@ Route::get('/admin/restaurants', [AdminPagesController::class, 'restaurants']);
 Route::get('/admin/restaurants/create', [AdminPagesController::class, 'restaurantForm']);
 Route::get('/admin/restaurants/{restaurant}/edit', [AdminPagesController::class, 'restaurantForm']);
 Route::get('/admin/restaurants/{restaurant}/dishes', [AdminPagesController::class, 'restaurantDishes']);
+Route::get('/admin/categories/create', [AdminPagesController::class, 'categoryForm']);
+Route::get('/admin/categories/{category}/edit', [AdminPagesController::class, 'categoryForm']);
 Route::get('/admin/disapprovals', [AdminPagesController::class, 'disapprovals']);
 
 // Admin web API (session based)
