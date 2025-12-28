@@ -176,8 +176,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         dishesGrid.innerHTML = allDishes.map(dish => {
-            const image = dish.images && dish.images.length > 0 
-                ? '/storage/' + dish.images[0].path 
+            // Find primary image or use first one
+            let primaryImage = null;
+            if (dish.images && dish.images.length > 0) {
+                primaryImage = dish.images.find(img => img.is_primary) || dish.images[0];
+            }
+            const image = primaryImage 
+                ? '/storage/' + primaryImage.path 
                 : 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80';
             const rating = dish.reviews_avg_rating ? parseFloat(dish.reviews_avg_rating).toFixed(1) : 'N/A';
             const likes = dish.likes_count || 0;

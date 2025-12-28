@@ -697,6 +697,7 @@ document.addEventListener('DOMContentLoaded', function() {
             renderDish();
             loadRelatedDishes();
             setupReactionButtons();
+            setupReviewForm();
             
         } catch (e) {
             console.error('Failed to load dish:', e);
@@ -771,23 +772,84 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    function setupReviewForm() {
+        const form = document.getElementById('review-form');
+        if (!form) return;
+        
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const rating = document.getElementById('review-rating').value;
+            const comment = document.getElementById('review-comment').value;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            
+            try {
+                const res = await fetch(`/api/dishes/${dishSlug}/reviews`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ rating: parseInt(rating), comment })
+                });
+                
+                if (!res.ok) {
+                    const error = await res.json();
+                    throw new Error(error.message || 'Failed to submit review');
+                }
+                
+                const newReview = await res.json();
+                
+                // Add review to list
+                currentDish.reviews = currentDish.reviews || [];
+                currentDish.reviews.unshift(newReview);
+                renderReviews(currentDish.reviews);
+                
+                // Update review count
+                document.getElementById('dish-reviews').textContent = currentDish.reviews.length;
+                
+                // Clear form
+                document.getElementById('review-comment').value = '';
+                document.getElementById('review-rating').value = '5';
+                
+                alert('Review submitted successfully!');
+                
+            } catch (e) {
+                console.error('Failed to submit review:', e);
+                alert('Error: ' + e.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        });
+    }
+    
     function renderDish() {
         loader.style.display = 'none';
         content.style.display = 'block';
         
         const dish = currentDish;
         
-        // Main image
+        // Main image - find primary image first
         const mainImage = document.getElementById('dish-main-image');
         if (dish.images && dish.images.length > 0) {
-            mainImage.src = '/storage/' + dish.images[0].path;
+            // Find primary image or use first one
+            let primaryIndex = dish.images.findIndex(img => img.is_primary);
+            if (primaryIndex === -1) primaryIndex = 0;
+            
+            mainImage.src = '/storage/' + dish.images[primaryIndex].path;
             mainImage.alt = dish.name;
-            currentImageIndex = 0;
+            currentImageIndex = primaryIndex;
             
             // Show image counter and navigation for multiple images
             if (dish.images.length > 1) {
                 document.getElementById('image-counter').style.display = 'block';
-                document.getElementById('image-counter').textContent = `1 / ${dish.images.length}`;
+                document.getElementById('image-counter').textContent = `${primaryIndex + 1} / ${dish.images.length}`;
                 document.getElementById('prev-btn').style.display = 'flex';
                 document.getElementById('next-btn').style.display = 'flex';
                 
@@ -795,7 +857,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const thumbsContainer = document.getElementById('dish-thumbnails');
                 thumbsContainer.style.display = 'flex';
                 thumbsContainer.innerHTML = dish.images.map((img, idx) => `
-                    <img src="/storage/${img.path}" alt="${dish.name}" class="dish-thumbnail ${idx === 0 ? 'active' : ''}" onclick="changeImage(${idx})" />
+                    <img src="/storage/${img.path}" alt="${dish.name}" class="dish-thumbnail ${idx === primaryIndex ? 'active' : ''}" onclick="changeImage(${idx})" />
                 `).join('');
             }
         } else {
@@ -981,8 +1043,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 const grid = document.getElementById('related-grid');
                 
                 grid.innerHTML = related.map(dish => {
-                    const image = dish.images && dish.images.length > 0 
-                        ? '/storage/' + dish.images[0].path 
+                    // Find primary image or use first one
+                    let primaryImage = null;
+                    if (dish.images && dish.images.length > 0) {
+                        primaryImage = dish.images.find(img => img.is_primary) || dish.images[0];
+                    }
+                    const image = primaryImage 
+                        ? '/storage/' + primaryImage.path 
                         : 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80';
                     
                     return `
