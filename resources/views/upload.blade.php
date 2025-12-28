@@ -334,7 +334,7 @@
         cursor: pointer;
         transition: all 0.2s;
         font-size: 0.875rem;
-        position: relative;
+        user-select: none;
     }
     
     .category-chip:hover {
@@ -346,12 +346,6 @@
         background: var(--primary);
         border-color: var(--primary);
         color: #fff;
-    }
-    
-    .category-chip input {
-        position: absolute;
-        opacity: 0;
-        pointer-events: none;
     }
     
     .new-restaurant-fields {
@@ -612,32 +606,15 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const container = document.getElementById('categories-container');
             container.innerHTML = categories.map(cat => `
-                <label class="category-chip" data-id="${cat.id}">
-                    <input type="checkbox" name="categories[]" value="${cat.id}" />
-                    ${cat.name}
-                </label>
+                <span class="category-chip" data-id="${cat.id}" data-value="${cat.id}">${cat.name}</span>
             `).join('');
             
             // Add click handlers
             container.querySelectorAll('.category-chip').forEach(chip => {
-                const checkbox = chip.querySelector('input');
-                
-                chip.addEventListener('click', function(e) {
-                    // If clicking directly on the checkbox, let the default behavior work
-                    if (e.target === checkbox) {
-                        this.classList.toggle('selected', checkbox.checked);
-                        return;
-                    }
-                    // Otherwise toggle the checkbox manually
-                    checkbox.checked = !checkbox.checked;
-                    this.classList.toggle('selected', checkbox.checked);
-                    // Dispatch change event so any listeners are notified
-                    checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+                chip.addEventListener('click', function() {
+                    this.classList.toggle('selected');
                 });
-                
-                checkbox.addEventListener('change', function() {
-                    chip.classList.toggle('selected', this.checked);
-                });
+            });
             });
         } catch (e) {
             console.error('Failed to load categories:', e);
@@ -854,7 +831,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Validate categories
         const categoriesContainer = document.getElementById('categories-container');
-        const selectedCats = categoriesContainer.querySelectorAll('input[name="categories[]"]:checked');
+        const selectedCats = categoriesContainer.querySelectorAll('.category-chip.selected');
         if (selectedCats.length === 0) {
             const catGroup = categoriesContainer.closest('.form-group');
             catGroup.classList.add('has-error');
@@ -865,7 +842,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const catGroup = categoriesContainer.closest('.form-group');
             catGroup.classList.remove('has-error');
             let errorEl = catGroup.querySelector('.form-error');
-            if (errorEl) errorEl.style.display = 'none';
+            if (errorEl) {
+                errorEl.innerHTML = '';
+                errorEl.style.display = '';
+            }
         }
         
         // Validate dish name
@@ -931,6 +911,12 @@ document.addEventListener('DOMContentLoaded', function() {
         submitBtn.innerHTML = '<svg class="icon icon-spin"><use href="#icon-loader"></use></svg> Uploading...';
         
         const formData = new FormData(form);
+        
+        // Add selected categories manually
+        const selectedCategoryChips = document.querySelectorAll('#categories-container .category-chip.selected');
+        selectedCategoryChips.forEach(chip => {
+            formData.append('categories[]', chip.dataset.value);
+        });
         
         try {
             const res = await fetch('/api/dishes', {
