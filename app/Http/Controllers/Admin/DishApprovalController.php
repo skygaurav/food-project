@@ -64,6 +64,12 @@ class DishApprovalController extends Controller
     {
         $dish->status = 'approved';
         $dish->save();
+        
+        // Also approve the restaurant if it was created with this dish
+        if ($dish->restaurant && !$dish->restaurant->is_approved) {
+            $dish->restaurant->is_approved = true;
+            $dish->restaurant->save();
+        }
 
         return response()->json($dish->load(['restaurant', 'images']));
     }

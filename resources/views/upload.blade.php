@@ -220,6 +220,118 @@
         color: #047857;
         margin: 0;
     }
+    
+    /* Autocomplete styles */
+    .autocomplete-wrapper {
+        position: relative;
+    }
+    
+    .autocomplete-results {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 100;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        display: none;
+    }
+    
+    .autocomplete-results.show {
+        display: block;
+    }
+    
+    .autocomplete-item {
+        padding: 0.75rem 1rem;
+        cursor: pointer;
+        border-bottom: 1px solid #f1f5f9;
+        transition: background 0.15s;
+    }
+    
+    .autocomplete-item:last-child {
+        border-bottom: none;
+    }
+    
+    .autocomplete-item:hover,
+    .autocomplete-item.active {
+        background: #fff7ed;
+    }
+    
+    .autocomplete-item-name {
+        font-weight: 500;
+        color: var(--text-dark);
+    }
+    
+    .autocomplete-item-location {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+    }
+    
+    .autocomplete-new {
+        padding: 0.75rem 1rem;
+        background: #f8fafc;
+        border-top: 1px solid #e2e8f0;
+        color: var(--primary);
+        font-weight: 500;
+        cursor: pointer;
+    }
+    
+    .autocomplete-new:hover {
+        background: #fff7ed;
+    }
+    
+    .new-restaurant-fields {
+        display: none;
+        margin-top: 1rem;
+        padding: 1rem;
+        background: #f8fafc;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .new-restaurant-fields.show {
+        display: block;
+    }
+    
+    .new-restaurant-fields .form-row {
+        margin-bottom: 0;
+    }
+    
+    .selected-restaurant {
+        display: none;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        background: #d1fae5;
+        border: 1px solid #10b981;
+        border-radius: 8px;
+        margin-top: 0.5rem;
+    }
+    
+    .selected-restaurant.show {
+        display: flex;
+    }
+    
+    .selected-restaurant-name {
+        flex: 1;
+        font-weight: 500;
+        color: #065f46;
+    }
+    
+    .selected-restaurant-clear {
+        background: none;
+        border: none;
+        color: #065f46;
+        cursor: pointer;
+        font-size: 1.25rem;
+        padding: 0;
+        line-height: 1;
+    }
 </style>
 @endpush
 
@@ -242,10 +354,50 @@
                 <h3 class="form-section-title">📍 Restaurant Details</h3>
                 
                 <div class="form-group">
-                    <label class="form-label">Select Restaurant <span class="required">*</span></label>
-                    <select id="restaurant_id" name="restaurant_id" class="form-control" required>
-                        <option value="">Loading restaurants...</option>
-                    </select>
+                    <label class="form-label">Restaurant Name <span class="required">*</span></label>
+                    <div class="autocomplete-wrapper">
+                        <input type="text" id="restaurant_search" class="form-control" 
+                               placeholder="Start typing restaurant name..." autocomplete="off" />
+                        <input type="hidden" id="restaurant_id" name="restaurant_id" />
+                        <input type="hidden" id="restaurant_name" name="restaurant_name" />
+                        <div id="autocomplete-results" class="autocomplete-results"></div>
+                    </div>
+                    
+                    <div id="selected-restaurant" class="selected-restaurant">
+                        <span class="selected-restaurant-name" id="selected-restaurant-name"></span>
+                        <button type="button" class="selected-restaurant-clear" id="clear-restaurant">&times;</button>
+                    </div>
+                </div>
+                
+                <div id="new-restaurant-fields" class="new-restaurant-fields">
+                    <p style="margin: 0 0 1rem 0; font-size: 0.875rem; color: var(--text-muted);">
+                        📝 Restaurant not found? Enter the address details below:
+                    </p>
+                    <div class="form-group">
+                        <label class="form-label">Street Address</label>
+                        <input type="text" id="restaurant_address" name="restaurant_address" class="form-control" 
+                               placeholder="e.g. 123 Main Street" />
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">City <span class="required">*</span></label>
+                            <input type="text" id="restaurant_city" name="restaurant_city" class="form-control" 
+                                   placeholder="e.g. Los Angeles" />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">State <span class="required">*</span></label>
+                            <input type="text" id="restaurant_state" name="restaurant_state" class="form-control" 
+                                   placeholder="e.g. California" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Postcode <span class="required">*</span></label>
+                            <input type="text" id="restaurant_postcode" name="restaurant_postcode" class="form-control" 
+                                   placeholder="e.g. 90001" />
+                        </div>
+                        <div class="form-group"></div>
+                    </div>
                 </div>
             </div>
             
@@ -317,28 +469,130 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('upload-form');
     const submitBtn = document.getElementById('submit-btn');
     const successMessage = document.getElementById('success-message');
-    const restaurantSelect = document.getElementById('restaurant_id');
     const imagesInput = document.getElementById('images');
     const imagePreviews = document.getElementById('image-previews');
     
-    // Load restaurants
-    async function loadRestaurants() {
-        try {
-            const res = await fetch('/api/restaurants');
-            const restaurants = await res.json();
-            
-            restaurantSelect.innerHTML = '<option value="">-- Select a restaurant --</option>';
-            restaurants.forEach(r => {
-                const option = document.createElement('option');
-                option.value = r.id;
-                option.textContent = r.name + (r.city ? ` (${r.city})` : '');
-                restaurantSelect.appendChild(option);
-            });
-        } catch (e) {
-            console.error('Failed to load restaurants:', e);
-            restaurantSelect.innerHTML = '<option value="">Failed to load restaurants</option>';
+    // Restaurant autocomplete elements
+    const restaurantSearch = document.getElementById('restaurant_search');
+    const restaurantIdInput = document.getElementById('restaurant_id');
+    const restaurantNameInput = document.getElementById('restaurant_name');
+    const autocompleteResults = document.getElementById('autocomplete-results');
+    const selectedRestaurant = document.getElementById('selected-restaurant');
+    const selectedRestaurantName = document.getElementById('selected-restaurant-name');
+    const clearRestaurantBtn = document.getElementById('clear-restaurant');
+    const newRestaurantFields = document.getElementById('new-restaurant-fields');
+    
+    let searchTimeout = null;
+    let isNewRestaurant = false;
+    
+    // Autocomplete search
+    restaurantSearch.addEventListener('input', function() {
+        const query = this.value.trim();
+        
+        // Clear previous timeout
+        if (searchTimeout) clearTimeout(searchTimeout);
+        
+        if (query.length < 2) {
+            autocompleteResults.classList.remove('show');
+            return;
         }
+        
+        // Debounce search
+        searchTimeout = setTimeout(async () => {
+            try {
+                const res = await fetch(`/api/restaurants/search?q=${encodeURIComponent(query)}`);
+                const restaurants = await res.json();
+                
+                let html = '';
+                
+                if (restaurants.length) {
+                    html = restaurants.map(r => `
+                        <div class="autocomplete-item" data-id="${r.id}" data-name="${r.name}" data-city="${r.city || ''}">
+                            <div class="autocomplete-item-name">${r.name}</div>
+                            <div class="autocomplete-item-location">${r.city || ''}${r.postcode ? ', ' + r.postcode : ''}</div>
+                        </div>
+                    `).join('');
+                }
+                
+                // Always show "Add new restaurant" option
+                html += `
+                    <div class="autocomplete-new" data-new="true">
+                        <span>➕ Add "${query}" as new restaurant</span>
+                    </div>
+                `;
+                
+                autocompleteResults.innerHTML = html;
+                autocompleteResults.classList.add('show');
+                
+                // Attach click handlers
+                autocompleteResults.querySelectorAll('.autocomplete-item').forEach(item => {
+                    item.addEventListener('click', () => selectRestaurant(item));
+                });
+                
+                autocompleteResults.querySelector('.autocomplete-new').addEventListener('click', () => {
+                    selectNewRestaurant(query);
+                });
+                
+            } catch (e) {
+                console.error('Search failed:', e);
+            }
+        }, 300);
+    });
+    
+    // Select existing restaurant
+    function selectRestaurant(item) {
+        const id = item.dataset.id;
+        const name = item.dataset.name;
+        const city = item.dataset.city;
+        
+        restaurantIdInput.value = id;
+        restaurantNameInput.value = '';
+        isNewRestaurant = false;
+        
+        selectedRestaurantName.textContent = name + (city ? ` (${city})` : '');
+        selectedRestaurant.classList.add('show');
+        restaurantSearch.style.display = 'none';
+        autocompleteResults.classList.remove('show');
+        newRestaurantFields.classList.remove('show');
     }
+    
+    // Select new restaurant
+    function selectNewRestaurant(name) {
+        restaurantIdInput.value = '';
+        restaurantNameInput.value = name;
+        isNewRestaurant = true;
+        
+        selectedRestaurantName.textContent = `${name} (New)`;
+        selectedRestaurant.classList.add('show');
+        restaurantSearch.style.display = 'none';
+        autocompleteResults.classList.remove('show');
+        newRestaurantFields.classList.add('show');
+    }
+    
+    // Clear restaurant selection
+    clearRestaurantBtn.addEventListener('click', function() {
+        restaurantIdInput.value = '';
+        restaurantNameInput.value = '';
+        isNewRestaurant = false;
+        
+        selectedRestaurant.classList.remove('show');
+        restaurantSearch.style.display = 'block';
+        restaurantSearch.value = '';
+        newRestaurantFields.classList.remove('show');
+        
+        // Clear new restaurant fields
+        document.getElementById('restaurant_address').value = '';
+        document.getElementById('restaurant_city').value = '';
+        document.getElementById('restaurant_state').value = '';
+        document.getElementById('restaurant_postcode').value = '';
+    });
+    
+    // Close autocomplete on outside click
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.autocomplete-wrapper')) {
+            autocompleteResults.classList.remove('show');
+        }
+    });
     
     // Image preview
     imagesInput.addEventListener('change', function() {
@@ -361,6 +615,24 @@ document.addEventListener('DOMContentLoaded', function() {
     // Form submit
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
+        
+        // Validate restaurant selection
+        if (!restaurantIdInput.value && !restaurantNameInput.value) {
+            alert('Please select or enter a restaurant name');
+            return;
+        }
+        
+        // Validate new restaurant fields
+        if (isNewRestaurant) {
+            const city = document.getElementById('restaurant_city').value.trim();
+            const state = document.getElementById('restaurant_state').value.trim();
+            const postcode = document.getElementById('restaurant_postcode').value.trim();
+            
+            if (!city || !state || !postcode) {
+                alert('Please fill in City, State, and Postcode for the new restaurant');
+                return;
+            }
+        }
         
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<span>⏳</span> Uploading...';
@@ -392,9 +664,6 @@ document.addEventListener('DOMContentLoaded', function() {
             submitBtn.innerHTML = '<span>🚀</span> Submit Dish';
         }
     });
-    
-    // Initial load
-    loadRestaurants();
 });
 </script>
 @endpush

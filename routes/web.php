@@ -107,6 +107,7 @@ Route::prefix('api')->group(function (): void {
     Route::get('dishes', [\App\Http\Controllers\DishController::class, 'index']);
     Route::get('dishes/{dish}', [\App\Http\Controllers\DishController::class, 'show']);
     Route::get('restaurants', [\App\Http\Controllers\RestaurantController::class, 'index']);
+    Route::get('restaurants/search', [\App\Http\Controllers\RestaurantController::class, 'search']);
     Route::get('restaurants/{restaurant}', [\App\Http\Controllers\RestaurantController::class, 'show']);
     Route::get('categories', [\App\Http\Controllers\Admin\CategoryController::class, 'index']);
     Route::get('cms-pages/footer', [CmsPageController::class, 'footerPages']);

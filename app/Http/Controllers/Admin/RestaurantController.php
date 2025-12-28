@@ -26,7 +26,10 @@ class RestaurantController extends Controller
     public function store(StoreRestaurantRequest $request): JsonResponse
     {
         $restaurant = DB::transaction(function () use ($request): Restaurant {
-            $restaurant = Restaurant::query()->create($request->validated());
+            $data = $request->validated();
+            $data['is_approved'] = true; // Admin-created restaurants are auto-approved
+            
+            $restaurant = Restaurant::query()->create($data);
             $restaurant->categories()->sync($request->validated('category_ids'));
 
             return $restaurant->load(['categories', 'images']);

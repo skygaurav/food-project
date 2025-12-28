@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreDishRequest;
 use App\Models\Dish;
 use App\Models\DishImage;
+use App\Models\Restaurant;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -48,8 +49,40 @@ class DishController extends Controller
     public function store(StoreDishRequest $request): JsonResponse
     {
         $dish = DB::transaction(function () use ($request): Dish {
+            $restaurantId = $request->integer('restaurant_id');
+            
+            // If no restaurant_id, create a new restaurant
+            if (!$restaurantId && $request->filled('restaurant_name')) {
+                $restaurantName = $request->string('restaurant_name')->toString();
+                $city = $request->string('restaurant_city')->toString();
+                $state = $request->string('restaurant_state')->toString();
+                $postcode = $request->string('restaurant_postcode')->toString();
+                
+                // Check if restaurant already exists with same name, city, and postcode
+                $existingRestaurant = Restaurant::query()
+                    ->where('name', $restaurantName)
+                    ->where('city', $city)
+                    ->where('postcode', $postcode)
+                    ->first();
+                
+                if ($existingRestaurant) {
+                    $restaurantId = $existingRestaurant->id;
+                } else {
+                    // Create new restaurant (not approved until dish is approved)
+                    $restaurant = Restaurant::query()->create([
+                        'name' => $restaurantName,
+                        'city' => $city,
+                        'region' => $state,
+                        'postcode' => $postcode,
+                        'address' => $request->string('restaurant_address')->toString(),
+                        'is_approved' => false,
+                    ]);
+                    $restaurantId = $restaurant->id;
+                }
+            }
+            
             $dish = Dish::query()->create([
-                'restaurant_id' => $request->integer('restaurant_id'),
+                'restaurant_id' => $restaurantId,
                 'user_id' => $request->user()->id,
                 'name' => $request->string('name')->toString(),
                 'comment' => $request->string('comment')->toString(),
