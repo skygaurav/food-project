@@ -62,7 +62,7 @@
                         <option value="">All Cities</option>
                     </select>
                 </div>
-                <div class="filter-group">
+                <div class="filter-group" style="display:none">
                     <label>Sort By</label>
                     <select id="filter-sort">
                         <option value="">Newest First</option>
@@ -93,7 +93,7 @@
     </section>
 
     <!-- Recent Reviews Section -->
-    <section class="home-section" id="reviews">
+    <section class="home-section" id="reviews" style="display: none;">
         <div class="section-header" style="text-align: center; margin-bottom: 1.5rem;">
             <h2 class="section-title">⭐ Recent Reviews</h2>
         </div>
@@ -457,7 +457,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                         <p class="dish-card-restaurant">${restaurant}</p>
                         <div class="dish-card-meta">
-                            <span class="dish-card-rating"><svg class="icon icon-sm icon-warning icon-filled"><use href="#icon-star-filled"></use></svg> ${rating}</span>
+                           <!-- <span class="dish-card-rating"><svg class="icon icon-sm icon-warning icon-filled"><use href="#icon-star-filled"></use></svg> ${rating}</span>-->
                             <span class="dish-card-likes"><svg class="icon icon-sm icon-danger icon-filled"><use href="#icon-heart-filled"></use></svg> ${likes} likes</span>
                         </div>
                     </div>
@@ -579,7 +579,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             </a>
                             <p class="dish-card-restaurant">${restaurant}</p>
                             <div class="dish-card-meta">
-                                <span class="dish-card-rating"><svg class="icon icon-sm icon-warning icon-filled"><use href="#icon-star-filled"></use></svg> ${rating}</span>
+                               <!--<span class="dish-card-rating"><svg class="icon icon-sm icon-warning icon-filled"><use href="#icon-star-filled"></use></svg> ${rating}</span>-->
                                 <span class="dish-card-likes"><svg class="icon icon-sm icon-danger icon-filled"><use href="#icon-heart-filled"></use></svg> ${likes}</span>
                             </div>
                         </div>

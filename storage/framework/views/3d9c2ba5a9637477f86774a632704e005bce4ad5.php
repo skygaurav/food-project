@@ -1,8 +1,6 @@
-@extends('layouts.frontend')
+<?php $__env->startSection('title', 'Dish Details'); ?>
 
-@section('title', 'Dish Details')
-
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <style>
     .dish-detail {
         display: grid;
@@ -512,9 +510,9 @@
         }
     }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
     <!-- Loader -->
     <div id="dish-loader" class="loader">
         <div class="loader-spinner"></div>
@@ -605,7 +603,7 @@
                 <h3 class="reviews-title">Reviews</h3>
             </div>
             
-            @auth
+            <?php if(auth()->guard()->check()): ?>
             <form id="review-form" class="review-form">
                 <div class="review-form-row">
                     <div class="review-form-group">
@@ -625,12 +623,12 @@
                 </div>
                 <button type="submit" class="btn btn-primary" style="margin-top: 1rem; width: 100%;">Submit Review</button>
             </form>
-            @else
+            <?php else: ?>
             <div style="text-align: center; padding: 1.5rem; background: #f8fafc; border-radius: 12px; margin-bottom: 1.5rem;">
                 <p style="margin: 0 0 0.5rem 0; color: var(--text-muted);">Want to leave a review?</p>
                 <a href="/login" class="btn btn-primary">Login to Review</a>
             </div>
-            @endauth
+            <?php endif; ?>
             
             <div id="reviews-loader" class="loader" style="display: none;">
                 <div class="loader-spinner"></div>
@@ -673,13 +671,13 @@
             <div id="modal-thumbnails" class="image-modal-thumbnails"></div>
         </div>
     </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const dishSlug = window.location.pathname.split('/').pop();
-    const isAuthenticated = {{ auth()->check() ? 'true' : 'false' }};
+    const isAuthenticated = <?php echo e(auth()->check() ? 'true' : 'false'); ?>;
     
     const loader = document.getElementById('dish-loader');
     const content = document.getElementById('dish-content');
@@ -1007,4 +1005,6 @@ document.addEventListener('DOMContentLoaded', function() {
     loadDish();
 });
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('layouts.frontend', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /var/www/html/resources/views/dish.blade.php ENDPATH**/ ?>

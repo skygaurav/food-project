@@ -415,7 +415,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                         <p class="dish-card-restaurant">${restaurant}</p>
                         <div class="dish-card-meta">
-                            <span class="dish-card-rating"><svg class="icon icon-sm icon-warning icon-filled"><use href="#icon-star-filled"></use></svg> ${rating}</span>
+                            <!--<span class="dish-card-rating"><svg class="icon icon-sm icon-warning icon-filled"><use href="#icon-star-filled"></use></svg> ${rating}</span>-->
                             <span class="dish-card-likes"><svg class="icon icon-sm icon-danger icon-filled"><use href="#icon-heart-filled"></use></svg> ${likes} likes</span>
                         </div>
                     </div>
