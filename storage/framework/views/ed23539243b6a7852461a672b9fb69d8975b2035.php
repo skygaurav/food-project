@@ -97,99 +97,7 @@
         gap: 1.5rem;
     }
     
-    .dish-card {
-        background: #fff;
-        border-radius: 16px;
-        overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-    
-    .dish-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-    }
-    
-    .dish-card-image {
-        position: relative;
-        height: 200px;
-        background: #f1f5f9;
-    }
-    
-    .dish-card-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-    
-    .dish-card-badge {
-        position: absolute;
-        top: 12px;
-        left: 12px;
-        background: var(--primary);
-        color: #fff;
-        padding: 0.35rem 0.75rem;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 600;
-    }
-    
-    .dish-card-content {
-        padding: 1.25rem;
-    }
-    
-    .dish-card-title {
-        font-family: 'Playfair Display', Georgia, serif;
-        font-size: 1.25rem;
-        font-weight: 600;
-        margin: 0 0 0.5rem 0;
-        color: var(--text-dark);
-    }
-    
-    .dish-card-title a {
-        color: inherit;
-        text-decoration: none;
-    }
-    
-    .dish-card-title a:hover {
-        color: var(--primary);
-    }
-    
-    .dish-card-restaurant {
-        font-size: 0.9rem;
-        color: var(--text-muted);
-        margin-bottom: 0.75rem;
-    }
-    
-    .dish-card-stats {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        font-size: 0.85rem;
-        color: var(--text-muted);
-    }
-    
-    .dish-card-stat {
-        display: flex;
-        align-items: center;
-        gap: 0.25rem;
-    }
-    
-    .dish-card-categories {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-top: 0.75rem;
-    }
-    
-    .category-tag {
-        background: #f1f5f9;
-        color: var(--text-muted);
-        padding: 0.25rem 0.6rem;
-        border-radius: 12px;
-        font-size: 0.75rem;
-        font-weight: 500;
-    }
+    /* Use shared dish-card styles from frontend.blade.php */
     
     .loader {
         text-align: center;
@@ -327,6 +235,12 @@
                 </select>
             </div>
             <div class="filter-group">
+                <label for="city">City</label>
+                <select id="city">
+                    <option value="">All Cities</option>
+                </select>
+            </div>
+            <div class="filter-group">
                 <label for="sort">Sort By</label>
                 <select id="sort">
                     <option value="latest">Latest</option>
@@ -363,6 +277,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     let currentPage = 1;
     let totalPages = 1;
+    let totalDishes = 0;
+    let allDishes = [];
+    let cities = new Set();
     let searchTimeout = null;
     
     const grid = document.getElementById('dishes-grid');
@@ -370,26 +287,42 @@ document.addEventListener('DOMContentLoaded', function() {
     const emptyState = document.getElementById('empty-state');
     const pagination = document.getElementById('pagination');
     const categorySelect = document.getElementById('category');
+    const citySelect = document.getElementById('city');
     const sortSelect = document.getElementById('sort');
     const searchInput = document.getElementById('search');
     
-    // Load categories
+    // Load categories (API returns array directly or {data: []})
     async function loadCategories() {
         try {
             const response = await fetch('/api/categories');
-            const data = await response.json();
+            const result = await response.json();
+            const categories = result.data || result;
             
-            document.getElementById('total-categories').textContent = data.data.length;
+            document.getElementById('total-categories').textContent = categories.length;
             
-            data.data.forEach(cat => {
+            categories.forEach(cat => {
                 const option = document.createElement('option');
-                option.value = cat.id;
+                option.value = cat.slug;
                 option.textContent = cat.name;
                 categorySelect.appendChild(option);
             });
         } catch (error) {
             console.error('Error loading categories:', error);
         }
+    }
+    
+    // Update cities filter from dishes data
+    function updateCitiesFilter() {
+        const currentValue = citySelect.value;
+        citySelect.innerHTML = '<option value="">All Cities</option>';
+        
+        Array.from(cities).sort().forEach(city => {
+            const option = document.createElement('option');
+            option.value = city;
+            option.textContent = city;
+            if (city === currentValue) option.selected = true;
+            citySelect.appendChild(option);
+        });
     }
     
     // Load dishes
@@ -400,39 +333,42 @@ document.addEventListener('DOMContentLoaded', function() {
         pagination.style.display = 'none';
         
         try {
-            const category = categorySelect.value;
-            const sort = sortSelect.value;
-            const search = searchInput.value;
+            const params = new URLSearchParams();
+            params.set('page', page);
+            params.set('per_page', 12);
             
-            let url = `/api/dishes?page=${page}&per_page=12`;
-            if (category) url += `&category=${category}`;
-            if (sort) url += `&sort=${sort}`;
-            if (search) url += `&search=${encodeURIComponent(search)}`;
+            if (categorySelect.value) params.set('category', categorySelect.value);
+            if (citySelect.value) params.set('city', citySelect.value);
+            if (sortSelect.value) params.set('sort', sortSelect.value);
+            if (searchInput.value) params.set('search', searchInput.value);
             
-            const response = await fetch(url);
+            const response = await fetch('/api/dishes?' + params.toString());
             const data = await response.json();
+            
+            allDishes = data.data || [];
+            currentPage = data.current_page || 1;
+            totalPages = data.last_page || 1;
+            totalDishes = data.total || allDishes.length;
             
             loader.style.display = 'none';
             
-            if (data.data.length === 0) {
+            // Extract cities from dishes for filter
+            allDishes.forEach(dish => {
+                if (dish.restaurant && dish.restaurant.city) {
+                    cities.add(dish.restaurant.city);
+                }
+            });
+            updateCitiesFilter();
+            
+            // Update stats
+            document.getElementById('total-dishes').textContent = totalDishes;
+            
+            if (allDishes.length === 0) {
                 emptyState.style.display = 'block';
                 return;
             }
             
-            // Update stats
-            document.getElementById('total-dishes').textContent = data.meta.total;
-            
-            // Render dishes
-            grid.innerHTML = '';
-            data.data.forEach(dish => {
-                grid.innerHTML += renderDishCard(dish);
-            });
-            
-            grid.style.display = 'grid';
-            
-            // Update pagination
-            currentPage = data.meta.current_page;
-            totalPages = data.meta.last_page;
+            renderDishes();
             renderPagination();
             
         } catch (error) {
@@ -442,112 +378,102 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Render dish card
-    function renderDishCard(dish) {
-        const image = dish.images?.[0]?.image_path 
-            ? `/storage/${dish.images[0].image_path}`
-            : 'https://via.placeholder.com/300x200?text=No+Image';
-        
-        const categories = dish.categories?.map(c => 
-            `<span class="category-tag">${c.name}</span>`
-        ).join('') || '';
-        
-        return `
-            <div class="dish-card">
-                <div class="dish-card-image">
-                    <img src="${image}" alt="${dish.name}" loading="lazy">
-                    ${dish.price ? `<span class="dish-card-badge">$${parseFloat(dish.price).toFixed(2)}</span>` : ''}
-                </div>
-                <div class="dish-card-content">
-                    <h3 class="dish-card-title">
-                        <a href="/dishes/${dish.slug}">${dish.name}</a>
-                    </h3>
-                    <p class="dish-card-restaurant">📍 ${dish.restaurant?.name || 'Unknown Restaurant'}</p>
-                    <div class="dish-card-stats">
-                        <span class="dish-card-stat">⭐ ${dish.average_rating ? parseFloat(dish.average_rating).toFixed(1) : 'N/A'}</span>
-                        <span class="dish-card-stat">💬 ${dish.reviews_count || 0}</span>
-                        <span class="dish-card-stat">👍 ${dish.likes || 0}</span>
+    // Render dishes - same format as home page
+    function renderDishes() {
+        grid.innerHTML = allDishes.map(dish => {
+            // Find primary image or use first one
+            let primaryImage = null;
+            if (dish.images && dish.images.length > 0) {
+                primaryImage = dish.images.find(img => img.is_primary) || dish.images[0];
+            }
+            let image = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80';
+            if (primaryImage) {
+                const imgPath = primaryImage.path || primaryImage.image_path;
+                if (imgPath) {
+                    image = imgPath.startsWith('http') ? imgPath : '/storage/' + imgPath;
+                }
+            }
+            
+            const rating = dish.reviews_avg_rating ? parseFloat(dish.reviews_avg_rating).toFixed(1) : 'N/A';
+            const likes = dish.likes_count || 0;
+            const city = dish.restaurant ? dish.restaurant.city : '';
+            const restaurant = dish.restaurant ? dish.restaurant.name : 'Unknown Restaurant';
+            
+            return `
+                <article class="dish-card">
+                    <a href="/dishes/${dish.slug}">
+                        <img src="${image}" alt="${dish.name}" class="dish-card-image" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'" />
+                    </a>
+                    <div class="dish-card-body">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.25rem;">
+                            <a href="/dishes/${dish.slug}" style="text-decoration: none; color: inherit;">
+                                <h3 class="dish-card-title">${dish.name}</h3>
+                            </a>
+                            ${city ? `<span style="font-size: 0.75rem; color: var(--text-muted); background: #f1f5f9; padding: 0.25rem 0.5rem; border-radius: 4px;">${city}</span>` : ''}
+                        </div>
+                        <p class="dish-card-restaurant">${restaurant}</p>
+                        <div class="dish-card-meta">
+                            <span class="dish-card-rating"><svg class="icon icon-sm icon-warning icon-filled"><use href="#icon-star-filled"></use></svg> ${rating}</span>
+                            <span class="dish-card-likes"><svg class="icon icon-sm icon-danger icon-filled"><use href="#icon-heart-filled"></use></svg> ${likes} likes</span>
+                        </div>
                     </div>
-                    ${categories ? `<div class="dish-card-categories">${categories}</div>` : ''}
-                </div>
-            </div>
-        `;
+                </article>
+            `;
+        }).join('');
+        
+        grid.style.display = 'grid';
     }
     
     // Render pagination
     function renderPagination() {
         if (totalPages <= 1) {
-            pagination.style.display = 'none';
+            if (totalDishes > 0) {
+                pagination.innerHTML = `<span style="color: var(--text-muted);">Showing all ${totalDishes} dish(es)</span>`;
+                pagination.style.display = 'flex';
+            } else {
+                pagination.style.display = 'none';
+            }
             return;
         }
         
         pagination.style.display = 'flex';
-        pagination.innerHTML = '';
+        let html = '';
         
         // Previous button
-        const prevBtn = document.createElement('button');
-        prevBtn.className = 'pagination-btn';
-        prevBtn.textContent = '← Prev';
-        prevBtn.disabled = currentPage === 1;
-        prevBtn.onclick = () => loadDishes(currentPage - 1);
-        pagination.appendChild(prevBtn);
+        html += `<button class="pagination-btn" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>← Prev</button>`;
         
         // Page numbers
-        const maxVisible = 5;
-        let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
-        let endPage = Math.min(totalPages, startPage + maxVisible - 1);
-        
-        if (endPage - startPage < maxVisible - 1) {
-            startPage = Math.max(1, endPage - maxVisible + 1);
-        }
-        
-        if (startPage > 1) {
-            addPageButton(1);
-            if (startPage > 2) {
-                const ellipsis = document.createElement('span');
-                ellipsis.textContent = '...';
-                ellipsis.style.padding = '0.5rem';
-                pagination.appendChild(ellipsis);
+        for (let i = 1; i <= totalPages; i++) {
+            if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                html += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+            } else if (i === currentPage - 2 || i === currentPage + 2) {
+                html += '<span style="padding: 0 0.5rem; color: var(--text-muted);">...</span>';
             }
-        }
-        
-        for (let i = startPage; i <= endPage; i++) {
-            addPageButton(i);
-        }
-        
-        if (endPage < totalPages) {
-            if (endPage < totalPages - 1) {
-                const ellipsis = document.createElement('span');
-                ellipsis.textContent = '...';
-                ellipsis.style.padding = '0.5rem';
-                pagination.appendChild(ellipsis);
-            }
-            addPageButton(totalPages);
         }
         
         // Next button
-        const nextBtn = document.createElement('button');
-        nextBtn.className = 'pagination-btn';
-        nextBtn.textContent = 'Next →';
-        nextBtn.disabled = currentPage === totalPages;
-        nextBtn.onclick = () => loadDishes(currentPage + 1);
-        pagination.appendChild(nextBtn);
+        html += `<button class="pagination-btn" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next →</button>`;
+        
+        // Info
+        html += `<span style="margin-left: 1rem; color: var(--text-muted);">Page ${currentPage} of ${totalPages} (${totalDishes} dishes)</span>`;
+        
+        pagination.innerHTML = html;
     }
     
-    function addPageButton(page) {
-        const btn = document.createElement('button');
-        btn.className = 'pagination-btn' + (page === currentPage ? ' active' : '');
-        btn.textContent = page;
-        btn.onclick = () => loadDishes(page);
-        pagination.appendChild(btn);
-    }
+    // Go to page function (global)
+    window.goToPage = function(page) {
+        if (page < 1 || page > totalPages) return;
+        loadDishes(page);
+        document.getElementById('dishes-grid').scrollIntoView({ behavior: 'smooth' });
+    };
     
     // Load restaurant count
     async function loadRestaurantCount() {
         try {
             const response = await fetch('/api/restaurants');
-            const data = await response.json();
-            document.getElementById('total-restaurants').textContent = data.data?.length || 0;
+            const result = await response.json();
+            const restaurants = result.data || result;
+            document.getElementById('total-restaurants').textContent = Array.isArray(restaurants) ? restaurants.length : 0;
         } catch (error) {
             console.error('Error loading restaurants:', error);
         }
@@ -555,6 +481,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Event listeners
     categorySelect.addEventListener('change', () => loadDishes(1));
+    citySelect.addEventListener('change', () => loadDishes(1));
     sortSelect.addEventListener('change', () => loadDishes(1));
     searchInput.addEventListener('input', () => {
         clearTimeout(searchTimeout);
@@ -569,4 +496,4 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <?php $__env->stopPush(); ?>
 
-<?php echo $__env->make('layouts.frontend', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /workspaces/food-project/resources/views/dishes.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.frontend', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /var/www/html/resources/views/dishes.blade.php ENDPATH**/ ?>

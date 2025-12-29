@@ -553,9 +553,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                 ${reviews} reviews
                             </span>
                         </div>
-                        <div class="popularity-badge">
-                            🔥 Popularity Score: ${popularityScore.toFixed(1)}
-                        </div>
                     </div>
                 </article>
             `;

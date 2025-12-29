@@ -288,4 +288,4 @@
         animation: spin 1s linear infinite;
     }
 </style>
-<?php /**PATH /workspaces/food-project/resources/views/partials/icons.blade.php ENDPATH**/ ?>
+<?php /**PATH /var/www/html/resources/views/partials/icons.blade.php ENDPATH**/ ?>

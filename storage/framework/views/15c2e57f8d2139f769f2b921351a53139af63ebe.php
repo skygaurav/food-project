@@ -1,21 +1,19 @@
-@extends('layouts.frontend')
+<?php $__env->startSection('title', 'Home'); ?>
 
-@section('title', 'Home')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
     <!-- Hero Section -->
     <section class="hero-section">
         <h1 class="hero-title">Discover Delicious Dishes</h1>
         <p class="hero-subtitle">Share your favorite meals and explore dishes loved by food enthusiasts in your city</p>
-        @auth
+        <?php if(auth()->guard()->check()): ?>
             <a href="/upload" class="btn btn-primary">
                 <svg class="icon"><use href="#icon-camera"></use></svg> Upload a Dish
             </a>
-        @else
+        <?php else: ?>
             <a href="/register" class="btn btn-primary">
                 <svg class="icon"><use href="#icon-utensils"></use></svg> Join Our Community
             </a>
-        @endauth
+        <?php endif; ?>
     </section>
 
     <!-- Popular Dishes Section -->
@@ -83,9 +81,9 @@
             <div class="empty-state-icon"><svg class="icon icon-4xl icon-muted"><use href="#icon-dish"></use></svg></div>
             <h3 class="empty-state-title">No dishes found</h3>
             <p class="empty-state-text">Be the first to share a delicious dish!</p>
-            @auth
+            <?php if(auth()->guard()->check()): ?>
                 <a href="/upload" class="btn btn-primary" style="margin-top: 1rem;">Upload a Dish</a>
-            @endauth
+            <?php endif; ?>
         </div>
         
         <!-- Pagination -->
@@ -105,9 +103,9 @@
             No reviews yet
         </div>
     </section>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <style>
     .home-section {
         margin-bottom: 3rem;
@@ -325,9 +323,9 @@
         }
     }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     let currentPage = 1;
@@ -701,4 +699,6 @@ document.addEventListener('DOMContentLoaded', function() {
     loadCategoriesGrid();
 });
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('layouts.frontend', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /var/www/html/resources/views/home.blade.php ENDPATH**/ ?>
