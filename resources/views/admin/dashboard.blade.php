@@ -54,44 +54,44 @@
             </div>
             <div class="card-body">
                 <div class="quick-actions">
-                    <a href="/admin/categories/create" class="quick-action-btn quick-action-categories">
-                        <div class="quick-action-icon-wrapper">
+                    <a href="/admin/categories/create" class="quick-action-btn">
+                        <span class="quick-action-icon qa-icon-amber">
                             <svg class="icon"><use href="#icon-star"></use></svg>
-                        </div>
-                        <div class="quick-action-content">
+                        </span>
+                        <span class="quick-action-content">
                             <span class="quick-action-title">Add Category</span>
                             <span class="quick-action-desc">Create new food category</span>
-                        </div>
+                        </span>
                         <svg class="icon quick-action-arrow"><use href="#icon-chevron-right"></use></svg>
                     </a>
-                    <a href="/admin/restaurants/create" class="quick-action-btn quick-action-restaurants">
-                        <div class="quick-action-icon-wrapper">
+                    <a href="/admin/restaurants/create" class="quick-action-btn">
+                        <span class="quick-action-icon qa-icon-green">
                             <svg class="icon"><use href="#icon-map-pin"></use></svg>
-                        </div>
-                        <div class="quick-action-content">
+                        </span>
+                        <span class="quick-action-content">
                             <span class="quick-action-title">Add Restaurant</span>
                             <span class="quick-action-desc">List a new restaurant</span>
-                        </div>
+                        </span>
                         <svg class="icon quick-action-arrow"><use href="#icon-chevron-right"></use></svg>
                     </a>
-                    <a href="/admin/disapprovals" class="quick-action-btn quick-action-pending">
-                        <div class="quick-action-icon-wrapper">
+                    <a href="/admin/disapprovals" class="quick-action-btn">
+                        <span class="quick-action-icon qa-icon-blue">
                             <svg class="icon"><use href="#icon-clock"></use></svg>
-                        </div>
-                        <div class="quick-action-content">
+                        </span>
+                        <span class="quick-action-content">
                             <span class="quick-action-title">Review Pending</span>
                             <span class="quick-action-desc">Approve or reject items</span>
-                        </div>
+                        </span>
                         <svg class="icon quick-action-arrow"><use href="#icon-chevron-right"></use></svg>
                     </a>
-                    <a href="/admin/cms-pages/create" class="quick-action-btn quick-action-cms">
-                        <div class="quick-action-icon-wrapper">
+                    <a href="/admin/cms-pages/create" class="quick-action-btn">
+                        <span class="quick-action-icon qa-icon-purple">
                             <svg class="icon"><use href="#icon-edit"></use></svg>
-                        </div>
-                        <div class="quick-action-content">
+                        </span>
+                        <span class="quick-action-content">
                             <span class="quick-action-title">Add CMS Page</span>
                             <span class="quick-action-desc">Create content pages</span>
-                        </div>
+                        </span>
                         <svg class="icon quick-action-arrow"><use href="#icon-chevron-right"></use></svg>
                     </a>
                 </div>
@@ -122,12 +122,13 @@
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
         gap: 1.5rem;
+        margin-top: 1.5rem;
     }
     
     /* Card enhancements */
     .quick-actions-card,
     .recent-restaurants-card {
-        border-radius: 16px;
+        border-radius: 16px !important;
         overflow: hidden;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
         transition: box-shadow 0.3s ease;
@@ -138,19 +139,41 @@
         box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
     }
     
-    .quick-actions-card .card-header,
+    .quick-actions-card .card-header {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border-bottom: 1px solid #e2e8f0;
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+    }
+    
     .recent-restaurants-card .card-header {
         background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
         border-bottom: 1px solid #e2e8f0;
         padding: 1.25rem 1.5rem;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
     }
     
     .quick-actions-card .card-title,
     .recent-restaurants-card .card-title {
-        display: flex;
+        display: inline-flex;
         align-items: center;
         gap: 0.5rem;
         margin: 0;
+        font-size: 1.125rem;
+        font-weight: 600;
+    }
+    
+    .quick-actions-card .card-title .icon,
+    .recent-restaurants-card .card-title .icon {
+        width: 20px !important;
+        height: 20px !important;
+        flex-shrink: 0;
     }
     
     .card-subtitle {
@@ -167,16 +190,11 @@
         text-decoration: none;
         font-weight: 500;
         transition: color 0.15s;
+        white-space: nowrap;
     }
     
     .card-header-link:hover {
         color: var(--primary-dark);
-    }
-    
-    .recent-restaurants-card .card-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
     }
     
     /* Quick Actions Grid */
@@ -188,8 +206,9 @@
     }
     
     .quick-action-btn {
-        display: flex;
-        align-items: center;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
         gap: 1rem;
         padding: 1rem 1.25rem;
         background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
@@ -225,51 +244,54 @@
         transform: scaleY(1);
     }
     
-    .quick-action-icon-wrapper {
+    .quick-action-icon {
         width: 48px;
+        min-width: 48px;
         height: 48px;
         border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
         flex-shrink: 0;
         transition: transform 0.2s ease;
     }
     
-    .quick-action-btn:hover .quick-action-icon-wrapper {
+    .quick-action-btn:hover .quick-action-icon {
         transform: scale(1.1);
     }
     
-    .quick-action-icon-wrapper .icon {
-        width: 24px;
-        height: 24px;
-        color: #fff;
+    .quick-action-icon .icon {
+        width: 24px !important;
+        height: 24px !important;
+        color: #fff !important;
+        stroke: #fff !important;
     }
     
     /* Color variants for quick actions */
-    .quick-action-categories .quick-action-icon-wrapper {
+    .qa-icon-amber {
         background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
         box-shadow: 0 4px 8px rgba(245, 158, 11, 0.3);
     }
     
-    .quick-action-restaurants .quick-action-icon-wrapper {
+    .qa-icon-green {
         background: linear-gradient(135deg, #10b981 0%, #059669 100%);
         box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
     }
     
-    .quick-action-pending .quick-action-icon-wrapper {
+    .qa-icon-blue {
         background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
         box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
     }
     
-    .quick-action-cms .quick-action-icon-wrapper {
+    .qa-icon-purple {
         background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
         box-shadow: 0 4px 8px rgba(139, 92, 246, 0.3);
     }
     
     .quick-action-content {
         flex: 1;
-        display: flex;
+        min-width: 0;
+        display: inline-flex;
         flex-direction: column;
         gap: 0.125rem;
     }
@@ -278,18 +300,24 @@
         font-weight: 600;
         font-size: 0.9375rem;
         color: #1e293b;
+        line-height: 1.3;
+        display: block;
     }
     
     .quick-action-desc {
         font-size: 0.75rem;
         color: #64748b;
+        line-height: 1.3;
+        display: block;
     }
     
     .quick-action-arrow {
-        width: 20px;
-        height: 20px;
+        width: 20px !important;
+        min-width: 20px;
+        height: 20px !important;
         color: #94a3b8;
         transition: all 0.2s ease;
+        flex-shrink: 0;
     }
     
     .quick-action-btn:hover .quick-action-arrow {
@@ -298,18 +326,17 @@
     }
     
     /* Recent Restaurants */
-    .recent-item {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 1rem;
-        margin: 0 -1rem;
-        border-radius: 12px;
-        transition: background 0.2s ease;
+    .recent-restaurants-card .card-body {
+        padding: 1rem 1.5rem;
     }
     
-    .recent-item:hover {
-        background: #f8fafc;
+    .recent-item {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between;
+        padding: 0.875rem 0;
+        transition: background 0.2s ease;
     }
     
     .recent-item:not(:last-child) {
@@ -317,20 +344,25 @@
     }
     
     .recent-item-info {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 0.875rem;
+        flex: 1;
+        min-width: 0;
     }
     
     .recent-item-icon {
-        width: 48px;
-        height: 48px;
+        width: 44px;
+        min-width: 44px;
+        height: 44px;
         background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        border-radius: 10px;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
         transition: all 0.2s ease;
+        flex-shrink: 0;
     }
     
     .recent-item:hover .recent-item-icon {
@@ -338,8 +370,8 @@
     }
     
     .recent-item-icon .icon {
-        width: 22px;
-        height: 22px;
+        width: 20px !important;
+        height: 20px !important;
         color: #64748b;
         transition: color 0.2s ease;
     }
@@ -352,38 +384,35 @@
         display: flex;
         flex-direction: column;
         gap: 0.125rem;
+        min-width: 0;
+        flex: 1;
     }
     
     .recent-item-name {
         font-weight: 600;
         color: #1e293b;
         font-size: 0.9375rem;
+        line-height: 1.3;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     
     .recent-item-meta {
         font-size: 0.75rem;
         color: #64748b;
-        display: flex;
+        display: inline-flex;
         align-items: center;
-        gap: 0.375rem;
+        gap: 0.25rem;
+        line-height: 1.3;
     }
     
     .recent-item-meta .icon {
-        width: 12px;
-        height: 12px;
+        width: 12px !important;
+        height: 12px !important;
+        flex-shrink: 0;
     }
-    
-    .recent-item .btn {
-        opacity: 0;
-        transform: translateX(-8px);
-        transition: all 0.2s ease;
-    }
-    
-    .recent-item:hover .btn {
-        opacity: 1;
-        transform: translateX(0);
-    }
-    
+
     /* Loading state */
     .loading-placeholder {
         display: flex;
@@ -460,12 +489,8 @@
         
         .quick-action-icon-wrapper {
             width: 40px;
+            min-width: 40px;
             height: 40px;
-        }
-        
-        .recent-item .btn {
-            opacity: 1;
-            transform: translateX(0);
         }
     }
 </style>
