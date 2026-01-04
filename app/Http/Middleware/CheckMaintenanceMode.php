@@ -21,7 +21,14 @@ class CheckMaintenanceMode
         // Check if maintenance mode is enabled
         $maintenanceMode = AdminSetting::where('key', 'maintenance_mode')->first();
         
-        if ($maintenanceMode && $maintenanceMode->value) {
+        // Check if maintenance mode is enabled (handle boolean, string "true", or integer 1)
+        $isMaintenanceEnabled = false;
+        if ($maintenanceMode) {
+            $value = $maintenanceMode->value;
+            $isMaintenanceEnabled = $value === true || $value === 1 || $value === '1' || $value === 'true';
+        }
+        
+        if ($isMaintenanceEnabled) {
             // Allow admin users to bypass maintenance mode (using session-based admin auth)
             if ($request->session()->has('admin_id')) {
                 return $next($request);

@@ -8050,3 +8050,113 @@
 #44 /var/www/html/public/index.php(11): Illuminate\\Foundation\\Http\\Kernel->handle(Object(Illuminate\\Http\\Request))
 #45 {main}
 "} 
+[2026-01-04 14:32:24] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [] is not defined. at /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Log/LogManager.php:210)
+[stacktrace]
+#0 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(135): Illuminate\\Log\\LogManager->resolve()
+#1 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(122): Illuminate\\Log\\LogManager->get()
+#2 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(645): Illuminate\\Log\\LogManager->driver()
+#3 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(274): Illuminate\\Log\\LogManager->error()
+#4 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(454): Illuminate\\Foundation\\Exceptions\\Handler->report()
+#5 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(157): Illuminate\\Foundation\\Console\\Kernel->reportException()
+#6 /workspaces/food-project/artisan(8): Illuminate\\Foundation\\Console\\Kernel->handle()
+#7 {main}
+"} 
+[2026-01-04 14:32:24] laravel.ERROR: Command "tinker" is not defined. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\CommandNotFoundException(code: 0): Command \"tinker\" is not defined. at /workspaces/food-project/vendor/symfony/console/Application.php:694)
+[stacktrace]
+#0 /workspaces/food-project/vendor/symfony/console/Application.php(259): Symfony\\Component\\Console\\Application->find()
+#1 /workspaces/food-project/vendor/symfony/console/Application.php(171): Symfony\\Component\\Console\\Application->doRun()
+#2 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Console/Application.php(102): Symfony\\Component\\Console\\Application->run()
+#3 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(155): Illuminate\\Console\\Application->run()
+#4 /workspaces/food-project/artisan(8): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 {main}
+"} 
+[2026-01-04 14:32:40] laravel.EMERGENCY: Unable to create configured logger. Using emergency logger. {"exception":"[object] (InvalidArgumentException(code: 0): Log [] is not defined. at /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Log/LogManager.php:210)
+[stacktrace]
+#0 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(135): Illuminate\\Log\\LogManager->resolve()
+#1 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(122): Illuminate\\Log\\LogManager->get()
+#2 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Log/LogManager.php(645): Illuminate\\Log\\LogManager->driver()
+#3 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(274): Illuminate\\Log\\LogManager->error()
+#4 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(198): Illuminate\\Foundation\\Exceptions\\Handler->report()
+#5 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(246): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleException()
+#6 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(270): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleShutdown()
+#7 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}()
+#8 {main}
+"} 
+[2026-01-04 14:32:40] laravel.ERROR: Uncaught PDOException: could not find driver in /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:70
+Stack trace:
+#0 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php(70): PDO->__construct()
+#1 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php(46): Illuminate\Database\Connectors\Connector->createPdoConnection()
+#2 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Connectors/MySqlConnector.php(24): Illuminate\Database\Connectors\Connector->createConnection()
+#3 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Connectors/ConnectionFactory.php(184): Illuminate\Database\Connectors\MySqlConnector->connect()
+#4 [internal function]: Illuminate\Database\Connectors\ConnectionFactory->Illuminate\Database\Connectors\{closure}()
+#5 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Connection.php(1181): call_user_func()
+#6 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Connection.php(1217): Illuminate\Database\Connection->getPdo()
+#7 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Connection.php(486): Illuminate\Database\Connection->getReadPdo()
+#8 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Connection.php(414): Illuminate\Database\Connection->getPdoForSelect()
+#9 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Connection.php(753): Illuminate\Database\Connection->Illuminate\Database\{closure}()
+#10 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Connection.php(720): Illuminate\Database\Connection->runQueryCallback()
+#11 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Connection.php(422): Illuminate\Database\Connection->run()
+#12 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(2706): Illuminate\Database\Connection->select()
+#13 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(2694): Illuminate\Database\Query\Builder->runSelect()
+#14 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3230): Illuminate\Database\Query\Builder->Illuminate\Database\Query\{closure}()
+#15 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(2695): Illuminate\Database\Query\Builder->onceWithColumns()
+#16 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(710): Illuminate\Database\Query\Builder->get()
+#17 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(694): Illuminate\Database\Eloquent\Builder->getModels()
+#18 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Concerns/BuildsQueries.php(296): Illuminate\Database\Eloquent\Builder->get()
+#19 Command line code(5): Illuminate\Database\Eloquent\Builder->first()
+#20 {main}
+
+Next Illuminate\Database\QueryException: could not find driver (SQL: select * from `admin_settings` where `key` = maintenance_mode limit 1) in /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Connection.php:760
+Stack trace:
+#0 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Connection.php(720): Illuminate\Database\Connection->runQueryCallback()
+#1 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Connection.php(422): Illuminate\Database\Connection->run()
+#2 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(2706): Illuminate\Database\Connection->select()
+#3 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(2694): Illuminate\Database\Query\Builder->runSelect()
+#4 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3230): Illuminate\Database\Query\Builder->Illuminate\Database\Query\{closure}()
+#5 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(2695): Illuminate\Database\Query\Builder->onceWithColumns()
+#6 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(710): Illuminate\Database\Query\Builder->get()
+#7 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(694): Illuminate\Database\Eloquent\Builder->getModels()
+#8 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Concerns/BuildsQueries.php(296): Illuminate\Database\Eloquent\Builder->get()
+#9 Command line code(5): Illuminate\Database\Eloquent\Builder->first()
+#10 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught PDOException: could not find driver in /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:70
+Stack trace:
+#0 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php(70): PDO->__construct()
+#1 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php(46): Illuminate\\Database\\Connectors\\Connector->createPdoConnection()
+#2 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Connectors/MySqlConnector.php(24): Illuminate\\Database\\Connectors\\Connector->createConnection()
+#3 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Connectors/ConnectionFactory.php(184): Illuminate\\Database\\Connectors\\MySqlConnector->connect()
+#4 [internal function]: Illuminate\\Database\\Connectors\\ConnectionFactory->Illuminate\\Database\\Connectors\\{closure}()
+#5 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Connection.php(1181): call_user_func()
+#6 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Connection.php(1217): Illuminate\\Database\\Connection->getPdo()
+#7 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Connection.php(486): Illuminate\\Database\\Connection->getReadPdo()
+#8 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Connection.php(414): Illuminate\\Database\\Connection->getPdoForSelect()
+#9 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Connection.php(753): Illuminate\\Database\\Connection->Illuminate\\Database\\{closure}()
+#10 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Connection.php(720): Illuminate\\Database\\Connection->runQueryCallback()
+#11 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Connection.php(422): Illuminate\\Database\\Connection->run()
+#12 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(2706): Illuminate\\Database\\Connection->select()
+#13 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(2694): Illuminate\\Database\\Query\\Builder->runSelect()
+#14 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3230): Illuminate\\Database\\Query\\Builder->Illuminate\\Database\\Query\\{closure}()
+#15 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(2695): Illuminate\\Database\\Query\\Builder->onceWithColumns()
+#16 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(710): Illuminate\\Database\\Query\\Builder->get()
+#17 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(694): Illuminate\\Database\\Eloquent\\Builder->getModels()
+#18 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Concerns/BuildsQueries.php(296): Illuminate\\Database\\Eloquent\\Builder->get()
+#19 Command line code(5): Illuminate\\Database\\Eloquent\\Builder->first()
+#20 {main}
+
+Next Illuminate\\Database\\QueryException: could not find driver (SQL: select * from `admin_settings` where `key` = maintenance_mode limit 1) in /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Connection.php:760
+Stack trace:
+#0 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Connection.php(720): Illuminate\\Database\\Connection->runQueryCallback()
+#1 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Connection.php(422): Illuminate\\Database\\Connection->run()
+#2 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(2706): Illuminate\\Database\\Connection->select()
+#3 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(2694): Illuminate\\Database\\Query\\Builder->runSelect()
+#4 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3230): Illuminate\\Database\\Query\\Builder->Illuminate\\Database\\Query\\{closure}()
+#5 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(2695): Illuminate\\Database\\Query\\Builder->onceWithColumns()
+#6 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(710): Illuminate\\Database\\Query\\Builder->get()
+#7 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(694): Illuminate\\Database\\Eloquent\\Builder->getModels()
+#8 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Concerns/BuildsQueries.php(296): Illuminate\\Database\\Eloquent\\Builder->get()
+#9 Command line code(5): Illuminate\\Database\\Eloquent\\Builder->first()
+#10 {main}
+  thrown at /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Database/Connection.php:760)
+[stacktrace]
+#0 {main}
+"} 
