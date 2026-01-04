@@ -539,6 +539,7 @@
                 <h1 id="dish-title" class="dish-title"></h1>
                 <p id="dish-restaurant" class="dish-restaurant"></p>
                 <p id="dish-location" class="dish-location"></p>
+                <p id="dish-opening-hours" class="dish-location" style="font-size: 0.9rem; color: #64748b;"></p>
                 
                 <div class="dish-stats">
                     <div class="dish-stat" style="display: none;">
@@ -810,6 +811,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (dish.restaurant) {
             const location = [dish.restaurant.address, dish.restaurant.city, dish.restaurant.region].filter(Boolean).join(', ');
             document.getElementById('dish-location').textContent = location || '';
+            
+            // Opening hours (from restaurant)
+            if (dish.restaurant.opening_hours) {
+                document.getElementById('dish-opening-hours').textContent = 'Hours: ' + dish.restaurant.opening_hours;
+            }
         }
         
         // Stats
