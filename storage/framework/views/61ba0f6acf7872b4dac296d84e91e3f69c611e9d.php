@@ -1,4 +1,4 @@
-<?php $__env->startSection('title', 'Register'); ?>
+<?php $__env->startSection('title', 'Forgot Password'); ?>
 
 <?php $__env->startPush('styles'); ?>
 <style>
@@ -85,6 +85,16 @@
         font-size: 0.875rem;
     }
     
+    .auth-success {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        color: #16a34a;
+        font-size: 0.875rem;
+    }
+    
     .auth-footer {
         text-align: center;
         margin-top: 1.5rem;
@@ -103,12 +113,6 @@
     .auth-footer a:hover {
         text-decoration: underline;
     }
-    
-    .form-hint {
-        font-size: 0.75rem;
-        color: var(--text-muted);
-        margin-top: 0.25rem;
-    }
 </style>
 <?php $__env->stopPush(); ?>
 
@@ -116,10 +120,17 @@
     <div class="auth-container">
         <div class="auth-card">
             <div class="auth-header">
-                <div class="auth-icon"><svg class="icon icon-3xl icon-primary"><use href="#icon-utensils"></use></svg></div>
-                <h1 class="auth-title">Join FOODCITA</h1>
-                <p class="auth-subtitle">Create an account to share your favorite dishes</p>
+                <div class="auth-icon"><svg class="icon icon-3xl icon-primary"><use href="#icon-mail"></use></svg></div>
+                <h1 class="auth-title">Forgot Password?</h1>
+                <p class="auth-subtitle">Enter your email and we'll send you a link to reset your password</p>
             </div>
+            
+            <?php if(session('status')): ?>
+                <div class="auth-success">
+                    <?php echo e(session('status')); ?>
+
+                </div>
+            <?php endif; ?>
             
             <?php if($errors->any()): ?>
                 <div class="auth-error">
@@ -129,15 +140,8 @@
                 </div>
             <?php endif; ?>
             
-            <form method="POST" action="/register" class="auth-form" id="register-form" novalidate>
+            <form method="POST" action="/forgot-password" class="auth-form" id="forgot-password-form" novalidate>
                 <?php echo csrf_field(); ?>
-                
-                <div class="form-group">
-                    <label for="name" class="form-label">Full Name</label>
-                    <input type="text" id="name" name="name" value="<?php echo e(old('name')); ?>" 
-                           class="form-control" placeholder="John Doe">
-                    <div class="form-error"></div>
-                </div>
                 
                 <div class="form-group">
                     <label for="email" class="form-label">Email Address</label>
@@ -146,28 +150,13 @@
                     <div class="form-error"></div>
                 </div>
                 
-                <div class="form-group">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" id="password" name="password" 
-                           class="form-control" placeholder="••••••••">
-                    <p class="form-hint">Must be at least 6 characters</p>
-                    <div class="form-error"></div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="password_confirmation" class="form-label">Confirm Password</label>
-                    <input type="password" id="password_confirmation" name="password_confirmation" 
-                           class="form-control" placeholder="••••••••">
-                    <div class="form-error"></div>
-                </div>
-                
                 <button type="submit" class="btn btn-primary auth-btn">
-                    <svg class="icon"><use href="#icon-rocket"></use></svg> Create Account
+                    <svg class="icon"><use href="#icon-mail"></use></svg> Send Reset Link
                 </button>
             </form>
             
             <div class="auth-footer">
-                Already have an account? <a href="/login">Sign in</a>
+                Remember your password? <a href="/login">Sign In</a>
             </div>
         </div>
     </div>
@@ -176,25 +165,13 @@
 <?php $__env->startPush('scripts'); ?>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('register-form');
+    const form = document.getElementById('forgot-password-form');
     const V = window.SmartValidator;
     
     const validations = {
-        name: [
-            (v) => V.rules.required(v, 'Full name is required'),
-            (v) => V.rules.minLength(v, 2, 'Name must be at least 2 characters')
-        ],
         email: [
             (v) => V.rules.required(v, 'Email address is required'),
             (v) => V.rules.email(v, 'Please enter a valid email address')
-        ],
-        password: [
-            (v) => V.rules.required(v, 'Password is required'),
-            (v) => V.rules.minLength(v, 6, 'Password must be at least 6 characters')
-        ],
-        password_confirmation: [
-            (v) => V.rules.required(v, 'Please confirm your password'),
-            (v) => V.rules.match(v, document.getElementById('password').value, 'Passwords do not match')
         ]
     };
     
@@ -211,4 +188,4 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <?php $__env->stopPush(); ?>
 
-<?php echo $__env->make('layouts.frontend', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /var/www/html/resources/views/auth/register.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.frontend', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /var/www/html/resources/views/auth/forgot-password.blade.php ENDPATH**/ ?>

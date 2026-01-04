@@ -261,7 +261,7 @@
     .dish-location {
         font-size: 0.9rem;
         color: var(--text-muted);
-        margin: 0 0 1.5rem 0;
+        margin: 0 0 .5rem 0;
     }
     
     .dish-stats {
@@ -537,6 +537,7 @@
                 <h1 id="dish-title" class="dish-title"></h1>
                 <p id="dish-restaurant" class="dish-restaurant"></p>
                 <p id="dish-location" class="dish-location"></p>
+                <p id="dish-opening-hours" class="dish-location dish-location"></p>
                 
                 <div class="dish-stats">
                     <div class="dish-stat" style="display: none;">
@@ -808,6 +809,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (dish.restaurant) {
             const location = [dish.restaurant.address, dish.restaurant.city, dish.restaurant.region].filter(Boolean).join(', ');
             document.getElementById('dish-location').textContent = location || '';
+            
+            // Opening hours (from restaurant)
+            if (dish.restaurant.opening_hours) {
+                document.getElementById('dish-opening-hours').textContent = 'Opening Hours: ' + dish.restaurant.opening_hours;
+            }
         }
         
         // Stats
@@ -823,10 +829,14 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('dish-cost').textContent = dish.meal_cost ? '$' + parseFloat(dish.meal_cost).toFixed(2) : '-';
         document.getElementById('dish-date-spot').innerHTML = dish.good_date_spot ? 'Yes <svg class="icon icon-sm icon-danger icon-filled"><use href="#icon-heart-filled"></use></svg>' : 'No';
         document.getElementById('dish-reservation').innerHTML = dish.reservation ? 'Yes <svg class="icon icon-sm icon-success"><use href="#icon-check-circle"></use></svg>' : 'No';
-        document.getElementById('dish-phone').innerHTML = dish.phone ? `<a href="tel:${dish.phone}" style="color: var(--primary);">${dish.phone}</a>` : '-';
         
-        if (dish.website) {
-            document.getElementById('dish-website').innerHTML = `<a href="${dish.website}" target="_blank" style="color: var(--primary);">Visit</a>`;
+        // Use dish phone/website, fallback to restaurant phone/website
+        const phoneNumber = dish.phone || (dish.restaurant && dish.restaurant.phone);
+        document.getElementById('dish-phone').innerHTML = phoneNumber ? `<a href="tel:${phoneNumber}" style="color: var(--primary);">${phoneNumber}</a>` : '-';
+        
+        const websiteUrl = dish.website || (dish.restaurant && dish.restaurant.website);
+        if (websiteUrl) {
+            document.getElementById('dish-website').innerHTML = `<a href="${websiteUrl}" target="_blank" style="color: var(--primary);">Visit</a>`;
         }
         
         // Comment

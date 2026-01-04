@@ -544,14 +544,14 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <svg class="icon"><use href="#icon-heart-filled"></use></svg>
                                 ${likes} likes
                             </span>
-                            <span class="dish-stat rating">
+                           <!-- <span class="dish-stat rating">
                                 <svg class="icon"><use href="#icon-star-filled"></use></svg>
                                 ${rating}
                             </span>
                             <span class="dish-stat reviews">
                                 <svg class="icon"><use href="#icon-comment"></use></svg>
                                 ${reviews} reviews
-                            </span>
+                            </span> -->
                         </div>
                     </div>
                 </article>

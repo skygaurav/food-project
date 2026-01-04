@@ -140,6 +140,10 @@
                     <div class="form-error"></div>
                 </div>
                 
+                <div class="form-group" style="text-align: right; margin-bottom: 0.5rem;">
+                    <a href="/forgot-password" style="color: var(--primary); font-size: 0.875rem; text-decoration: none;">Forgot your password?</a>
+                </div>
+                
                 <button type="submit" class="btn btn-primary auth-btn">
                     <svg class="icon"><use href="#icon-lock"></use></svg> Sign In
                 </button>

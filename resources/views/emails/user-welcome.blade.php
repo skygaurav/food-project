@@ -120,13 +120,13 @@
                 </div>
             </div>
             
-            <div class="feature">
+            <!--<div class="feature">
                 <span class="feature-icon">⭐</span>
                 <div class="feature-text">
                     <strong>Rate & Review</strong><br>
                     Help others find great food by sharing your honest reviews
                 </div>
-            </div>
+            </div>-->
             
             <div class="feature">
                 <span class="feature-icon">❤️</span>

@@ -176,6 +176,10 @@
                     />
                 </div>
 
+                <div class="form-group" style="text-align: right; margin-bottom: 0.5rem;">
+                    <a href="/admin/forgot-password" style="color: var(--primary); font-size: 0.875rem; text-decoration: none;">Forgot your password?</a>
+                </div>
+
                 <button type="submit" class="btn-login">
                     Sign In
                 </button>
