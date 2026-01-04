@@ -7,7 +7,6 @@ namespace App\Http\Middleware;
 use App\Models\AdminSetting;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class CheckMaintenanceMode
@@ -23,8 +22,8 @@ class CheckMaintenanceMode
         $maintenanceMode = AdminSetting::where('key', 'maintenance_mode')->first();
         
         if ($maintenanceMode && $maintenanceMode->value) {
-            // Allow admin users to bypass maintenance mode
-            if (Auth::guard('admin')->check()) {
+            // Allow admin users to bypass maintenance mode (using session-based admin auth)
+            if ($request->session()->has('admin_id')) {
                 return $next($request);
             }
             
