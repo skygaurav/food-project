@@ -550,11 +550,17 @@ class DishController extends Controller
      *
      * Only approved dishes are publicly viewable, unless user is the owner.
      *
-     * @param  \App\Models\Dish  $dish
+     * @param  string  $slug  The dish slug
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show(Dish $dish): JsonResponse
+    public function show(string $slug): JsonResponse
     {
+        $dish = Dish::where('slug', $slug)->first();
+        
+        if (!$dish) {
+            return response()->json(['error' => 'Dish not found'], 404);
+        }
+        
         // Only approved dishes can be viewed publicly
         // Unless the user is the owner of the dish
         if ($dish->status !== self::STATUS_APPROVED) {

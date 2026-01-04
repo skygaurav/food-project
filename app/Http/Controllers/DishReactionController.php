@@ -31,11 +31,12 @@ class DishReactionController extends Controller
      * If user has different reaction, updates it.
      *
      * @param  \App\Http\Requests\StoreReactionRequest  $request
-     * @param  \App\Models\Dish  $dish
+     * @param  string  $slug  The dish slug
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(StoreReactionRequest $request, Dish $dish): JsonResponse
+    public function store(StoreReactionRequest $request, string $slug): JsonResponse
     {
+        $dish = Dish::where('slug', $slug)->firstOrFail();
         $type = $request->string('type')->toString();
 
         $existingReaction = $this->findUserReaction($dish, $request->user()->id);
@@ -50,11 +51,13 @@ class DishReactionController extends Controller
     /**
      * Remove user's reaction from a dish.
      *
-     * @param  \App\Models\Dish  $dish
+     * @param  string  $slug  The dish slug
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(Dish $dish): JsonResponse
+    public function destroy(string $slug): JsonResponse
     {
+        $dish = Dish::where('slug', $slug)->firstOrFail();
+        
         DishReaction::query()
             ->where('dish_id', $dish->id)
             ->where('user_id', auth()->id())

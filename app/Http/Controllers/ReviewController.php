@@ -50,11 +50,13 @@ class ReviewController extends Controller
      * Store a new review for a dish.
      *
      * @param  \App\Http\Requests\StoreReviewRequest  $request
-     * @param  \App\Models\Dish  $dish
+     * @param  string  $slug  The dish slug
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(StoreReviewRequest $request, Dish $dish): JsonResponse
+    public function store(StoreReviewRequest $request, string $slug): JsonResponse
     {
+        $dish = Dish::where('slug', $slug)->firstOrFail();
+        
         $review = Review::query()->create([
             'dish_id' => $dish->id,
             'user_id' => $request->user()->id,
