@@ -11,6 +11,17 @@ use App\Http\Controllers\DishController;
 use App\Http\Controllers\Admin\CmsPageController;
 use Illuminate\Support\Facades\Route;
 
+// Debug route to check maintenance mode (REMOVE IN PRODUCTION)
+Route::get('/debug-maintenance', function () {
+    $setting = \App\Models\AdminSetting::where('key', 'maintenance_mode')->first();
+    return response()->json([
+        'found' => $setting ? true : false,
+        'raw_value' => $setting ? $setting->getRawOriginal('value') : null,
+        'decoded_value' => $setting ? $setting->value : null,
+        'value_type' => $setting ? gettype($setting->value) : null,
+    ]);
+});
+
 // Frontend routes with maintenance mode check
 Route::middleware('maintenance')->group(function () {
     Route::view('/', 'home');
