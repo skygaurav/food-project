@@ -14,11 +14,16 @@ use Illuminate\Support\Facades\Route;
 // Debug route to check maintenance mode (REMOVE IN PRODUCTION)
 Route::get('/debug-maintenance', function () {
     $setting = \App\Models\AdminSetting::where('key', 'maintenance_mode')->first();
+    $value = $setting ? $setting->value : null;
+    $isEnabled = $value === true || $value === 1 || $value === '1' || $value === 'true';
+    $hasAdminSession = session()->has('admin_id');
     return response()->json([
         'found' => $setting ? true : false,
-        'raw_value' => $setting ? $setting->getRawOriginal('value') : null,
-        'decoded_value' => $setting ? $setting->value : null,
-        'value_type' => $setting ? gettype($setting->value) : null,
+        'decoded_value' => $value,
+        'value_type' => gettype($value),
+        'is_enabled' => $isEnabled,
+        'has_admin_session' => $hasAdminSession,
+        'should_show_maintenance' => $isEnabled && !$hasAdminSession,
     ]);
 });
 
