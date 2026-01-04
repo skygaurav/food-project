@@ -23,13 +23,13 @@ Route::get('restaurants', [RestaurantController::class, 'index']);
 Route::get('restaurants/cities', [RestaurantController::class, 'cities']);
 Route::get('restaurants/{restaurant}', [RestaurantController::class, 'show']);
 Route::get('dishes', [DishController::class, 'index']);
-Route::get('dishes/popular', [DishController::class, 'popular'])->name('dishes.popular');
-Route::get('dishes/{dish}', [DishController::class, 'show'])->name('dishes.show');
+Route::get('popular', [DishController::class, 'popular']);
+Route::get('dishes/{dish:slug}', [DishController::class, 'show'])->where('dish', '^(?!popular$).*');
 Route::get('reviews/recent', [ReviewController::class, 'recent']);
 
 Route::middleware(['auth:web'])->group(function (): void {
     Route::post('dishes', [DishController::class, 'store']);
-    Route::post('dishes/{dish}/reviews', [ReviewController::class, 'store']);
-    Route::post('dishes/{dish}/reactions', [DishReactionController::class, 'store']);
-    Route::delete('dishes/{dish}/reactions', [DishReactionController::class, 'destroy']);
+    Route::post('dishes/{dish:slug}/reviews', [ReviewController::class, 'store']);
+    Route::post('dishes/{dish:slug}/reactions', [DishReactionController::class, 'store']);
+    Route::delete('dishes/{dish:slug}/reactions', [DishReactionController::class, 'destroy']);
 });
