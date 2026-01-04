@@ -16,7 +16,7 @@ class AdminSettingController extends Controller
     {
         $adminId = $request->session()->get('admin_id');
         if (! $adminId) {
-            return response()->json([], 403);
+            return response()->json(['message' => 'Unauthenticated.'], 401);
         }
 
         $rows = AdminSetting::query()->get();
@@ -32,7 +32,7 @@ class AdminSettingController extends Controller
     {
         $adminId = $request->session()->get('admin_id');
         if (! $adminId) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Unauthenticated.'], 401);
         }
 
         $data = $request->all();
@@ -56,7 +56,7 @@ class AdminSettingController extends Controller
     {
         $adminId = $request->session()->get('admin_id');
         if (! $adminId) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Unauthenticated.'], 401);
         }
 
         $request->validate([

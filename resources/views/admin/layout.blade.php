@@ -642,7 +642,15 @@
     // Fetch helper
     async function adminFetch(method, url, body) {
         const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        const opts = { method, credentials: 'same-origin', headers: { 'X-CSRF-TOKEN': token } };
+        const opts = { 
+            method, 
+            credentials: 'same-origin', 
+            headers: { 
+                'X-CSRF-TOKEN': token,
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            } 
+        };
         if (body) {
             opts.headers['Content-Type'] = 'application/json';
             opts.body = JSON.stringify(body);
@@ -650,7 +658,12 @@
         const res = await fetch(url, opts);
         if (!res.ok) {
             const err = await res.json().catch(() => ({}));
-            throw new Error(err.message || 'Request failed');
+            // Handle session expiration - redirect to login
+            if (res.status === 401) {
+                window.location.href = '/admin/login';
+                throw new Error('Session expired. Please login again.');
+            }
+            throw new Error(err.message || err.error || 'Request failed');
         }
         return res.json().catch(() => null);
     }
