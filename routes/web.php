@@ -93,6 +93,7 @@ Route::prefix('admin/api')->middleware(['web','admin.auth'])->group(function ():
 	// admin settings
 	Route::get('settings', [\App\Http\Controllers\Admin\AdminSettingController::class, 'get']);
 	Route::post('settings', [\App\Http\Controllers\Admin\AdminSettingController::class, 'save']);
+	Route::post('settings/test-email', [\App\Http\Controllers\Admin\AdminSettingController::class, 'testEmail']);
 
 	// All dishes
 	Route::get('dishes', [\App\Http\Controllers\Admin\DishApprovalController::class, 'all']);

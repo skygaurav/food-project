@@ -9,8 +9,8 @@ use App\Http\Requests\Admin\UpdateDishStatusRequest;
 use App\Mail\DishApprovedMail;
 use App\Mail\DishRejectedMail;
 use App\Models\Dish;
+use App\Services\MailService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Mail;
 
 class DishApprovalController extends Controller
 {
@@ -136,9 +136,9 @@ class DishApprovalController extends Controller
             $dish->restaurant->save();
         }
 
-        // Send email notification to user
+        // Send email notification to user using MailService
         if ($dish->user) {
-            Mail::to($dish->user->email)->send(new DishApprovedMail($dish, $dish->user));
+            MailService::send(new DishApprovedMail($dish, $dish->user), $dish->user->email);
         }
 
         return response()->json($dish->load(['restaurant', 'images']));
@@ -149,9 +149,9 @@ class DishApprovalController extends Controller
         $dish->status = 'rejected';
         $dish->save();
 
-        // Send email notification to user
+        // Send email notification to user using MailService
         if ($dish->user) {
-            Mail::to($dish->user->email)->send(new DishRejectedMail($dish, $dish->user));
+            MailService::send(new DishRejectedMail($dish, $dish->user), $dish->user->email);
         }
 
         return response()->json($dish->load(['restaurant', 'images']));

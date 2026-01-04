@@ -111,6 +111,67 @@
                     <input type="url" name="social_tiktok" class="form-control" placeholder="https://tiktok.com/@yourprofile" />
                 </div>
                 
+                <h3 style="font-size: 1rem; font-weight: 600; margin: 1.5rem 0 1rem; color: #475569; border-top: 1px solid #e2e8f0; padding-top: 1.5rem;">
+                    <svg class="icon icon-sm" style="margin-right: 0.5rem;"><use href="#icon-mail"></use></svg>
+                    Email / SMTP Settings
+                </h3>
+                <p class="text-muted" style="font-size: 0.85rem; margin-bottom: 1rem;">Configure SMTP settings for sending emails. All fields are required for email functionality to work.</p>
+                
+                <div class="form-row" style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">SMTP Host</label>
+                        <input type="text" name="smtp_host" class="form-control" placeholder="smtp.gmail.com or smtp.mailgun.org" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">SMTP Port</label>
+                        <input type="number" name="smtp_port" class="form-control" placeholder="587" min="1" max="65535" />
+                    </div>
+                </div>
+                
+                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">SMTP Username</label>
+                        <input type="text" name="smtp_username" class="form-control" placeholder="your-email@gmail.com" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">SMTP Password</label>
+                        <input type="password" name="smtp_password" class="form-control" placeholder="••••••••" />
+                        <small class="text-muted">For Gmail, use an App Password</small>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Encryption</label>
+                    <select name="smtp_encryption" class="form-control" style="width: auto;">
+                        <option value="tls">TLS (Recommended)</option>
+                        <option value="ssl">SSL</option>
+                        <option value="">None</option>
+                    </select>
+                </div>
+                
+                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">From Email Address</label>
+                        <input type="email" name="mail_from_address" class="form-control" placeholder="noreply@yourdomain.com" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">From Name</label>
+                        <input type="text" name="mail_from_name" class="form-control" placeholder="FOODCITA" />
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Admin Notification Email</label>
+                    <input type="email" name="admin_notification_email" class="form-control" placeholder="admin@yourdomain.com" />
+                    <small class="text-muted">Receives notifications when new dishes are submitted</small>
+                </div>
+                
+                <div class="form-group" style="margin-top: 1rem;">
+                    <button type="button" class="btn btn-secondary" onclick="testEmailSettings()">
+                        <svg class="icon"><use href="#icon-mail"></use></svg> Send Test Email
+                    </button>
+                </div>
+                
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">
                         <svg class="icon"><use href="#icon-save"></use></svg> Save Settings
@@ -155,6 +216,15 @@ async function loadSettings() {
             if (settings.social_twitter) form.social_twitter.value = settings.social_twitter;
             if (settings.social_youtube) form.social_youtube.value = settings.social_youtube;
             if (settings.social_tiktok) form.social_tiktok.value = settings.social_tiktok;
+            // SMTP settings
+            if (settings.smtp_host) form.smtp_host.value = settings.smtp_host;
+            if (settings.smtp_port) form.smtp_port.value = settings.smtp_port;
+            if (settings.smtp_username) form.smtp_username.value = settings.smtp_username;
+            if (settings.smtp_password) form.smtp_password.value = settings.smtp_password;
+            if (settings.smtp_encryption) form.smtp_encryption.value = settings.smtp_encryption;
+            if (settings.mail_from_address) form.mail_from_address.value = settings.mail_from_address;
+            if (settings.mail_from_name) form.mail_from_name.value = settings.mail_from_name;
+            if (settings.admin_notification_email) form.admin_notification_email.value = settings.admin_notification_email;
         }
     } catch (e) {
         // Ignore - settings may not exist yet
@@ -176,7 +246,16 @@ form.addEventListener('submit', async e => {
         social_instagram: form.social_instagram.value.trim() || null,
         social_twitter: form.social_twitter.value.trim() || null,
         social_youtube: form.social_youtube.value.trim() || null,
-        social_tiktok: form.social_tiktok.value.trim() || null
+        social_tiktok: form.social_tiktok.value.trim() || null,
+        // SMTP settings
+        smtp_host: form.smtp_host.value.trim() || null,
+        smtp_port: form.smtp_port.value ? parseInt(form.smtp_port.value) : null,
+        smtp_username: form.smtp_username.value.trim() || null,
+        smtp_password: form.smtp_password.value || null,
+        smtp_encryption: form.smtp_encryption.value || null,
+        mail_from_address: form.mail_from_address.value.trim() || null,
+        mail_from_name: form.mail_from_name.value.trim() || null,
+        admin_notification_email: form.admin_notification_email.value.trim() || null
     };
     
     try {
@@ -198,6 +277,22 @@ function clearColumnPreferences() {
     });
     
     alert('Column preferences have been reset. Refresh the page to see default columns.');
+}
+
+async function testEmailSettings() {
+    const testEmail = prompt('Enter email address to send test email:');
+    if (!testEmail) return;
+    
+    try {
+        const result = await adminFetch('POST', '/admin/api/settings/test-email', { email: testEmail });
+        if (result.success) {
+            alert('Test email sent successfully! Check your inbox.');
+        } else {
+            alert('Failed to send test email: ' + (result.error || 'Unknown error'));
+        }
+    } catch (err) {
+        alert('Failed to send test email: ' + (err.message || 'Unknown error'));
+    }
 }
 
 loadSettings();

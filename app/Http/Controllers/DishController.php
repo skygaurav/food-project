@@ -11,10 +11,10 @@ use App\Models\AdminSetting;
 use App\Models\Dish;
 use App\Models\DishImage;
 use App\Models\Restaurant;
+use App\Services\MailService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
 class DishController extends Controller
@@ -474,14 +474,14 @@ class DishController extends Controller
             return $dish->load(['restaurant', 'images']);
         });
 
-        // Send email notification to user
+        // Send email notification to user using MailService
         $user = $request->user();
-        Mail::to($user->email)->send(new DishSubmittedMail($dish, $user));
+        MailService::send(new DishSubmittedMail($dish, $user), $user->email);
 
         // Send notification to admin
-        $adminEmail = AdminSetting::where('key', 'admin_notification_email')->first();
-        if ($adminEmail && $adminEmail->value) {
-            Mail::to($adminEmail->value)->send(new NewDishSubmittedAdminMail($dish));
+        $adminEmail = MailService::getAdminNotificationEmail();
+        if ($adminEmail) {
+            MailService::send(new NewDishSubmittedAdminMail($dish), $adminEmail);
         }
 
         return response()->json($dish, 201);

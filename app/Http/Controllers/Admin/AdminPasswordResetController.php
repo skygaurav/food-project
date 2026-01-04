@@ -7,11 +7,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Mail\AdminPasswordResetMail;
 use App\Models\Admin;
+use App\Services\MailService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -52,8 +52,8 @@ class AdminPasswordResetController extends Controller
                 'created_at' => now(),
             ]);
 
-            // Send email
-            Mail::to($admin->email)->send(new AdminPasswordResetMail($admin, $token));
+            // Send email using MailService
+            MailService::send(new AdminPasswordResetMail($admin, $token), $admin->email);
         }
 
         // Always return success to prevent email enumeration

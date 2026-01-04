@@ -6,11 +6,11 @@ namespace App\Http\Controllers;
 
 use App\Mail\UserPasswordResetMail;
 use App\Models\User;
+use App\Services\MailService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -51,8 +51,8 @@ class PasswordResetController extends Controller
                 'created_at' => now(),
             ]);
 
-            // Send email
-            Mail::to($user->email)->send(new UserPasswordResetMail($user, $token));
+            // Send email using MailService
+            MailService::send(new UserPasswordResetMail($user, $token), $user->email);
         }
 
         // Always return success to prevent email enumeration

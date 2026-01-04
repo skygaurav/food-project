@@ -6,12 +6,12 @@ namespace App\Http\Controllers;
 
 use App\Mail\UserWelcomeMail;
 use App\Models\User;
+use App\Services\MailService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
 class UserAuthController extends Controller
@@ -57,8 +57,8 @@ class UserAuthController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
-        // Send welcome email
-        Mail::to($user->email)->send(new UserWelcomeMail($user));
+        // Send welcome email using MailService
+        MailService::send(new UserWelcomeMail($user), $user->email);
 
         Auth::login($user);
         $request->session()->regenerate();
