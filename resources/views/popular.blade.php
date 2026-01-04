@@ -332,7 +332,7 @@
                 <div class="stat-value" id="total-likes">-</div>
                 <div class="stat-label">Total Likes</div>
             </div>
-            <div class="stat-item">
+            <div class="stat-item" style="display:none;">
                 <div class="stat-value" id="total-reviews">-</div>
                 <div class="stat-label">Total Reviews</div>
             </div>
