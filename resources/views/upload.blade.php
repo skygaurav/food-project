@@ -119,6 +119,12 @@
         background: #fff5eb;
     }
     
+    .file-upload.drag-over {
+        border-color: var(--primary);
+        background: #fff5eb;
+        border-style: solid;
+    }
+    
     .file-upload-icon {
         font-size: 2.5rem;
         margin-bottom: 0.5rem;
@@ -763,17 +769,22 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Image preview with main image selection
     imagesInput.addEventListener('change', function() {
+        handleImageFiles(this.files);
+    });
+    
+    // Handle image files for preview
+    function handleImageFiles(files) {
         imagePreviews.innerHTML = '';
         mainImageIndex = 0;
         mainImageIndexInput.value = '0';
         
-        if (this.files.length > 0) {
+        if (files.length > 0) {
             mainImageHint.style.display = 'block';
         } else {
             mainImageHint.style.display = 'none';
         }
         
-        Array.from(this.files).forEach((file, index) => {
+        Array.from(files).forEach((file, index) => {
             const reader = new FileReader();
             reader.onload = function(e) {
                 const preview = document.createElement('div');
@@ -790,6 +801,49 @@ document.addEventListener('DOMContentLoaded', function() {
             };
             reader.readAsDataURL(file);
         });
+    }
+    
+    // Drag and drop functionality
+    const fileUploadArea = document.querySelector('.file-upload');
+    
+    fileUploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.classList.add('drag-over');
+    });
+    
+    fileUploadArea.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.classList.remove('drag-over');
+    });
+    
+    fileUploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.classList.remove('drag-over');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            // Filter only image files
+            const imageFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
+            if (imageFiles.length > 0) {
+                // Create a new DataTransfer to set files on the input
+                const dataTransfer = new DataTransfer();
+                imageFiles.forEach(file => dataTransfer.items.add(file));
+                imagesInput.files = dataTransfer.files;
+                handleImageFiles(imagesInput.files);
+            }
+        }
+    });
+    
+    // Prevent default drag behavior on the document to avoid opening files in the browser
+    document.addEventListener('dragover', function(e) {
+        e.preventDefault();
+    });
+    
+    document.addEventListener('drop', function(e) {
+        e.preventDefault();
     });
     
     function setMainImage(index) {
