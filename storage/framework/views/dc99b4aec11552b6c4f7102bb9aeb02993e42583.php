@@ -14,6 +14,23 @@
         </div>
         <div class="card-body">
             <form id="settings-form">
+                <h3 style="font-size: 1rem; font-weight: 600; margin: 0 0 1rem; color: #475569;">
+                    <svg class="icon icon-sm" style="margin-right: 0.5rem;"><use href="#icon-alert-triangle"></use></svg>
+                    Maintenance Mode
+                </h3>
+                <div class="form-group">
+                    <label class="toggle-switch">
+                        <input type="checkbox" name="maintenance_mode" id="maintenance_mode" />
+                        <span class="toggle-slider"></span>
+                        <span class="toggle-label">Enable Maintenance Mode</span>
+                    </label>
+                    <small class="text-muted" style="display: block; margin-top: 0.5rem;">When enabled, the site will display a maintenance page to all visitors. Admin users can still access the admin panel.</small>
+                </div>
+                
+                <h3 style="font-size: 1rem; font-weight: 600; margin: 1.5rem 0 1rem; color: #475569; border-top: 1px solid #e2e8f0; padding-top: 1.5rem;">
+                    <svg class="icon icon-sm" style="margin-right: 0.5rem;"><use href="#icon-settings"></use></svg>
+                    General Settings
+                </h3>
                 <div class="form-group">
                     <label class="form-label">Site Name</label>
                     <input type="text" name="site_name" class="form-control" placeholder="FOODCITA" />
@@ -201,6 +218,7 @@ async function loadSettings() {
     try {
         const settings = await adminFetch('GET', '/admin/api/settings');
         if (settings) {
+            form.maintenance_mode.checked = settings.maintenance_mode ? true : false;
             if (settings.site_name) form.site_name.value = settings.site_name;
             if (settings.items_per_page) form.items_per_page.value = settings.items_per_page;
             if (settings.default_dish_status) form.default_dish_status.value = settings.default_dish_status;
@@ -232,6 +250,7 @@ async function loadSettings() {
 form.addEventListener('submit', async e => {
     e.preventDefault();
     const payload = {
+        maintenance_mode: form.maintenance_mode.checked,
         site_name: form.site_name.value.trim(),
         items_per_page: parseInt(form.items_per_page.value),
         default_dish_status: form.default_dish_status.value,
