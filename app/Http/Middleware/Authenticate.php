@@ -31,7 +31,7 @@ class Authenticate extends Middleware
      * @param  \Illuminate\Http\Request  $request  The incoming HTTP request
      * @return string|null The redirect path or null for JSON responses
      */
-    protected function redirectTo(Request $request): ?string
+    protected function redirectTo($request)
     {
         if (! $request->expectsJson()) {
             return self::LOGIN_PATH;
