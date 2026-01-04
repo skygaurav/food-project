@@ -1,21 +1,46 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console;
 
-use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
+/**
+ * Console kernel for artisan commands.
+ *
+ * Handles console command registration and task scheduling.
+ *
+ * @package App\Console
+ */
 class Kernel extends ConsoleKernel
 {
+    /**
+     * The Artisan commands provided by your application.
+     *
+     * @var array<int, class-string>
+     */
     protected $commands = [];
 
-    protected function schedule(Schedule $schedule)
+    /**
+     * Define the application's command schedule.
+     *
+     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
+     * @return void
+     */
+    protected function schedule(Schedule $schedule): void
     {
-        // no scheduled tasks for now
+        // No scheduled tasks for now
     }
 
-    protected function commands()
+    /**
+     * Register the commands for the application.
+     *
+     * @return void
+     */
+    protected function commands(): void
     {
-        // load commands if any
+        // Load commands if any
     }
 }

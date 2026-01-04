@@ -14,10 +14,29 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
+/**
+ * Controller for user password reset functionality.
+ *
+ * Handles forgot password requests and password reset operations.
+ *
+ * @package App\Http\Controllers
+ */
 class PasswordResetController extends Controller
 {
     /**
+     * Token expiration time in minutes.
+     */
+    private const TOKEN_EXPIRATION_MINUTES = 60;
+
+    /**
+     * Token length for password reset.
+     */
+    private const TOKEN_LENGTH = 64;
+
+    /**
      * Show the forgot password form.
+     *
+     * @return \Illuminate\View\View
      */
     public function showForgotPassword(): View
     {
@@ -26,6 +45,12 @@ class PasswordResetController extends Controller
 
     /**
      * Handle the forgot password request.
+     *
+     * Generates a password reset token and sends it via email.
+     * Always returns success to prevent email enumeration attacks.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function sendResetLink(Request $request): RedirectResponse
     {
@@ -36,31 +61,23 @@ class PasswordResetController extends Controller
         $user = User::query()->where('email', $request->email)->first();
 
         if ($user) {
-            // Generate token
-            $token = Str::random(64);
-
-            // Delete existing tokens
-            DB::table('password_reset_tokens')
-                ->where('email', $request->email)
-                ->delete();
-
-            // Store new token
-            DB::table('password_reset_tokens')->insert([
-                'email' => $request->email,
-                'token' => Hash::make($token),
-                'created_at' => now(),
-            ]);
-
-            // Send email using MailService
+            $token = $this->createResetToken($request->email);
             MailService::send(new UserPasswordResetMail($user, $token), $user->email);
         }
 
         // Always return success to prevent email enumeration
-        return back()->with('status', 'If your email address exists in our database, you will receive a password reset link shortly.');
+        return back()->with(
+            'status',
+            'If your email address exists in our database, you will receive a password reset link shortly.'
+        );
     }
 
     /**
      * Show the reset password form.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string  $token
+     * @return \Illuminate\View\View
      */
     public function showResetPassword(Request $request, string $token): View
     {
@@ -72,6 +89,11 @@ class PasswordResetController extends Controller
 
     /**
      * Handle the password reset.
+     *
+     * Validates the token and updates the user's password.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function resetPassword(Request $request): RedirectResponse
     {
@@ -85,30 +107,99 @@ class PasswordResetController extends Controller
             ->where('email', $request->email)
             ->first();
 
-        if (!$record) {
+        if (! $record) {
             return back()->withErrors(['email' => 'Invalid password reset request.']);
         }
 
-        // Check token validity
-        if (!Hash::check($request->token, $record->token)) {
+        if (! $this->isValidToken($request->token, $record)) {
             return back()->withErrors(['email' => 'Invalid password reset token.']);
         }
 
-        // Check if token is expired (60 minutes)
-        if (now()->diffInMinutes($record->created_at) > 60) {
+        if ($this->isTokenExpired($record)) {
             return back()->withErrors(['email' => 'Password reset link has expired.']);
         }
 
-        // Update user password
-        User::query()
-            ->where('email', $request->email)
-            ->update(['password' => Hash::make($request->password)]);
+        $this->updateUserPassword($request->email, $request->password);
+        $this->deleteResetToken($request->email);
 
-        // Delete token
+        return redirect('/login')->with(
+            'status',
+            'Your password has been reset successfully. Please login with your new password.'
+        );
+    }
+
+    /**
+     * Create a password reset token for the given email.
+     *
+     * @param  string  $email
+     * @return string
+     */
+    private function createResetToken(string $email): string
+    {
+        $token = Str::random(self::TOKEN_LENGTH);
+
+        // Delete existing tokens
         DB::table('password_reset_tokens')
-            ->where('email', $request->email)
+            ->where('email', $email)
             ->delete();
 
-        return redirect('/login')->with('status', 'Your password has been reset successfully. Please login with your new password.');
+        // Store new token
+        DB::table('password_reset_tokens')->insert([
+            'email' => $email,
+            'token' => Hash::make($token),
+            'created_at' => now(),
+        ]);
+
+        return $token;
+    }
+
+    /**
+     * Check if the provided token matches the stored hash.
+     *
+     * @param  string  $token
+     * @param  object  $record
+     * @return bool
+     */
+    private function isValidToken(string $token, object $record): bool
+    {
+        return Hash::check($token, $record->token);
+    }
+
+    /**
+     * Check if the reset token has expired.
+     *
+     * @param  object  $record
+     * @return bool
+     */
+    private function isTokenExpired(object $record): bool
+    {
+        return now()->diffInMinutes($record->created_at) > self::TOKEN_EXPIRATION_MINUTES;
+    }
+
+    /**
+     * Update the user's password.
+     *
+     * @param  string  $email
+     * @param  string  $password
+     * @return void
+     */
+    private function updateUserPassword(string $email, string $password): void
+    {
+        User::query()
+            ->where('email', $email)
+            ->update(['password' => Hash::make($password)]);
+    }
+
+    /**
+     * Delete the password reset token for the given email.
+     *
+     * @param  string  $email
+     * @return void
+     */
+    private function deleteResetToken(string $email): void
+    {
+        DB::table('password_reset_tokens')
+            ->where('email', $email)
+            ->delete();
     }
 }

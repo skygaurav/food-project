@@ -11,14 +11,32 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Mailable for notifying admin of new dish submissions.
+ *
+ * Sends notification to admin when a new dish is submitted for review.
+ *
+ * @package App\Mail
+ */
 class NewDishSubmittedAdminMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable;
+    use SerializesModels;
 
+    /**
+     * Create a new message instance.
+     *
+     * @param  \App\Models\Dish  $dish
+     */
     public function __construct(
         public Dish $dish
     ) {}
 
+    /**
+     * Get the message envelope.
+     *
+     * @return \Illuminate\Mail\Mailables\Envelope
+     */
     public function envelope(): Envelope
     {
         return new Envelope(
@@ -26,6 +44,11 @@ class NewDishSubmittedAdminMail extends Mailable
         );
     }
 
+    /**
+     * Get the message content definition.
+     *
+     * @return \Illuminate\Mail\Mailables\Content
+     */
     public function content(): Content
     {
         return new Content(

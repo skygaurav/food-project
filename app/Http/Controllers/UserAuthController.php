@@ -14,18 +14,41 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
+/**
+ * Controller for user authentication (login, register, logout).
+ *
+ * Handles the authentication flow for frontend website users.
+ *
+ * @package App\Http\Controllers
+ */
 class UserAuthController extends Controller
 {
+    /**
+     * Show the login form.
+     *
+     * @return \Illuminate\View\View
+     */
     public function showLogin(): View
     {
         return view('auth.login');
     }
 
+    /**
+     * Show the registration form.
+     *
+     * @return \Illuminate\View\View
+     */
     public function showRegister(): View
     {
         return view('auth.register');
     }
 
+    /**
+     * Handle user login request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function login(Request $request): RedirectResponse
     {
         $credentials = $request->validate([
@@ -35,6 +58,7 @@ class UserAuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
+
             return redirect()->intended('/');
         }
 
@@ -43,6 +67,14 @@ class UserAuthController extends Controller
         ])->withInput();
     }
 
+    /**
+     * Handle user registration request.
+     *
+     * Creates a new user account, sends a welcome email, and logs them in.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function register(Request $request): RedirectResponse
     {
         $validated = $request->validate([
@@ -66,6 +98,12 @@ class UserAuthController extends Controller
         return redirect('/');
     }
 
+    /**
+     * Handle user logout request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function logout(Request $request): RedirectResponse
     {
         Auth::logout();
@@ -75,6 +113,12 @@ class UserAuthController extends Controller
         return redirect('/');
     }
 
+    /**
+     * Get the currently authenticated user.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function me(Request $request): JsonResponse
     {
         return response()->json($request->user());

@@ -6,13 +6,30 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Form request for storing a new dish.
+ *
+ * Validates dish data including images and restaurant information.
+ *
+ * @package App\Http\Requests
+ */
 class StoreDishRequest extends FormRequest
 {
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
     public function authorize(): bool
     {
         return true;
     }
 
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, array<int, mixed>>
+     */
     public function rules(): array
     {
         $rules = [
@@ -45,6 +62,11 @@ class StoreDishRequest extends FormRequest
         return $rules;
     }
 
+    /**
+     * Get custom error messages for validation rules.
+     *
+     * @return array<string, string>
+     */
     public function messages(): array
     {
         return [

@@ -12,15 +12,46 @@ use App\Models\Dish;
 use App\Models\DishImage;
 use App\Models\Restaurant;
 use App\Services\MailService;
+use Illuminate\Http\File;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * Controller for managing dishes (public and user-owned).
+ *
+ * Handles CRUD operations for dishes, image uploads, and restaurant associations.
+ *
+ * @package App\Http\Controllers
+ */
 class DishController extends Controller
 {
     /**
+     * Dish status constants.
+     */
+    private const STATUS_APPROVED = 'approved';
+    private const STATUS_PENDING = 'pending';
+
+    /**
+     * Default pagination values.
+     */
+    private const DEFAULT_PER_PAGE = 12;
+    private const DEFAULT_MY_DISHES_PER_PAGE = 10;
+
+    /**
+     * Image quality settings.
+     */
+    private const IMAGE_QUALITY = 90;
+
+    /**
      * Get all dishes for public listing (approved only).
+     *
+     * Supports filtering by category, city, and search query.
+     * Supports sorting by popularity, rating, name, or date.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request): JsonResponse
     {
@@ -77,16 +108,22 @@ class DishController extends Controller
                 $query->latest();
         }
 
-        $perPage = $request->integer('per_page', 12);
+        $perPage = $request->integer('per_page', self::DEFAULT_PER_PAGE);
+
         return response()->json($query->paginate($perPage));
     }
 
     /**
      * Get popular dishes sorted by likes and reviews.
+     *
+     * Calculates popularity score: likes (weighted x2) + reviews count + average rating.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function popular(Request $request): JsonResponse
     {
-        $perPage = $request->integer('per_page', 12);
+        $perPage = $request->integer('per_page', self::DEFAULT_PER_PAGE);
         
         $query = Dish::query()
             ->with(['restaurant.categories', 'images'])
@@ -129,10 +166,15 @@ class DishController extends Controller
 
     /**
      * Get current user's dishes (all statuses).
+     *
+     * Returns paginated list of dishes owned by the authenticated user.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function myDishes(Request $request): JsonResponse
     {
-        $perPage = $request->integer('per_page', 10);
+        $perPage = $request->integer('per_page', self::DEFAULT_MY_DISHES_PER_PAGE);
         $page = $request->integer('page', 1);
         
         $query = Dish::query()
@@ -191,6 +233,10 @@ class DishController extends Controller
 
     /**
      * Update a dish owned by the current user (only before approval).
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Dish  $dish
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, Dish $dish): JsonResponse
     {
@@ -200,7 +246,7 @@ class DishController extends Controller
         }
 
         // Can only edit pending dishes
-        if ($dish->status !== 'pending') {
+        if ($dish->status !== self::STATUS_PENDING) {
             return response()->json(['error' => 'Only pending dishes can be edited'], 400);
         }
 
@@ -256,8 +302,8 @@ class DishController extends Controller
             // Get image resize settings from admin settings
             $imageWidth = null;
             $imageHeight = null;
-            $widthSetting = \App\Models\AdminSetting::where('key', 'image_width')->first();
-            $heightSetting = \App\Models\AdminSetting::where('key', 'image_height')->first();
+            $widthSetting = AdminSetting::where('key', 'image_width')->first();
+            $heightSetting = AdminSetting::where('key', 'image_height')->first();
             if ($widthSetting && $widthSetting->value) {
                 $imageWidth = (int) $widthSetting->value;
             }
@@ -290,7 +336,7 @@ class DishController extends Controller
                         imagedestroy($dstImage);
                         
                         // Store resized image
-                        $path = Storage::disk('public')->putFile('dishes', new \Illuminate\Http\File($tempPath));
+                        $path = Storage::disk('public')->putFile('dishes', new File($tempPath));
                         unlink($tempPath);
                     } else {
                         $path = $image->store('dishes', 'public');
@@ -311,6 +357,9 @@ class DishController extends Controller
 
     /**
      * Delete a dish owned by the current user (only before approval).
+     *
+     * @param  \App\Models\Dish  $dish
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(Dish $dish): JsonResponse
     {
@@ -320,7 +369,7 @@ class DishController extends Controller
         }
 
         // Can only delete pending dishes
-        if ($dish->status !== 'pending') {
+        if ($dish->status !== self::STATUS_PENDING) {
             return response()->json(['error' => 'Only pending dishes can be deleted'], 400);
         }
 
@@ -329,6 +378,15 @@ class DishController extends Controller
         return response()->json(['success' => true]);
     }
 
+    /**
+     * Store a new dish.
+     *
+     * Creates a dish with associated restaurant and images.
+     * Sends notification emails to user and admin.
+     *
+     * @param  \App\Http\Requests\StoreDishRequest  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(StoreDishRequest $request): JsonResponse
     {
         $dish = DB::transaction(function () use ($request): Dish {
@@ -370,7 +428,7 @@ class DishController extends Controller
                 'user_id' => $request->user()->id,
                 'name' => $request->string('name')->toString(),
                 'comment' => $request->string('comment')->toString(),
-                'status' => 'pending',
+                'status' => self::STATUS_PENDING,
                 'meal_cost' => $request->input('meal_cost'),
                 'good_date_spot' => $request->boolean('good_date_spot'),
                 'website' => $request->string('website')->toString(),
@@ -416,8 +474,8 @@ class DishController extends Controller
             // Get image dimensions from admin settings
             $imageWidth = null;
             $imageHeight = null;
-            $widthSetting = \App\Models\AdminSetting::where('key', 'image_width')->first();
-            $heightSetting = \App\Models\AdminSetting::where('key', 'image_height')->first();
+            $widthSetting = AdminSetting::where('key', 'image_width')->first();
+            $heightSetting = AdminSetting::where('key', 'image_height')->first();
             if ($widthSetting && $widthSetting->value) {
                 $imageWidth = (int) $widthSetting->value;
             }
@@ -487,11 +545,19 @@ class DishController extends Controller
         return response()->json($dish, 201);
     }
 
+    /**
+     * Show a single dish with its details.
+     *
+     * Only approved dishes are publicly viewable, unless user is the owner.
+     *
+     * @param  \App\Models\Dish  $dish
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function show(Dish $dish): JsonResponse
     {
         // Only approved dishes can be viewed publicly
         // Unless the user is the owner of the dish
-        if ($dish->status !== 'approved') {
+        if ($dish->status !== self::STATUS_APPROVED) {
             $isOwner = auth()->check() && auth()->id() === $dish->user_id;
             if (!$isOwner) {
                 return response()->json(['error' => 'Dish not found or not yet approved'], 404);

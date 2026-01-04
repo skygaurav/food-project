@@ -11,14 +11,32 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Mailable for welcoming new users.
+ *
+ * Sends a welcome email after successful registration.
+ *
+ * @package App\Mail
+ */
 class UserWelcomeMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable;
+    use SerializesModels;
 
+    /**
+     * Create a new message instance.
+     *
+     * @param  \App\Models\User  $user
+     */
     public function __construct(
         public User $user
     ) {}
 
+    /**
+     * Get the message envelope.
+     *
+     * @return \Illuminate\Mail\Mailables\Envelope
+     */
     public function envelope(): Envelope
     {
         return new Envelope(
@@ -26,6 +44,11 @@ class UserWelcomeMail extends Mailable
         );
     }
 
+    /**
+     * Get the message content definition.
+     *
+     * @return \Illuminate\Mail\Mailables\Content
+     */
     public function content(): Content
     {
         return new Content(

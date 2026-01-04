@@ -4,12 +4,25 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Restaurant;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
+/**
+ * Controller for public restaurant API endpoints.
+ *
+ * Provides read-only access to approved restaurants for the frontend.
+ *
+ * @package App\Http\Controllers
+ */
 class RestaurantController extends Controller
 {
+    /**
+     * Get all approved restaurants.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index(): JsonResponse
     {
         $restaurants = Restaurant::query()
@@ -22,7 +35,11 @@ class RestaurantController extends Controller
     }
 
     /**
-     * Get list of cities with approved restaurants
+     * Get list of cities with approved restaurants.
+     *
+     * Used for city filter dropdowns on the frontend.
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function cities(): JsonResponse
     {
@@ -38,12 +55,15 @@ class RestaurantController extends Controller
     }
 
     /**
-     * Search restaurants by name for autocomplete
+     * Search restaurants by name for autocomplete.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function search(Request $request): JsonResponse
     {
         $query = $request->string('q')->toString();
-        
+
         if (strlen($query) < 2) {
             return response()->json([]);
         }
@@ -59,23 +79,31 @@ class RestaurantController extends Controller
         return response()->json($restaurants);
     }
 
+    /**
+     * Get a single restaurant with its dishes.
+     *
+     * @param  \App\Models\Restaurant  $restaurant
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function show(Restaurant $restaurant): JsonResponse
     {
         $restaurant->load([
             'categories',
             'images',
-            'dishes' => fn($query) => $query->with('images')->where('status', 'approved')
+            'dishes' => fn ($query) => $query->with('images')->where('status', 'approved'),
         ]);
 
         return response()->json($restaurant);
     }
-    
+
     /**
-     * Get all categories for selection
+     * Get all categories for selection.
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function categories(): JsonResponse
     {
-        $categories = \App\Models\Category::query()
+        $categories = Category::query()
             ->orderBy('name')
             ->get(['id', 'name']);
 
