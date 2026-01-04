@@ -11,41 +11,44 @@ use App\Http\Controllers\DishController;
 use App\Http\Controllers\Admin\CmsPageController;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'home');
-Route::view('/popular', 'popular');
-Route::view('/dishes', 'dishes');
-Route::get('/dishes/{dish:slug}', function (\App\Models\Dish $dish) {
-    return view('dish', ['dishSlug' => $dish->slug]);
+// Frontend routes with maintenance mode check
+Route::middleware('maintenance')->group(function () {
+    Route::view('/', 'home');
+    Route::view('/popular', 'popular');
+    Route::view('/dishes', 'dishes');
+    Route::get('/dishes/{dish:slug}', function (\App\Models\Dish $dish) {
+        return view('dish', ['dishSlug' => $dish->slug]);
+    });
+
+    // CMS pages (frontend)
+    Route::get('/page/{slug}', [CmsPageController::class, 'showPage']);
+
+    // User authentication routes
+    Route::middleware('guest')->group(function () {
+        Route::get('/login', [UserAuthController::class, 'showLogin'])->name('login');
+        Route::post('/login', [UserAuthController::class, 'login']);
+        Route::get('/register', [UserAuthController::class, 'showRegister'])->name('register');
+        Route::post('/register', [UserAuthController::class, 'register']);
+        
+        // User password reset routes
+        Route::get('/forgot-password', [PasswordResetController::class, 'showForgotPassword'])->name('password.request');
+        Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLink'])->name('password.email');
+        Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetPassword'])->name('password.reset');
+        Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])->name('password.update');
+    });
+    Route::post('/logout', [UserAuthController::class, 'logout'])->name('logout');
+
+    // Upload dish (requires authentication)
+    Route::get('/upload', function () {
+        return view('upload');
+    })->middleware('auth')->name('upload');
+    Route::post('/api/dishes', [DishController::class, 'store'])->middleware('auth');
+
+    // User's dish management
+    Route::get('/my-dishes', function () {
+        return view('my-dishes');
+    })->middleware('auth')->name('my-dishes');
 });
-
-// CMS pages (frontend)
-Route::get('/page/{slug}', [CmsPageController::class, 'showPage']);
-
-// User authentication routes
-Route::middleware('guest')->group(function () {
-    Route::get('/login', [UserAuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [UserAuthController::class, 'login']);
-    Route::get('/register', [UserAuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [UserAuthController::class, 'register']);
-    
-    // User password reset routes
-    Route::get('/forgot-password', [PasswordResetController::class, 'showForgotPassword'])->name('password.request');
-    Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLink'])->name('password.email');
-    Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetPassword'])->name('password.reset');
-    Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])->name('password.update');
-});
-Route::post('/logout', [UserAuthController::class, 'logout'])->name('logout');
-
-// Upload dish (requires authentication)
-Route::get('/upload', function () {
-    return view('upload');
-})->middleware('auth')->name('upload');
-Route::post('/api/dishes', [DishController::class, 'store'])->middleware('auth');
-
-// User's dish management
-Route::get('/my-dishes', function () {
-    return view('my-dishes');
-})->middleware('auth')->name('my-dishes');
 
 Route::get('/admin/login', [AdminAuthController::class, 'showLogin'])->name('admin.login');
 Route::post('/admin/login', [AdminAuthController::class, 'login'])->name('admin.login.attempt');

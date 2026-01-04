@@ -386,6 +386,47 @@
             accent-color: var(--primary);
         }
         
+        /* Toggle Switch */
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            gap: 0.75rem;
+        }
+        .toggle-switch input {
+            display: none;
+        }
+        .toggle-slider {
+            width: 48px;
+            height: 26px;
+            background: #cbd5e1;
+            border-radius: 26px;
+            position: relative;
+            transition: background 0.3s;
+        }
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            top: 3px;
+            left: 3px;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .toggle-switch input:checked + .toggle-slider {
+            background: var(--primary);
+        }
+        .toggle-switch input:checked + .toggle-slider::before {
+            transform: translateX(22px);
+        }
+        .toggle-label {
+            font-weight: 500;
+            color: #334155;
+        }
+        
         /* Pagination */
         .pagination {
             display: flex;

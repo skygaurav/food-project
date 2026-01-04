@@ -52,5 +52,6 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
         'admin.auth' => \App\Http\Middleware\AdminAuth::class,
+        'maintenance' => \App\Http\Middleware\CheckMaintenanceMode::class,
     ];
 }
