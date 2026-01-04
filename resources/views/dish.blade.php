@@ -825,10 +825,14 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('dish-cost').textContent = dish.meal_cost ? '$' + parseFloat(dish.meal_cost).toFixed(2) : '-';
         document.getElementById('dish-date-spot').innerHTML = dish.good_date_spot ? 'Yes <svg class="icon icon-sm icon-danger icon-filled"><use href="#icon-heart-filled"></use></svg>' : 'No';
         document.getElementById('dish-reservation').innerHTML = dish.reservation ? 'Yes <svg class="icon icon-sm icon-success"><use href="#icon-check-circle"></use></svg>' : 'No';
-        document.getElementById('dish-phone').innerHTML = dish.phone ? `<a href="tel:${dish.phone}" style="color: var(--primary);">${dish.phone}</a>` : '-';
         
-        if (dish.website) {
-            document.getElementById('dish-website').innerHTML = `<a href="${dish.website}" target="_blank" style="color: var(--primary);">Visit</a>`;
+        // Use dish phone/website, fallback to restaurant phone/website
+        const phoneNumber = dish.phone || (dish.restaurant && dish.restaurant.phone);
+        document.getElementById('dish-phone').innerHTML = phoneNumber ? `<a href="tel:${phoneNumber}" style="color: var(--primary);">${phoneNumber}</a>` : '-';
+        
+        const websiteUrl = dish.website || (dish.restaurant && dish.restaurant.website);
+        if (websiteUrl) {
+            document.getElementById('dish-website').innerHTML = `<a href="${websiteUrl}" target="_blank" style="color: var(--primary);">Visit</a>`;
         }
         
         // Comment
