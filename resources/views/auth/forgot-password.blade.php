@@ -1,6 +1,6 @@
 @extends('layouts.frontend')
 
-@section('title', 'Login')
+@section('title', 'Forgot Password')
 
 @push('styles')
 <style>
@@ -87,6 +87,16 @@
         font-size: 0.875rem;
     }
     
+    .auth-success {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        color: #16a34a;
+        font-size: 0.875rem;
+    }
+    
     .auth-footer {
         text-align: center;
         margin-top: 1.5rem;
@@ -112,10 +122,16 @@
     <div class="auth-container">
         <div class="auth-card">
             <div class="auth-header">
-                <div class="auth-icon"><svg class="icon icon-3xl icon-primary"><use href="#icon-wave"></use></svg></div>
-                <h1 class="auth-title">Welcome Back!</h1>
-                <p class="auth-subtitle">Sign in to continue to FOODCITA</p>
+                <div class="auth-icon"><svg class="icon icon-3xl icon-primary"><use href="#icon-mail"></use></svg></div>
+                <h1 class="auth-title">Forgot Password?</h1>
+                <p class="auth-subtitle">Enter your email and we'll send you a link to reset your password</p>
             </div>
+            
+            @if (session('status'))
+                <div class="auth-success">
+                    {{ session('status') }}
+                </div>
+            @endif
             
             @if ($errors->any())
                 <div class="auth-error">
@@ -125,7 +141,7 @@
                 </div>
             @endif
             
-            <form method="POST" action="/login" class="auth-form" id="login-form" novalidate>
+            <form method="POST" action="/forgot-password" class="auth-form" id="forgot-password-form" novalidate>
                 @csrf
                 
                 <div class="form-group">
@@ -135,24 +151,13 @@
                     <div class="form-error"></div>
                 </div>
                 
-                <div class="form-group">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" id="password" name="password" 
-                           class="form-control" placeholder="••••••••">
-                    <div class="form-error"></div>
-                </div>
-                
-                <div class="form-group" style="text-align: right; margin-bottom: 0.5rem;">
-                    <a href="/forgot-password" style="color: var(--primary); font-size: 0.875rem; text-decoration: none;">Forgot your password?</a>
-                </div>
-                
                 <button type="submit" class="btn btn-primary auth-btn">
-                    <svg class="icon"><use href="#icon-lock"></use></svg> Sign In
+                    <svg class="icon"><use href="#icon-mail"></use></svg> Send Reset Link
                 </button>
             </form>
             
             <div class="auth-footer">
-                Don't have an account? <a href="/register">Create one</a>
+                Remember your password? <a href="/login">Sign In</a>
             </div>
         </div>
     </div>
@@ -161,16 +166,13 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('login-form');
+    const form = document.getElementById('forgot-password-form');
     const V = window.SmartValidator;
     
     const validations = {
         email: [
             (v) => V.rules.required(v, 'Email address is required'),
             (v) => V.rules.email(v, 'Please enter a valid email address')
-        ],
-        password: [
-            (v) => V.rules.required(v, 'Password is required')
         ]
     };
     
@@ -179,7 +181,6 @@ document.addEventListener('DOMContentLoaded', function() {
     form.addEventListener('submit', function(e) {
         if (!V.validateForm(form, validations)) {
             e.preventDefault();
-            // Focus first error field
             const firstError = form.querySelector('.form-group.has-error input');
             if (firstError) firstError.focus();
         }

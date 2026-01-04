@@ -6,8 +6,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UpdateDishStatusRequest;
+use App\Mail\DishApprovedMail;
+use App\Mail\DishRejectedMail;
 use App\Models\Dish;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Mail;
 
 class DishApprovalController extends Controller
 {
@@ -133,6 +136,11 @@ class DishApprovalController extends Controller
             $dish->restaurant->save();
         }
 
+        // Send email notification to user
+        if ($dish->user) {
+            Mail::to($dish->user->email)->send(new DishApprovedMail($dish, $dish->user));
+        }
+
         return response()->json($dish->load(['restaurant', 'images']));
     }
 
@@ -140,6 +148,11 @@ class DishApprovalController extends Controller
     {
         $dish->status = 'rejected';
         $dish->save();
+
+        // Send email notification to user
+        if ($dish->user) {
+            Mail::to($dish->user->email)->send(new DishRejectedMail($dish, $dish->user));
+        }
 
         return response()->json($dish->load(['restaurant', 'images']));
     }

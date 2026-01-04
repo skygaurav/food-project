@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Admin Login — FOODCITA</title>
+    <title>Reset Password — FOODCITA Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -85,6 +85,10 @@
         .form-control::placeholder {
             color: #94a3b8;
         }
+        .form-control:disabled {
+            background: #f1f5f9;
+            color: #64748b;
+        }
         .btn-login {
             width: 100%;
             padding: 0.875rem 1.5rem;
@@ -140,8 +144,8 @@
         </div>
         
         <div class="login-card">
-            <h2>Welcome back</h2>
-            <p>Sign in to manage restaurants, categories, and dish approvals.</p>
+            <h2>Reset Password</h2>
+            <p>Enter your new password below.</p>
 
             @if ($errors->any())
                 <div class="error-box">
@@ -149,44 +153,53 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ url('/admin/login') }}">
+            <form method="POST" action="{{ url('/admin/reset-password') }}">
                 @csrf
+                <input type="hidden" name="token" value="{{ $token }}">
+                <input type="hidden" name="email" value="{{ $email }}">
+                
                 <div class="form-group">
-                    <label class="form-label">Username</label>
+                    <label class="form-label">Email Address</label>
                     <input
+                        type="email"
                         class="form-control"
-                        name="username"
-                        value="{{ old('username') }}"
-                        placeholder="Enter your username"
-                        required
-                        autocomplete="username"
+                        value="{{ $email }}"
+                        disabled
                     />
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Password</label>
+                    <label class="form-label">New Password</label>
                     <input
                         type="password"
                         class="form-control"
                         name="password"
-                        placeholder="Enter your password"
+                        placeholder="Enter new password"
                         required
-                        autocomplete="current-password"
+                        autocomplete="new-password"
                     />
                 </div>
 
-                <div class="form-group" style="text-align: right; margin-bottom: 0.5rem;">
-                    <a href="/admin/forgot-password" style="color: var(--primary); font-size: 0.875rem; text-decoration: none;">Forgot your password?</a>
+                <div class="form-group">
+                    <label class="form-label">Confirm New Password</label>
+                    <input
+                        type="password"
+                        class="form-control"
+                        name="password_confirmation"
+                        placeholder="Confirm new password"
+                        required
+                        autocomplete="new-password"
+                    />
                 </div>
 
                 <button type="submit" class="btn-login">
-                    Sign In
+                    Reset Password
                 </button>
             </form>
         </div>
         
         <div class="login-footer">
-            <a href="/">← Back to website</a>
+            <a href="/admin/login">← Back to Login</a>
         </div>
     </div>
 </body>

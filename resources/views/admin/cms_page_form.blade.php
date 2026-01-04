@@ -35,9 +35,8 @@
                 
                 <div class="form-group">
                     <label for="content" class="form-label">Page Content</label>
-                    <textarea id="content" name="content" class="form-control" rows="15" 
-                              placeholder="Enter page content here. HTML is supported.">{{ $page->content ?? '' }}</textarea>
-                    <small class="form-hint">You can use HTML tags for formatting</small>
+                    <textarea id="content" name="content" class="form-control tinymce-editor" rows="15" 
+                              placeholder="Enter page content here.">{{ $page->content ?? '' }}</textarea>
                 </div>
                 
                 <div class="form-row">
@@ -143,16 +142,47 @@
         accent-color: var(--primary);
     }
     
-    textarea.form-control {
-        font-family: 'Monaco', 'Consolas', monospace;
-        font-size: 0.875rem;
-        line-height: 1.6;
+    /* TinyMCE container styling */
+    .tox-tinymce {
+        border-radius: 8px !important;
+        border: 1px solid #e2e8f0 !important;
+    }
+    
+    .tox .tox-toolbar__primary {
+        background-color: #f8fafc !important;
     }
 </style>
 @endpush
 
 @push('scripts')
+<!-- TinyMCE CDN -->
+<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 <script>
+// Initialize TinyMCE
+tinymce.init({
+    selector: '.tinymce-editor',
+    height: 400,
+    menubar: true,
+    plugins: [
+        'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+        'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+        'insertdatetime', 'media', 'table', 'help', 'wordcount'
+    ],
+    toolbar: 'undo redo | blocks | ' +
+        'bold italic forecolor backcolor | alignleft aligncenter ' +
+        'alignright alignjustify | bullist numlist outdent indent | ' +
+        'link image media | table | removeformat code | help',
+    content_style: 'body { font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px; line-height: 1.6; }',
+    branding: false,
+    promotion: false,
+    license_key: 'gpl',
+    setup: function(editor) {
+        editor.on('change', function() {
+            tinymce.triggerSave();
+        });
+    }
+});
+
 const pageId = {{ $page->id ?? 'null' }};
 const form = document.getElementById('cms-form');
 
@@ -170,6 +200,9 @@ document.getElementById('title').addEventListener('blur', function() {
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
     
+    // Ensure TinyMCE content is synced to textarea
+    tinymce.triggerSave();
+    
     const submitBtn = form.querySelector('button[type="submit"]');
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<svg class="icon icon-spin"><use href="#icon-loader"></use></svg> Saving...';
@@ -177,7 +210,7 @@ form.addEventListener('submit', async (e) => {
     const data = {
         title: document.getElementById('title').value,
         slug: document.getElementById('slug').value,
-        content: document.getElementById('content').value,
+        content: tinymce.get('content').getContent(),
         sort_order: parseInt(document.getElementById('sort_order').value) || 0,
         show_in_footer: document.querySelector('input[name="show_in_footer"]:checked').value === '1',
         is_active: document.querySelector('input[name="is_active"]:checked').value === '1',

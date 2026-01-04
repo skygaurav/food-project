@@ -5,12 +5,16 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreDishRequest;
+use App\Mail\DishSubmittedMail;
+use App\Mail\NewDishSubmittedAdminMail;
+use App\Models\AdminSetting;
 use App\Models\Dish;
 use App\Models\DishImage;
 use App\Models\Restaurant;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
 class DishController extends Controller
@@ -469,6 +473,16 @@ class DishController extends Controller
 
             return $dish->load(['restaurant', 'images']);
         });
+
+        // Send email notification to user
+        $user = $request->user();
+        Mail::to($user->email)->send(new DishSubmittedMail($dish, $user));
+
+        // Send notification to admin
+        $adminEmail = AdminSetting::where('key', 'admin_notification_email')->first();
+        if ($adminEmail && $adminEmail->value) {
+            Mail::to($adminEmail->value)->send(new NewDishSubmittedAdminMail($dish));
+        }
 
         return response()->json($dish, 201);
     }

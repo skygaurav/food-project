@@ -1,6 +1,6 @@
 @extends('layouts.frontend')
 
-@section('title', 'Login')
+@section('title', 'Reset Password')
 
 @push('styles')
 <style>
@@ -112,9 +112,9 @@
     <div class="auth-container">
         <div class="auth-card">
             <div class="auth-header">
-                <div class="auth-icon"><svg class="icon icon-3xl icon-primary"><use href="#icon-wave"></use></svg></div>
-                <h1 class="auth-title">Welcome Back!</h1>
-                <p class="auth-subtitle">Sign in to continue to FOODCITA</p>
+                <div class="auth-icon"><svg class="icon icon-3xl icon-primary"><use href="#icon-lock"></use></svg></div>
+                <h1 class="auth-title">Reset Password</h1>
+                <p class="auth-subtitle">Enter your new password below</p>
             </div>
             
             @if ($errors->any())
@@ -125,34 +125,39 @@
                 </div>
             @endif
             
-            <form method="POST" action="/login" class="auth-form" id="login-form" novalidate>
+            <form method="POST" action="/reset-password" class="auth-form" id="reset-password-form" novalidate>
                 @csrf
                 
+                <input type="hidden" name="token" value="{{ $token }}">
+                <input type="hidden" name="email" value="{{ $email ?? old('email') }}">
+                
                 <div class="form-group">
-                    <label for="email" class="form-label">Email Address</label>
-                    <input type="email" id="email" name="email" value="{{ old('email') }}" 
-                           class="form-control" placeholder="you@example.com">
-                    <div class="form-error"></div>
+                    <label for="email_display" class="form-label">Email Address</label>
+                    <input type="email" id="email_display" class="form-control" 
+                           value="{{ $email ?? old('email') }}" disabled>
                 </div>
                 
                 <div class="form-group">
-                    <label for="password" class="form-label">Password</label>
+                    <label for="password" class="form-label">New Password</label>
                     <input type="password" id="password" name="password" 
                            class="form-control" placeholder="••••••••">
                     <div class="form-error"></div>
                 </div>
                 
-                <div class="form-group" style="text-align: right; margin-bottom: 0.5rem;">
-                    <a href="/forgot-password" style="color: var(--primary); font-size: 0.875rem; text-decoration: none;">Forgot your password?</a>
+                <div class="form-group">
+                    <label for="password_confirmation" class="form-label">Confirm New Password</label>
+                    <input type="password" id="password_confirmation" name="password_confirmation" 
+                           class="form-control" placeholder="••••••••">
+                    <div class="form-error"></div>
                 </div>
                 
                 <button type="submit" class="btn btn-primary auth-btn">
-                    <svg class="icon"><use href="#icon-lock"></use></svg> Sign In
+                    <svg class="icon"><use href="#icon-lock"></use></svg> Reset Password
                 </button>
             </form>
             
             <div class="auth-footer">
-                Don't have an account? <a href="/register">Create one</a>
+                Remember your password? <a href="/login">Sign In</a>
             </div>
         </div>
     </div>
@@ -161,16 +166,20 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('login-form');
+    const form = document.getElementById('reset-password-form');
     const V = window.SmartValidator;
     
     const validations = {
-        email: [
-            (v) => V.rules.required(v, 'Email address is required'),
-            (v) => V.rules.email(v, 'Please enter a valid email address')
-        ],
         password: [
-            (v) => V.rules.required(v, 'Password is required')
+            (v) => V.rules.required(v, 'Password is required'),
+            (v) => V.rules.minLength(v, 6, 'Password must be at least 6 characters')
+        ],
+        password_confirmation: [
+            (v) => V.rules.required(v, 'Please confirm your password'),
+            (v) => {
+                const password = document.getElementById('password').value;
+                return v === password ? null : 'Passwords do not match';
+            }
         ]
     };
     
@@ -179,7 +188,6 @@ document.addEventListener('DOMContentLoaded', function() {
     form.addEventListener('submit', function(e) {
         if (!V.validateForm(form, validations)) {
             e.preventDefault();
-            // Focus first error field
             const firstError = form.querySelector('.form-group.has-error input');
             if (firstError) firstError.focus();
         }

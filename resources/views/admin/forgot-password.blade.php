@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Admin Login — FOODCITA</title>
+    <title>Forgot Password — FOODCITA Admin</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -110,6 +110,15 @@
             font-size: 0.875rem;
             margin-bottom: 1.25rem;
         }
+        .success-box {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            margin-bottom: 1.25rem;
+        }
         .login-footer {
             text-align: center;
             margin-top: 1.5rem;
@@ -140,8 +149,14 @@
         </div>
         
         <div class="login-card">
-            <h2>Welcome back</h2>
-            <p>Sign in to manage restaurants, categories, and dish approvals.</p>
+            <h2>Forgot Password?</h2>
+            <p>Enter your email address and we'll send you a link to reset your password.</p>
+
+            @if (session('status'))
+                <div class="success-box">
+                    {{ session('status') }}
+                </div>
+            @endif
 
             @if ($errors->any())
                 <div class="error-box">
@@ -149,44 +164,29 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ url('/admin/login') }}">
+            <form method="POST" action="{{ url('/admin/forgot-password') }}">
                 @csrf
                 <div class="form-group">
-                    <label class="form-label">Username</label>
+                    <label class="form-label">Email Address</label>
                     <input
+                        type="email"
                         class="form-control"
-                        name="username"
-                        value="{{ old('username') }}"
-                        placeholder="Enter your username"
+                        name="email"
+                        value="{{ old('email') }}"
+                        placeholder="Enter your email address"
                         required
-                        autocomplete="username"
+                        autocomplete="email"
                     />
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Password</label>
-                    <input
-                        type="password"
-                        class="form-control"
-                        name="password"
-                        placeholder="Enter your password"
-                        required
-                        autocomplete="current-password"
-                    />
-                </div>
-
-                <div class="form-group" style="text-align: right; margin-bottom: 0.5rem;">
-                    <a href="/admin/forgot-password" style="color: var(--primary); font-size: 0.875rem; text-decoration: none;">Forgot your password?</a>
                 </div>
 
                 <button type="submit" class="btn-login">
-                    Sign In
+                    Send Reset Link
                 </button>
             </form>
         </div>
         
         <div class="login-footer">
-            <a href="/">← Back to website</a>
+            <a href="/admin/login">← Back to Login</a>
         </div>
     </div>
 </body>

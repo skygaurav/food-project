@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\AdminPasswordResetController;
 use App\Http\Controllers\Admin\AdminPagesController;
 use App\Http\Controllers\UserAuthController;
+use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\DishController;
 use App\Http\Controllers\Admin\CmsPageController;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +28,12 @@ Route::get('/register', [UserAuthController::class, 'showRegister'])->name('regi
 Route::post('/register', [UserAuthController::class, 'register']);
 Route::post('/logout', [UserAuthController::class, 'logout'])->name('logout');
 
+// User password reset routes
+Route::get('/forgot-password', [PasswordResetController::class, 'showForgotPassword'])->name('password.request');
+Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLink'])->name('password.email');
+Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetPassword'])->name('password.reset');
+Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])->name('password.update');
+
 // Upload dish (requires authentication)
 Route::get('/upload', function () {
     return view('upload');
@@ -41,6 +49,12 @@ Route::get('/admin/login', [AdminAuthController::class, 'showLogin'])->name('adm
 Route::post('/admin/login', [AdminAuthController::class, 'login'])->name('admin.login.attempt');
 Route::get('/admin', [AdminAuthController::class, 'dashboard'])->name('admin.dashboard');
 Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
+
+// Admin password reset routes
+Route::get('/admin/forgot-password', [AdminPasswordResetController::class, 'showForgotPassword'])->name('admin.password.request');
+Route::post('/admin/forgot-password', [AdminPasswordResetController::class, 'sendResetLink'])->name('admin.password.email');
+Route::get('/admin/reset-password/{token}', [AdminPasswordResetController::class, 'showResetPassword'])->name('admin.password.reset');
+Route::post('/admin/reset-password', [AdminPasswordResetController::class, 'resetPassword'])->name('admin.password.update');
 
 // Admin pages (views)
 Route::get('/admin/categories', [AdminPagesController::class, 'categories']);
