@@ -244,7 +244,9 @@ function render() {
                     ${d.status === 'pending' ? `
                         <button class="btn btn-success btn-sm" onclick="approveDish(${d.id})">Approve</button>
                         <button class="btn btn-danger btn-sm" onclick="rejectDish(${d.id})">Reject</button>
-                    ` : ''}
+                    ` : `
+                        <button class="btn btn-warning btn-sm" onclick="setPendingDish(${d.id})" title="Set to Pending">⏱ Pending</button>
+                    `}
                 </td>
             </tr>
         `}).join('');
@@ -298,6 +300,18 @@ window.rejectDish = async function(id) {
         applyFilters();
     } catch (e) {
         alert('Failed to reject dish');
+    }
+};
+
+window.setPendingDish = async function(id) {
+    if (!confirm('Set this dish back to pending status?')) return;
+    try {
+        await adminFetch('POST', `/admin/api/dishes/${id}/set-pending`);
+        const dish = allData.find(d => d.id === id);
+        if (dish) dish.status = 'pending';
+        applyFilters();
+    } catch (e) {
+        alert('Failed to update dish status');
     }
 };
 
