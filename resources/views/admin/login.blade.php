@@ -132,7 +132,7 @@
         }
     </style>
     @if(config('captcha.enabled', true) && config('captcha.sitekey'))
-        {!! NoCaptcha::renderJs() !!}
+        {!! app('captcha')->renderJs() !!}
     @endif
 </head>
 <body>
@@ -195,7 +195,7 @@
 
                 @if(config('captcha.enabled', true) && config('captcha.sitekey'))
                     <div class="form-group captcha-container" style="margin-bottom: 1.25rem;">
-                        {!! NoCaptcha::display() !!}
+                        {!! app('captcha')->display() !!}
                         @error('g-recaptcha-response')
                             <div class="captcha-error" style="color: #991b1b; font-size: 0.875rem; margin-top: 0.5rem;">
                                 {{ $message }}

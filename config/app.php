@@ -37,7 +37,12 @@ return [
         /* Application Service Providers */
         App\Providers\AppServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        
+        /* Third Party Service Providers */
+        Anhskohbo\NoCaptcha\NoCaptchaServiceProvider::class,
     ],
 
-    'aliases' => [],
+    'aliases' => [
+        'NoCaptcha' => Anhskohbo\NoCaptcha\Facades\NoCaptcha::class,
+    ],
 ];

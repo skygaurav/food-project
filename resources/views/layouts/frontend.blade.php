@@ -1161,7 +1161,7 @@
     
     {{-- Google reCAPTCHA Script --}}
     @if(config('captcha.enabled', true) && config('captcha.sitekey'))
-        {!! NoCaptcha::renderJs() !!}
+        {!! app('captcha')->renderJs() !!}
     @endif
     
     @stack('scripts')

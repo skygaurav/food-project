@@ -8763,3 +8763,11 @@ Stack trace:
 #34 /var/www/html/public/index.php(10): Illuminate\\Foundation\\Http\\Kernel->handle()
 #35 {main}
 "} 
+[2026-01-09 18:00:17] local.ERROR: Command "tinker" is not defined. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\CommandNotFoundException(code: 0): Command \"tinker\" is not defined. at /workspaces/food-project/vendor/symfony/console/Application.php:759)
+[stacktrace]
+#0 /workspaces/food-project/vendor/symfony/console/Application.php(298): Symfony\\Component\\Console\\Application->find()
+#1 /workspaces/food-project/vendor/symfony/console/Application.php(195): Symfony\\Component\\Console\\Application->doRun()
+#2 /workspaces/food-project/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony\\Component\\Console\\Application->run()
+#3 /workspaces/food-project/artisan(6): Illuminate\\Foundation\\Console\\Kernel->handle()
+#4 {main}
+"} 
