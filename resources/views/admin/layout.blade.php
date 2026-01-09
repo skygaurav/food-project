@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Admin') — FOODCITA</title>
+    <title>@yield('title', 'Admin') — {{ $seoSettings['site_name'] ?? 'FOODCITA' }}</title>
     <link rel="stylesheet" href="/app.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -627,7 +627,16 @@
     @include('partials.icons')
     
     <header class="admin-header">
-        <a href="/admin" style="text-decoration: none; color: inherit;"><h1><svg class="icon icon-lg" style="color: var(--primary);"><use href="#icon-utensils"></use></svg> FOODCITA Admin</h1></a>
+        <a href="/admin" style="text-decoration: none; color: inherit;">
+            <h1>
+                @if($seoSettings['site_logo'] ?? null)
+                    <img src="{{ asset('storage/' . $seoSettings['site_logo']) }}" alt="{{ $seoSettings['site_name'] ?? 'FOODCITA' }}" style="height: 32px; width: auto; max-width: 150px; object-fit: contain; vertical-align: middle; margin-right: 8px;">
+                @else
+                    <svg class="icon icon-lg" style="color: var(--primary);"><use href="#icon-utensils"></use></svg>
+                @endif
+                {{ $seoSettings['site_name'] ?? 'FOODCITA' }} Admin
+            </h1>
+        </a>
         <div class="header-actions">
             <div class="header-user">
                 <svg class="icon"><use href="#icon-user"></use></svg>
