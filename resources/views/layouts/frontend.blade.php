@@ -1159,6 +1159,11 @@
     });
     </script>
     
+    {{-- Google reCAPTCHA Script --}}
+    @if(config('captcha.enabled', true) && config('captcha.sitekey'))
+        {!! NoCaptcha::renderJs() !!}
+    @endif
+    
     @stack('scripts')
 </body>
 </html>
