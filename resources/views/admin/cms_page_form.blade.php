@@ -156,7 +156,7 @@
 
 @push('scripts')
 <!-- TinyMCE CDN -->
-<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<script src="https://cdn.tiny.cloud/1/rxsdvv03vcxqh4km0pvu0sdyvvd7s1acmiw4zznzm3j95h02/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 <script>
 // Initialize TinyMCE
 tinymce.init({
