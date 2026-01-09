@@ -817,8 +817,12 @@
     <header class="site-header">
         <div class="header-container">
             <a href="/" class="logo">
-                <svg class="icon icon-lg"><use href="#icon-utensils"></use></svg>
-                FOODCITA
+                @if($seoSettings['site_logo'] ?? null)
+                    <img src="{{ asset('storage/' . $seoSettings['site_logo']) }}" alt="{{ $seoSettings['site_name'] ?? 'FOODCITA' }}" class="logo-img" style="height: 36px; width: auto; max-width: 180px; object-fit: contain;">
+                @else
+                    <svg class="icon icon-lg"><use href="#icon-utensils"></use></svg>
+                    {{ $seoSettings['site_name'] ?? 'FOODCITA' }}
+                @endif
             </a>
             
             <nav class="nav-links">
@@ -895,7 +899,13 @@
         <div class="footer-container">
             <div class="footer-grid">
                 <div class="footer-section">
-                    <h4><svg class="icon"><use href="#icon-utensils"></use></svg> FOODCITA</h4>
+                    <h4>
+                        @if($seoSettings['site_logo'] ?? null)
+                            <img src="{{ asset('storage/' . $seoSettings['site_logo']) }}" alt="{{ $seoSettings['site_name'] ?? 'FOODCITA' }}" style="height: 28px; width: auto; max-width: 140px; object-fit: contain; vertical-align: middle;">
+                        @else
+                            <svg class="icon"><use href="#icon-utensils"></use></svg> {{ $seoSettings['site_name'] ?? 'FOODCITA' }}
+                        @endif
+                    </h4>
                     <p>Discover and share the best dishes from restaurants in your city. Join our community of food lovers!</p>
                 </div>
                 

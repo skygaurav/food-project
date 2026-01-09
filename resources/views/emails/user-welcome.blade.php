@@ -102,15 +102,19 @@
     <div class="container">
         <div class="header">
             <div class="welcome-emoji">🎉</div>
-            <div class="logo">FOODCITA</div>
+            @if($seoSettings['site_logo'] ?? null)
+                <img src="{{ asset('storage/' . $seoSettings['site_logo']) }}" alt="{{ $seoSettings['site_name'] ?? 'FOODCITA' }}" style="height: 48px; width: auto; max-width: 200px; object-fit: contain; margin-bottom: 15px;">
+            @else
+                <div class="logo">{{ $seoSettings['site_name'] ?? 'FOODCITA' }}</div>
+            @endif
             <h1>Welcome, {{ $user->name }}!</h1>
             <p class="subtitle">You've joined a community of food lovers!</p>
         </div>
         
-        <p>Thank you for creating your FOODCITA account! We're thrilled to have you as part of our food-loving community.</p>
+        <p>Thank you for creating your {{ $seoSettings['site_name'] ?? 'FOODCITA' }} account! We're thrilled to have you as part of our food-loving community.</p>
         
         <div class="features">
-            <h3 style="margin-top: 0; color: #1e293b;">What you can do with FOODCITA:</h3>
+            <h3 style="margin-top: 0; color: #1e293b;">What you can do with {{ $seoSettings['site_name'] ?? 'FOODCITA' }}:</h3>
             
             <div class="feature">
                 <span class="feature-icon">📸</span>
@@ -154,7 +158,7 @@
         
         <div class="footer">
             <p>This email was sent to {{ $user->email }}</p>
-            <p>&copy; {{ date('Y') }} FOODCITA. All rights reserved.</p>
+            <p>&copy; {{ date('Y') }} {{ $seoSettings['site_name'] ?? 'FOODCITA' }}. All rights reserved.</p>
         </div>
     </div>
 </body>

@@ -167,6 +167,8 @@ Route::prefix('admin/api')->middleware(['web', 'admin.auth'])->group(function ()
     Route::get('settings', [AdminSettingController::class, 'get']);
     Route::post('settings', [AdminSettingController::class, 'save']);
     Route::post('settings/test-email', [AdminSettingController::class, 'testEmail']);
+    Route::post('settings/upload-logo', [AdminSettingController::class, 'uploadLogo']);
+    Route::post('settings/remove-logo', [AdminSettingController::class, 'removeLogo']);
 
     // Dishes
     Route::get('dishes', [DishApprovalController::class, 'all']);

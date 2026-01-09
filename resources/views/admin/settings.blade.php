@@ -17,6 +17,28 @@
         <div class="card-body">
             <form id="settings-form">
                 <h3 style="font-size: 1rem; font-weight: 600; margin: 0 0 1rem; color: #475569;">
+                    <svg class="icon icon-sm" style="margin-right: 0.5rem;"><use href="#icon-image"></use></svg>
+                    Site Logo
+                </h3>
+                <div class="form-group">
+                    <label class="form-label">Logo Image</label>
+                    <div id="logo-preview-container" style="margin-bottom: 1rem;">
+                        <img id="logo-preview" src="" alt="Site Logo" style="max-height: 60px; display: none; background: #1e293b; padding: 0.5rem 1rem; border-radius: 8px;" />
+                        <span id="no-logo-text" class="text-muted">No logo uploaded</span>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <input type="file" id="logo-file" accept="image/png,image/jpeg,image/svg+xml,image/webp" style="display: none;" onchange="uploadLogo(this)" />
+                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('logo-file').click()">
+                            <svg class="icon"><use href="#icon-image"></use></svg> Upload Logo
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm" id="remove-logo-btn" style="display: none;" onclick="removeLogo()">
+                            Remove
+                        </button>
+                    </div>
+                    <small class="text-muted" style="display: block; margin-top: 0.5rem;">Recommended: PNG or SVG with transparent background. Max 2MB.</small>
+                </div>
+                
+                <h3 style="font-size: 1rem; font-weight: 600; margin: 1.5rem 0 1rem; color: #475569; border-top: 1px solid #e2e8f0; padding-top: 1.5rem;">
                     <svg class="icon icon-sm" style="margin-right: 0.5rem;"><use href="#icon-alert-triangle"></use></svg>
                     Maintenance Mode
                 </h3>
@@ -220,6 +242,13 @@ async function loadSettings() {
     try {
         const settings = await adminFetch('GET', '/admin/api/settings');
         if (settings) {
+            // Logo
+            if (settings.site_logo) {
+                document.getElementById('logo-preview').src = '/storage/' + settings.site_logo;
+                document.getElementById('logo-preview').style.display = 'block';
+                document.getElementById('no-logo-text').style.display = 'none';
+                document.getElementById('remove-logo-btn').style.display = 'inline-flex';
+            }
             form.maintenance_mode.checked = settings.maintenance_mode ? true : false;
             if (settings.site_name) form.site_name.value = settings.site_name;
             if (settings.items_per_page) form.items_per_page.value = settings.items_per_page;
@@ -311,6 +340,63 @@ async function testEmailSettings() {
         }
     } catch (err) {
         alert('Failed to send test email: ' + (err.message || 'Unknown error'));
+    }
+}
+
+async function uploadLogo(input) {
+    if (!input.files || !input.files[0]) return;
+    
+    const file = input.files[0];
+    if (file.size > 2 * 1024 * 1024) {
+        alert('Logo file must be less than 2MB');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('logo', file);
+    
+    try {
+        const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        const res = await fetch('/admin/api/settings/upload-logo', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': token,
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            credentials: 'same-origin',
+            body: formData
+        });
+        
+        if (!res.ok) throw new Error('Upload failed');
+        
+        const data = await res.json();
+        if (data.path) {
+            document.getElementById('logo-preview').src = '/storage/' + data.path;
+            document.getElementById('logo-preview').style.display = 'block';
+            document.getElementById('no-logo-text').style.display = 'none';
+            document.getElementById('remove-logo-btn').style.display = 'inline-flex';
+            alert('Logo uploaded successfully!');
+        }
+    } catch (err) {
+        alert('Failed to upload logo: ' + (err.message || 'Unknown error'));
+    }
+    
+    input.value = '';
+}
+
+async function removeLogo() {
+    if (!confirm('Are you sure you want to remove the logo?')) return;
+    
+    try {
+        await adminFetch('POST', '/admin/api/settings/remove-logo');
+        document.getElementById('logo-preview').src = '';
+        document.getElementById('logo-preview').style.display = 'none';
+        document.getElementById('no-logo-text').style.display = 'inline';
+        document.getElementById('remove-logo-btn').style.display = 'none';
+        alert('Logo removed successfully!');
+    } catch (err) {
+        alert('Failed to remove logo: ' + (err.message || 'Unknown error'));
     }
 }
 

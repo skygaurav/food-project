@@ -9,6 +9,7 @@ use App\Models\AdminSetting;
 use App\Services\MailService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Controller for managing admin settings.
@@ -83,6 +84,65 @@ class AdminSettingController extends Controller
         $result = MailService::sendTestEmail($request->input('email'));
 
         return response()->json($result);
+    }
+
+    /**
+     * Upload site logo.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function uploadLogo(Request $request): JsonResponse
+    {
+        $adminId = $request->session()->get(self::SESSION_ADMIN_ID);
+
+        if (! $adminId) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
+
+        $request->validate([
+            'logo' => ['required', 'image', 'max:2048'],
+        ]);
+
+        // Delete old logo if exists
+        $oldLogo = AdminSetting::query()->where('key', 'site_logo')->first();
+        if ($oldLogo && $oldLogo->value) {
+            Storage::disk('public')->delete($oldLogo->value);
+        }
+
+        // Store new logo
+        $path = $request->file('logo')->store('logos', 'public');
+
+        // Save setting
+        AdminSetting::query()->updateOrCreate(
+            ['key' => 'site_logo'],
+            ['value' => $path, 'admin_id' => $adminId]
+        );
+
+        return response()->json(['path' => $path]);
+    }
+
+    /**
+     * Remove site logo.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function removeLogo(Request $request): JsonResponse
+    {
+        $adminId = $request->session()->get(self::SESSION_ADMIN_ID);
+
+        if (! $adminId) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
+
+        $setting = AdminSetting::query()->where('key', 'site_logo')->first();
+        if ($setting && $setting->value) {
+            Storage::disk('public')->delete($setting->value);
+            $setting->delete();
+        }
+
+        return response()->json(['success' => true]);
     }
 
     /**
