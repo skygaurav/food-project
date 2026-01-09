@@ -163,6 +163,8 @@
                     <div class="form-error"></div>
                 </div>
                 
+                @include('partials.captcha')
+                
                 <button type="submit" class="btn btn-primary auth-btn">
                     <svg class="icon"><use href="#icon-rocket"></use></svg> Create Account
                 </button>

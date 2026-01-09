@@ -54,8 +54,18 @@ class PasswordResetController extends Controller
      */
     public function sendResetLink(Request $request): RedirectResponse
     {
-        $request->validate([
+        $rules = [
             'email' => ['required', 'email'],
+        ];
+
+        // Add captcha validation if enabled
+        if (config('captcha.enabled', true) && config('captcha.sitekey')) {
+            $rules['g-recaptcha-response'] = ['required', 'captcha'];
+        }
+
+        $request->validate($rules, [
+            'g-recaptcha-response.required' => 'Please complete the captcha verification.',
+            'g-recaptcha-response.captcha' => 'Captcha verification failed. Please try again.',
         ]);
 
         $user = User::query()->where('email', $request->email)->first();

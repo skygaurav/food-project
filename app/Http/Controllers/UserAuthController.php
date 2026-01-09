@@ -51,12 +51,22 @@ class UserAuthController extends Controller
      */
     public function login(Request $request): RedirectResponse
     {
-        $credentials = $request->validate([
+        $rules = [
             'email' => ['required', 'email'],
             'password' => ['required', 'string'],
+        ];
+
+        // Add captcha validation if enabled
+        if (config('captcha.enabled', true) && config('captcha.sitekey')) {
+            $rules['g-recaptcha-response'] = ['required', 'captcha'];
+        }
+
+        $credentials = $request->validate($rules, [
+            'g-recaptcha-response.required' => 'Please complete the captcha verification.',
+            'g-recaptcha-response.captcha' => 'Captcha verification failed. Please try again.',
         ]);
 
-        if (Auth::attempt($credentials)) {
+        if (Auth::attempt(['email' => $credentials['email'], 'password' => $credentials['password']])) {
             $request->session()->regenerate();
 
             return redirect()->intended('/');
@@ -77,10 +87,20 @@ class UserAuthController extends Controller
      */
     public function register(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:6', 'confirmed'],
+        ];
+
+        // Add captcha validation if enabled
+        if (config('captcha.enabled', true) && config('captcha.sitekey')) {
+            $rules['g-recaptcha-response'] = ['required', 'captcha'];
+        }
+
+        $validated = $request->validate($rules, [
+            'g-recaptcha-response.required' => 'Please complete the captcha verification.',
+            'g-recaptcha-response.captcha' => 'Captcha verification failed. Please try again.',
         ]);
 
         $user = User::query()->create([

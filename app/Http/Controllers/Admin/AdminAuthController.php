@@ -43,9 +43,19 @@ class AdminAuthController extends Controller
      */
     public function login(Request $request): RedirectResponse
     {
-        $credentials = $request->validate([
+        $rules = [
             'username' => ['required', 'string'],
             'password' => ['required', 'string'],
+        ];
+
+        // Add captcha validation if enabled
+        if (config('captcha.enabled', true) && config('captcha.sitekey')) {
+            $rules['g-recaptcha-response'] = ['required', 'captcha'];
+        }
+
+        $credentials = $request->validate($rules, [
+            'g-recaptcha-response.required' => 'Please complete the captcha verification.',
+            'g-recaptcha-response.captcha' => 'Captcha verification failed. Please try again.',
         ]);
 
         $admin = Admin::query()->where('username', $credentials['username'])->first();

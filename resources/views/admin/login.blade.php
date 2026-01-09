@@ -131,6 +131,9 @@
             text-decoration: underline;
         }
     </style>
+    @if(config('captcha.enabled', true) && config('captcha.sitekey'))
+        {!! NoCaptcha::renderJs() !!}
+    @endif
 </head>
 <body>
     <div class="login-container">
@@ -189,6 +192,17 @@
                 <div class="form-group" style="text-align: right; margin-bottom: 0.5rem;">
                     <a href="/admin/forgot-password" style="color: var(--primary); font-size: 0.875rem; text-decoration: none;">Forgot your password?</a>
                 </div>
+
+                @if(config('captcha.enabled', true) && config('captcha.sitekey'))
+                    <div class="form-group captcha-container" style="margin-bottom: 1.25rem;">
+                        {!! NoCaptcha::display() !!}
+                        @error('g-recaptcha-response')
+                            <div class="captcha-error" style="color: #991b1b; font-size: 0.875rem; margin-top: 0.5rem;">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                @endif
 
                 <button type="submit" class="btn-login">
                     Sign In

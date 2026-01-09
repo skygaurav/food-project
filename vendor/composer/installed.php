@@ -3,13 +3,22 @@
         'name' => 'skygaurav/food-project',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'b145183cd20427d49fbc1533b94ad4d0982e58ef',
+        'reference' => '1c471efea77f37920a55204e4a64b1660945bd10',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
         'dev' => true,
     ),
     'versions' => array(
+        'anhskohbo/no-captcha' => array(
+            'pretty_version' => '3.7.0',
+            'version' => '3.7.0.0',
+            'reference' => '87666572f0dbe1e3380a2e9ae7574bf3a2d0804e',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../anhskohbo/no-captcha',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
         'brick/math' => array(
             'pretty_version' => '0.14.1',
             'version' => '0.14.1.0',
@@ -638,7 +647,7 @@
         'skygaurav/food-project' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'b145183cd20427d49fbc1533b94ad4d0982e58ef',
+            'reference' => '1c471efea77f37920a55204e4a64b1660945bd10',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

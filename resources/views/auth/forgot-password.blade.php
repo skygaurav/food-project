@@ -151,6 +151,8 @@
                     <div class="form-error"></div>
                 </div>
                 
+                @include('partials.captcha')
+                
                 <button type="submit" class="btn btn-primary auth-btn">
                     <svg class="icon"><use href="#icon-mail"></use></svg> Send Reset Link
                 </button>
