@@ -17,7 +17,14 @@
             "database/factories"
         ]
     },
-    "scripts": {},
+    "scripts": {
+        "post-install-cmd": [
+            "@php artisan storage:link --quiet --force"
+        ],
+        "post-update-cmd": [
+            "@php artisan storage:link --quiet --force"
+        ]
+    },
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
