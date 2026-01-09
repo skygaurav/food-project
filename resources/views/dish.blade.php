@@ -44,14 +44,11 @@
     .dish-thumbnails {
         display: flex;
         gap: 0.5rem;
-        padding: 0.75rem;
-        background: rgba(0,0,0,0.6);
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
+        padding: 0.75rem 0;
+        margin-top: 0.75rem;
         overflow-x: auto;
         scrollbar-width: none;
+        justify-content: center;
     }
     
     .dish-thumbnails::-webkit-scrollbar {
@@ -64,7 +61,7 @@
         border-radius: 8px;
         object-fit: cover;
         cursor: pointer;
-        border: 3px solid transparent;
+        border: 3px solid #e2e8f0;
         transition: all 0.2s;
         flex-shrink: 0;
     }
@@ -75,7 +72,8 @@
     }
     
     .dish-thumbnail:hover {
-        border-color: rgba(255,255,255,0.7);
+        border-color: var(--primary);
+        opacity: 0.8;
     }
     
     .image-counter {
@@ -132,6 +130,7 @@
         z-index: 9999;
         align-items: center;
         justify-content: center;
+        overflow: hidden;
     }
     
     .image-modal.show {
@@ -142,6 +141,9 @@
         position: relative;
         max-width: 90vw;
         max-height: 90vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     
     .image-modal-img {
@@ -149,6 +151,45 @@
         max-height: 85vh;
         object-fit: contain;
         border-radius: 8px;
+        transition: transform 0.3s ease;
+        cursor: zoom-in;
+    }
+    
+    .image-modal-img.zoomed {
+        cursor: zoom-out;
+        transform: scale(2);
+        cursor: grab;
+    }
+    
+    .image-modal-img.zoomed.grabbing {
+        cursor: grabbing;
+    }
+    
+    .zoom-controls {
+        position: absolute;
+        bottom: -45px;
+        right: 0;
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .zoom-btn {
+        background: rgba(255,255,255,0.2);
+        color: #fff;
+        border: none;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        transition: background 0.2s;
+    }
+    
+    .zoom-btn:hover {
+        background: rgba(255,255,255,0.3);
     }
     
     .image-modal-close {
@@ -529,15 +570,17 @@
     <!-- Dish Content -->
     <div id="dish-content" style="display: none;">
         <section class="dish-detail">
-            <div class="dish-image-container">
-                <img id="dish-main-image" src="" alt="" class="dish-main-image" onclick="openGalleryModal(currentImageIndex)" />
-                <div id="image-counter" class="image-counter" style="display: none;">1 / 1</div>
-                <button id="prev-btn" class="image-nav-btn prev" style="display: none;" onclick="navigateImage(-1)">
-                    <svg class="icon" style="color: #fff;"><use href="#icon-chevron-left"></use></svg>
-                </button>
-                <button id="next-btn" class="image-nav-btn next" style="display: none;" onclick="navigateImage(1)">
-                    <svg class="icon" style="color: #fff;"><use href="#icon-chevron-right"></use></svg>
-                </button>
+            <div>
+                <div class="dish-image-container">
+                    <img id="dish-main-image" src="" alt="" class="dish-main-image" onclick="openGalleryModal(currentImageIndex)" />
+                    <div id="image-counter" class="image-counter" style="display: none;">1 / 1</div>
+                    <button id="prev-btn" class="image-nav-btn prev" style="display: none;" onclick="navigateImage(-1)">
+                        <svg class="icon" style="color: #fff;"><use href="#icon-chevron-left"></use></svg>
+                    </button>
+                    <button id="next-btn" class="image-nav-btn next" style="display: none;" onclick="navigateImage(1)">
+                        <svg class="icon" style="color: #fff;"><use href="#icon-chevron-right"></use></svg>
+                    </button>
+                </div>
                 <div id="dish-thumbnails" class="dish-thumbnails" style="display: none;"></div>
             </div>
             
@@ -666,11 +709,16 @@
             <button class="image-modal-nav prev" onclick="modalNavigate(-1)">
                 <svg class="icon" style="color: #fff;"><use href="#icon-chevron-left"></use></svg>
             </button>
-            <img id="modal-main-image" class="image-modal-img" src="" alt="" />
+            <img id="modal-main-image" class="image-modal-img" src="" alt="" onclick="toggleZoom(event)" />
             <button class="image-modal-nav next" onclick="modalNavigate(1)">
                 <svg class="icon" style="color: #fff;"><use href="#icon-chevron-right"></use></svg>
             </button>
             <div id="modal-counter" class="image-modal-counter">1 / 1</div>
+            <div class="zoom-controls">
+                <button class="zoom-btn" onclick="zoomIn()" title="Zoom In">+</button>
+                <button class="zoom-btn" onclick="zoomOut()" title="Zoom Out">−</button>
+                <button class="zoom-btn" onclick="resetZoom()" title="Reset">↺</button>
+            </div>
             <div id="modal-thumbnails" class="image-modal-thumbnails"></div>
         </div>
     </div>
@@ -916,7 +964,84 @@ document.addEventListener('DOMContentLoaded', function() {
     window.closeGalleryModal = function() {
         document.getElementById('gallery-modal').classList.remove('show');
         document.body.style.overflow = '';
+        resetZoom();
     };
+    
+    // Zoom functionality
+    let zoomLevel = 1;
+    let isDragging = false;
+    let dragStart = { x: 0, y: 0 };
+    let imgPosition = { x: 0, y: 0 };
+    
+    window.toggleZoom = function(e) {
+        const img = document.getElementById('modal-main-image');
+        if (zoomLevel === 1) {
+            zoomIn();
+        } else {
+            resetZoom();
+        }
+    };
+    
+    window.zoomIn = function() {
+        const img = document.getElementById('modal-main-image');
+        zoomLevel = Math.min(zoomLevel + 0.5, 4);
+        img.style.transform = `scale(${zoomLevel}) translate(${imgPosition.x}px, ${imgPosition.y}px)`;
+        img.classList.toggle('zoomed', zoomLevel > 1);
+    };
+    
+    window.zoomOut = function() {
+        const img = document.getElementById('modal-main-image');
+        zoomLevel = Math.max(zoomLevel - 0.5, 1);
+        if (zoomLevel === 1) {
+            resetZoom();
+        } else {
+            img.style.transform = `scale(${zoomLevel}) translate(${imgPosition.x}px, ${imgPosition.y}px)`;
+        }
+    };
+    
+    window.resetZoom = function() {
+        const img = document.getElementById('modal-main-image');
+        zoomLevel = 1;
+        imgPosition = { x: 0, y: 0 };
+        img.style.transform = '';
+        img.classList.remove('zoomed', 'grabbing');
+    };
+    
+    // Pan/drag functionality when zoomed
+    const modalImg = document.getElementById('modal-main-image');
+    
+    modalImg.addEventListener('mousedown', function(e) {
+        if (zoomLevel <= 1) return;
+        isDragging = true;
+        dragStart = { x: e.clientX - imgPosition.x, y: e.clientY - imgPosition.y };
+        this.classList.add('grabbing');
+        e.preventDefault();
+    });
+    
+    document.addEventListener('mousemove', function(e) {
+        if (!isDragging) return;
+        imgPosition = {
+            x: (e.clientX - dragStart.x) / zoomLevel,
+            y: (e.clientY - dragStart.y) / zoomLevel
+        };
+        modalImg.style.transform = `scale(${zoomLevel}) translate(${imgPosition.x}px, ${imgPosition.y}px)`;
+    });
+    
+    document.addEventListener('mouseup', function() {
+        isDragging = false;
+        modalImg.classList.remove('grabbing');
+    });
+    
+    // Mouse wheel zoom
+    document.getElementById('gallery-modal').addEventListener('wheel', function(e) {
+        if (!this.classList.contains('show')) return;
+        e.preventDefault();
+        if (e.deltaY < 0) {
+            zoomIn();
+        } else {
+            zoomOut();
+        }
+    });
     
     window.modalNavigate = function(direction) {
         if (!currentDish.images || currentDish.images.length <= 1) return;
@@ -934,6 +1059,9 @@ document.addEventListener('DOMContentLoaded', function() {
         currentImageIndex = idx;
         const modalImg = document.getElementById('modal-main-image');
         const modalCounter = document.getElementById('modal-counter');
+        
+        // Reset zoom when changing images
+        resetZoom();
         
         modalImg.src = '/storage/' + currentDish.images[idx].path;
         modalCounter.textContent = `${idx + 1} / ${currentDish.images.length}`;
