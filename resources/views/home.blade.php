@@ -542,7 +542,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const popularEmpty = document.getElementById('popular-empty');
         
         try {
-            const res = await fetch('/api/dishes/popular?per_page=3');
+            const res = await fetch('/api/popular?per_page=3');
             const data = await res.json();
             const dishes = data.data || [];
             
