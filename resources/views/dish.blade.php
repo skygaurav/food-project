@@ -20,13 +20,19 @@
         position: relative;
         border-radius: 16px;
         overflow: hidden;
-        background: #f1f5f9;
+        background: linear-gradient(135deg, #fef3e2 0%, #fde8d0 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 300px;
+        max-height: 500px;
     }
     
     .dish-main-image {
         width: 100%;
-        height: 400px;
-        object-fit: cover;
+        height: auto;
+        max-height: 500px;
+        object-fit: contain;
         cursor: pointer;
         transition: transform 0.3s;
     }
@@ -594,12 +600,6 @@
             </div>
         </section>
         
-        <!-- Comment if any -->
-        <div id="dish-comment-section" class="reviews-section" style="display: none;">
-            <h3 class="reviews-title">Uploader's Comment</h3>
-            <p id="dish-comment" style="color: var(--text-muted); line-height: 1.6;"></p>
-        </div>
-        
         <!-- Reviews Section -->
         <section class="reviews-section" style="display: none;">
             <div class="reviews-header">
@@ -829,8 +829,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         document.getElementById('dish-cost').textContent = dish.meal_cost ? '$' + parseFloat(dish.meal_cost).toFixed(2) : '-';
-        document.getElementById('dish-date-spot').innerHTML = dish.good_date_spot ? 'Yes <svg class="icon icon-sm icon-danger icon-filled"><use href="#icon-heart-filled"></use></svg>' : 'No';
-        document.getElementById('dish-reservation').innerHTML = dish.reservation ? 'Yes <svg class="icon icon-sm icon-success"><use href="#icon-check-circle"></use></svg>' : 'No';
+        
+        // Date Spot: Pull from Restaurant first, then fall back to dish
+        const isDateSpot = (dish.restaurant && dish.restaurant.is_date_spot !== null && dish.restaurant.is_date_spot !== undefined) 
+            ? dish.restaurant.is_date_spot 
+            : dish.good_date_spot;
+        document.getElementById('dish-date-spot').innerHTML = isDateSpot ? 'Yes <svg class="icon icon-sm icon-danger icon-filled"><use href="#icon-heart-filled"></use></svg>' : 'No';
+        
+        // Reservation: Pull from Restaurant first, then fall back to dish
+        const hasReservation = (dish.restaurant && dish.restaurant.reservation !== null && dish.restaurant.reservation !== undefined)
+            ? dish.restaurant.reservation
+            : dish.reservation;
+        document.getElementById('dish-reservation').innerHTML = hasReservation ? 'Yes <svg class="icon icon-sm icon-success"><use href="#icon-check-circle"></use></svg>' : 'No';
         
         // Use dish phone/website, fallback to restaurant phone/website
         const phoneNumber = dish.phone || (dish.restaurant && dish.restaurant.phone);
@@ -839,12 +849,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const websiteUrl = dish.website || (dish.restaurant && dish.restaurant.website);
         if (websiteUrl) {
             document.getElementById('dish-website').innerHTML = `<a href="${websiteUrl}" target="_blank" style="color: var(--primary);">Visit</a>`;
-        }
-        
-        // Comment
-        if (dish.comment) {
-            document.getElementById('dish-comment-section').style.display = 'block';
-            document.getElementById('dish-comment').textContent = dish.comment;
         }
         
         // Reviews

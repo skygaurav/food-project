@@ -465,7 +465,7 @@
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label class="form-label">Postcode <span class="required">*</span></label>
+                            <label class="form-label">Postcode</label>
                             <input type="text" id="restaurant_postcode" name="restaurant_postcode" class="form-control" 
                                    placeholder="e.g. 90001" />
                             <div class="form-error"></div>
@@ -501,7 +501,7 @@
                     </div>
                 </div>
                 
-                <div class="form-group">
+                <div class="form-group" id="categories-group">
                     <label class="form-label">Restaurant Categories <span class="required">*</span></label>
                     <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem;">Select one or more categories that best describe this restaurant</p>
                     <div id="categories-container" class="categories-select">
@@ -554,7 +554,7 @@
                         <div class="form-error"></div>
                     </div>
                     
-                    <div class="form-group">
+                    <div class="form-group" id="website-group">
                         <label class="form-label">Restaurant Website</label>
                         <input type="url" id="website" name="website" class="form-control" placeholder="https://..." />
                         <div class="form-error"></div>
@@ -562,7 +562,7 @@
                 </div>
                 
                 <div class="form-row">
-                    <div class="form-group">
+                    <div class="form-group" id="phone-group">
                         <label class="form-label">Restaurant Phone</label>
                         <input type="tel" id="phone" name="phone" class="form-control" placeholder="e.g. (555) 123-4567" />
                         <div class="form-error"></div>
@@ -727,6 +727,11 @@ document.addEventListener('DOMContentLoaded', function() {
         restaurantSearch.style.display = 'none';
         autocompleteResults.classList.remove('show');
         newRestaurantFields.classList.remove('show');
+        
+        // Hide Categories, Website, Phone for existing restaurant
+        document.getElementById('categories-group').style.display = 'none';
+        document.getElementById('website-group').style.display = 'none';
+        document.getElementById('phone-group').style.display = 'none';
     }
     
     // Select new restaurant
@@ -740,6 +745,11 @@ document.addEventListener('DOMContentLoaded', function() {
         restaurantSearch.style.display = 'none';
         autocompleteResults.classList.remove('show');
         newRestaurantFields.classList.add('show');
+        
+        // Show Categories, Website, Phone for new restaurant
+        document.getElementById('categories-group').style.display = 'block';
+        document.getElementById('website-group').style.display = 'block';
+        document.getElementById('phone-group').style.display = 'block';
     }
     
     // Clear restaurant selection
@@ -758,6 +768,11 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('restaurant_city').value = '';
         document.getElementById('restaurant_state').value = '';
         document.getElementById('restaurant_postcode').value = '';
+        
+        // Show Categories, Website, Phone fields again
+        document.getElementById('categories-group').style.display = 'block';
+        document.getElementById('website-group').style.display = 'block';
+        document.getElementById('phone-group').style.display = 'block';
     });
     
     // Close autocomplete on outside click
@@ -901,31 +916,26 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 V.clearError(stateInput);
             }
-            
-            if (!postcodeInput.value.trim()) {
-                V.setError(postcodeInput, 'Postcode is required for new restaurants');
-                isValid = false;
-            } else {
-                V.clearError(postcodeInput);
-            }
         }
         
-        // Validate categories
-        const categoriesContainer = document.getElementById('categories-container');
-        const selectedCats = categoriesContainer.querySelectorAll('.category-chip.selected');
-        if (selectedCats.length === 0) {
-            const catGroup = categoriesContainer.closest('.form-group');
-            catGroup.classList.add('has-error');
-            let errorEl = catGroup.querySelector('.form-error');
-            if (errorEl) errorEl.innerHTML = '<svg class="icon icon-xs"><use href="#icon-x"></use></svg> Please select at least one category';
-            isValid = false;
-        } else {
-            const catGroup = categoriesContainer.closest('.form-group');
-            catGroup.classList.remove('has-error');
-            let errorEl = catGroup.querySelector('.form-error');
-            if (errorEl) {
-                errorEl.innerHTML = '';
-                errorEl.style.display = '';
+        // Validate categories (only for new restaurants)
+        if (isNewRestaurant) {
+            const categoriesContainer = document.getElementById('categories-container');
+            const selectedCats = categoriesContainer.querySelectorAll('.category-chip.selected');
+            if (selectedCats.length === 0) {
+                const catGroup = categoriesContainer.closest('.form-group');
+                catGroup.classList.add('has-error');
+                let errorEl = catGroup.querySelector('.form-error');
+                if (errorEl) errorEl.innerHTML = '<svg class="icon icon-xs"><use href="#icon-x"></use></svg> Please select at least one category';
+                isValid = false;
+            } else {
+                const catGroup = categoriesContainer.closest('.form-group');
+                catGroup.classList.remove('has-error');
+                let errorEl = catGroup.querySelector('.form-error');
+                if (errorEl) {
+                    errorEl.innerHTML = '';
+                    errorEl.style.display = '';
+                }
             }
         }
         

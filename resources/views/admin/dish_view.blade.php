@@ -24,10 +24,20 @@
                 <button class="btn btn-danger" id="reject-btn">
                     <svg class="icon"><use href="#icon-x"></use></svg> Reject
                 </button>
+            @elseif($dish->status === 'approved')
+                <span id="status-badge" class="badge badge-success" style="font-size: 1rem; padding: 0.5rem 1rem;">
+                    Approved
+                </span>
+                <button class="btn btn-warning" id="unapprove-btn">
+                    <svg class="icon"><use href="#icon-clock"></use></svg> Set to Pending
+                </button>
             @else
-                <span id="status-badge" class="badge {{ $dish->status === 'approved' ? 'badge-success' : 'badge-danger' }}" style="font-size: 1rem; padding: 0.5rem 1rem;">
+                <span id="status-badge" class="badge badge-danger" style="font-size: 1rem; padding: 0.5rem 1rem;">
                     {{ ucfirst($dish->status) }}
                 </span>
+                <button class="btn btn-warning" id="unapprove-btn">
+                    <svg class="icon"><use href="#icon-clock"></use></svg> Set to Pending
+                </button>
             @endif
             <a href="/dishes/{{ $dish->slug }}" target="_blank" class="btn btn-secondary">
                 <svg class="icon"><use href="#icon-external-link"></use></svg> View on Site
@@ -619,6 +629,22 @@ if (rejectBtn) {
             location.reload();
         } catch (e) {
             alert('Failed to reject dish: ' + e.message);
+        }
+    });
+}
+
+// Unapprove (set to pending) button
+const unapproveBtn = document.getElementById('unapprove-btn');
+if (unapproveBtn) {
+    unapproveBtn.addEventListener('click', async () => {
+        if (!confirm('Are you sure you want to set this dish back to pending status?')) return;
+        
+        try {
+            await adminFetch('POST', `/admin/api/dishes/${dishId}/set-pending`);
+            alert('Dish set to pending status.');
+            location.reload();
+        } catch (e) {
+            alert('Failed to update dish status: ' + e.message);
         }
     });
 }

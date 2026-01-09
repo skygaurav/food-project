@@ -7,6 +7,16 @@
     <title>@yield('meta_title', $seoSettings['default_meta_title'] ?? 'FOODCITA - Discover Delicious Dishes')</title>
     <meta name="description" content="@yield('meta_description', $seoSettings['default_meta_description'] ?? 'Share your favorite meals and explore dishes loved by food enthusiasts in your city.')">
     <meta name="keywords" content="@yield('meta_keywords', $seoSettings['default_meta_keywords'] ?? 'food, dishes, restaurants, reviews, dining')">
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6579J2TEHH"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-6579J2TEHH');
+    </script>
+    
     <link rel="stylesheet" href="/app.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -331,12 +341,13 @@
         
         .btn-header-outline {
             border: 1px solid rgba(255,255,255,0.3);
-            color: #fff;
+            color: #1e293b;
+            background: rgba(255,255,255,0.9);
         }
         
         .btn-header-outline:hover {
             border-color: #fff;
-            background: rgba(255,255,255,0.1);
+            background: #fff;
         }
         
         .btn-header-primary {

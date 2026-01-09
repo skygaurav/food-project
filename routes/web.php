@@ -174,6 +174,7 @@ Route::prefix('admin/api')->middleware(['web', 'admin.auth'])->group(function ()
     Route::get('dishes/{dish:id}', [DishApprovalController::class, 'show']);
     Route::post('dishes/{dish:id}/approve', [DishApprovalController::class, 'approve']);
     Route::post('dishes/{dish:id}/disapprove', [DishApprovalController::class, 'disapprove']);
+    Route::post('dishes/{dish:id}/set-pending', [DishApprovalController::class, 'setPending']);
 
     // Admin user management
     Route::get('admins', [AdminManagementController::class, 'index']);
