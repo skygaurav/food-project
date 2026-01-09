@@ -122,6 +122,20 @@ class DishApprovalController extends Controller
     }
 
     /**
+     * Set a dish back to pending status.
+     *
+     * @param  \App\Models\Dish  $dish
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function setPending(Dish $dish): JsonResponse
+    {
+        $dish->status = self::STATUS_PENDING;
+        $dish->save();
+
+        return response()->json($dish->load(['restaurant', 'images']));
+    }
+
+    /**
      * Format a dish for list display.
      *
      * @param  \App\Models\Dish  $dish

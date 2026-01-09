@@ -73,14 +73,18 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="logo">🍽️ FOODCITA</div>
+            @if($seoSettings['site_logo'] ?? null)
+                <img src="{{ asset('storage/' . $seoSettings['site_logo']) }}" alt="{{ $seoSettings['site_name'] ?? 'FOODCITA' }}" style="height: 48px; width: auto; max-width: 200px; object-fit: contain; margin-bottom: 15px;">
+            @else
+                <div class="logo">🍽️ {{ $seoSettings['site_name'] ?? 'FOODCITA' }}</div>
+            @endif
         </div>
         
         <h1>Reset Your Password</h1>
         
         <p>Hello {{ $user->name }},</p>
         
-        <p>We received a request to reset the password for your FOODCITA account. Click the button below to create a new password:</p>
+        <p>We received a request to reset the password for your {{ $seoSettings['site_name'] ?? 'FOODCITA' }} account. Click the button below to create a new password:</p>
         
         <div style="text-align: center;">
             <a href="{{ $resetUrl }}" class="btn">Reset My Password</a>
@@ -95,7 +99,7 @@
         
         <div class="footer">
             <p>This email was sent to {{ $user->email }}</p>
-            <p>&copy; {{ date('Y') }} FOODCITA. All rights reserved.</p>
+            <p>&copy; {{ date('Y') }} {{ $seoSettings['site_name'] ?? 'FOODCITA' }}. All rights reserved.</p>
         </div>
     </div>
 </body>

@@ -7,6 +7,16 @@
     <title>@yield('meta_title', $seoSettings['default_meta_title'] ?? 'FOODCITA - Discover Delicious Dishes')</title>
     <meta name="description" content="@yield('meta_description', $seoSettings['default_meta_description'] ?? 'Share your favorite meals and explore dishes loved by food enthusiasts in your city.')">
     <meta name="keywords" content="@yield('meta_keywords', $seoSettings['default_meta_keywords'] ?? 'food, dishes, restaurants, reviews, dining')">
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-6579J2TEHH"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-6579J2TEHH');
+    </script>
+    
     <link rel="stylesheet" href="/app.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -331,12 +341,13 @@
         
         .btn-header-outline {
             border: 1px solid rgba(255,255,255,0.3);
-            color: #fff;
+            color: #1e293b;
+            background: rgba(255,255,255,0.9);
         }
         
         .btn-header-outline:hover {
             border-color: #fff;
-            background: rgba(255,255,255,0.1);
+            background: #fff;
         }
         
         .btn-header-primary {
@@ -806,8 +817,12 @@
     <header class="site-header">
         <div class="header-container">
             <a href="/" class="logo">
-                <svg class="icon icon-lg"><use href="#icon-utensils"></use></svg>
-                FOODCITA
+                @if($seoSettings['site_logo'] ?? null)
+                    <img src="{{ asset('storage/' . $seoSettings['site_logo']) }}" alt="{{ $seoSettings['site_name'] ?? 'FOODCITA' }}" class="logo-img" style="height: 36px; width: auto; max-width: 180px; object-fit: contain;">
+                @else
+                    <svg class="icon icon-lg"><use href="#icon-utensils"></use></svg>
+                    {{ $seoSettings['site_name'] ?? 'FOODCITA' }}
+                @endif
             </a>
             
             <nav class="nav-links">
@@ -884,7 +899,13 @@
         <div class="footer-container">
             <div class="footer-grid">
                 <div class="footer-section">
-                    <h4><svg class="icon"><use href="#icon-utensils"></use></svg> FOODCITA</h4>
+                    <h4>
+                        @if($seoSettings['site_logo'] ?? null)
+                            <img src="{{ asset('storage/' . $seoSettings['site_logo']) }}" alt="{{ $seoSettings['site_name'] ?? 'FOODCITA' }}" style="height: 28px; width: auto; max-width: 140px; object-fit: contain; vertical-align: middle;">
+                        @else
+                            <svg class="icon"><use href="#icon-utensils"></use></svg> {{ $seoSettings['site_name'] ?? 'FOODCITA' }}
+                        @endif
+                    </h4>
                     <p>Discover and share the best dishes from restaurants in your city. Join our community of food lovers!</p>
                 </div>
                 

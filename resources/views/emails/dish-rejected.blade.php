@@ -122,7 +122,11 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="logo">🍽️ FOODCITA</div>
+            @if($seoSettings['site_logo'] ?? null)
+                <img src="{{ asset('storage/' . $seoSettings['site_logo']) }}" alt="{{ $seoSettings['site_name'] ?? 'FOODCITA' }}" style="height: 48px; width: auto; max-width: 200px; object-fit: contain; margin-bottom: 15px;">
+            @else
+                <div class="logo">🍽️ {{ $seoSettings['site_name'] ?? 'FOODCITA' }}</div>
+            @endif
         </div>
         
         <h1>Update on Your Dish Submission</h1>
@@ -162,7 +166,7 @@
         
         <div class="footer">
             <p>This email was sent to {{ $user->email }}</p>
-            <p>&copy; {{ date('Y') }} FOODCITA. All rights reserved.</p>
+            <p>&copy; {{ date('Y') }} {{ $seoSettings['site_name'] ?? 'FOODCITA' }}. All rights reserved.</p>
         </div>
     </div>
 </body>

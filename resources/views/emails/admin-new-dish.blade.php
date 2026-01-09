@@ -122,7 +122,11 @@
     <div class="container">
         <div class="header">
             <div class="notification-icon">🔔</div>
-            <div class="logo">🍽️ FOODCITA</div>
+            @if($seoSettings['site_logo'] ?? null)
+                <img src="{{ asset('storage/' . $seoSettings['site_logo']) }}" alt="{{ $seoSettings['site_name'] ?? 'FOODCITA' }}" style="height: 48px; width: auto; max-width: 200px; object-fit: contain; margin-bottom: 15px;">
+            @else
+                <div class="logo">🍽️ {{ $seoSettings['site_name'] ?? 'FOODCITA' }}</div>
+            @endif
             <div class="admin-badge">ADMIN NOTIFICATION</div>
         </div>
         
@@ -181,8 +185,8 @@
         </div>
         
         <div class="footer">
-            <p>This is an automated notification from FOODCITA Admin</p>
-            <p>&copy; {{ date('Y') }} FOODCITA. All rights reserved.</p>
+            <p>This is an automated notification from {{ $seoSettings['site_name'] ?? 'FOODCITA' }} Admin</p>
+            <p>&copy; {{ date('Y') }} {{ $seoSettings['site_name'] ?? 'FOODCITA' }}. All rights reserved.</p>
         </div>
     </div>
 </body>

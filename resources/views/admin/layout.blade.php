@@ -627,7 +627,7 @@
     @include('partials.icons')
     
     <header class="admin-header">
-        <h1><svg class="icon icon-lg" style="color: var(--primary);"><use href="#icon-utensils"></use></svg> FOODCITA Admin</h1>
+        <a href="/admin" style="text-decoration: none; color: inherit;"><h1><svg class="icon icon-lg" style="color: var(--primary);"><use href="#icon-utensils"></use></svg> FOODCITA Admin</h1></a>
         <div class="header-actions">
             <div class="header-user">
                 <svg class="icon"><use href="#icon-user"></use></svg>

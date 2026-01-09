@@ -82,7 +82,7 @@ class AppServiceProvider extends ServiceProvider
         try {
             $settings = AdminSetting::query()
                 ->whereIn('key', [
-                    'meta_title', 'meta_description', 'meta_keywords', 'site_name',
+                    'meta_title', 'meta_description', 'meta_keywords', 'site_name', 'site_logo',
                     'social_facebook', 'social_instagram', 'social_twitter', 'social_youtube', 'social_tiktok',
                 ])
                 ->get()
@@ -91,6 +91,7 @@ class AppServiceProvider extends ServiceProvider
 
             return [
                 'site_name' => $settings['site_name'] ?? self::DEFAULT_SEO_SETTINGS['site_name'],
+                'site_logo' => $settings['site_logo'] ?? null,
                 'default_meta_title' => $settings['meta_title'] ?? self::DEFAULT_SEO_SETTINGS['default_meta_title'],
                 'default_meta_description' => $settings['meta_description'] ?? self::DEFAULT_SEO_SETTINGS['default_meta_description'],
                 'default_meta_keywords' => $settings['meta_keywords'] ?? self::DEFAULT_SEO_SETTINGS['default_meta_keywords'],
