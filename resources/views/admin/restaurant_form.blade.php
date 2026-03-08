@@ -63,8 +63,8 @@
                     </div>
                     
                     <div class="form-group">
-                        <label class="form-label">Postcode <span style="color: #ef4444;">*</span></label>
-                        <input type="text" name="postcode" value="{{ $restaurant->postcode ?? '' }}" class="form-control" placeholder="ZIP / Postcode" required />
+                        <label class="form-label">Postcode</label>
+                        <input type="text" name="postcode" value="{{ $restaurant->postcode ?? '' }}" class="form-control" placeholder="ZIP / Postcode" />
                     </div>
                 </div>
                 
@@ -214,7 +214,7 @@ form.addEventListener('submit', async e => {
     }
     
     // Validate required fields
-    const required = ['name', 'address', 'city', 'region', 'country', 'postcode'];
+    const required = ['name', 'address', 'city', 'region', 'country'];
     for (const field of required) {
         if (!payload[field]) {
             alert(`${field.charAt(0).toUpperCase() + field.slice(1).replace('_', ' ')} is required`);

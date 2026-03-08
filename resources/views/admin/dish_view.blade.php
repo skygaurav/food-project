@@ -180,7 +180,7 @@
                         </div>
                         <div class="detail-item full-width">
                             <label>Address</label>
-                            <span>{{ $dish->restaurant->address }}, {{ $dish->restaurant->city }}, {{ $dish->restaurant->region }} {{ $dish->restaurant->postcode }}, {{ $dish->restaurant->country }}</span>
+                            <span>{{ $dish->restaurant->address }}, {{ $dish->restaurant->city }}, {{ $dish->restaurant->region }}{!! $dish->restaurant->postcode ? ' ' . $dish->restaurant->postcode . ',' : ',' !!} {{ $dish->restaurant->country }}</span>
                         </div>
                         <div class="detail-item">
                             <label>Website</label>

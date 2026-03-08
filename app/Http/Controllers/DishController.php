@@ -399,12 +399,16 @@ class DishController extends Controller
                 $state = $request->string('restaurant_state')->toString();
                 $postcode = $request->string('restaurant_postcode')->toString();
                 
-                // Check if restaurant already exists with same name, city, and postcode
-                $existingRestaurant = Restaurant::query()
+                // Check if restaurant already exists with same name, city, and postcode (if provided)
+                $query = Restaurant::query()
                     ->where('name', $restaurantName)
-                    ->where('city', $city)
-                    ->where('postcode', $postcode)
-                    ->first();
+                    ->where('city', $city);
+                
+                if ($postcode) {
+                    $query->where('postcode', $postcode);
+                }
+                
+                $existingRestaurant = $query->first();
                 
                 if ($existingRestaurant) {
                     $restaurantId = $existingRestaurant->id;

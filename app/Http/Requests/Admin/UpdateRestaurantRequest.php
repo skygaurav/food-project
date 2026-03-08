@@ -38,7 +38,7 @@ class UpdateRestaurantRequest extends FormRequest
             'city' => ['required', 'string', 'max:120'],
             'region' => ['required', 'string', 'max:120'],
             'country' => ['required', 'string', 'max:120'],
-            'postcode' => ['required', 'string', 'max:20'],
+            'postcode' => ['nullable', 'string', 'max:20'],
             'website' => ['nullable', 'url', 'max:255'],
             'opening_hours' => ['nullable', 'string'],
             'meal_cost' => ['nullable', 'numeric', 'min:0'],
