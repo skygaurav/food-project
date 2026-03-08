@@ -54,7 +54,7 @@ class StoreDishRequest extends FormRequest
             $rules['restaurant_name'] = ['required', 'string', 'max:200'];
             $rules['restaurant_city'] = ['required', 'string', 'max:100'];
             $rules['restaurant_state'] = ['required', 'string', 'max:100'];
-            $rules['restaurant_postcode'] = ['required', 'string', 'max:20'];
+            $rules['restaurant_postcode'] = ['nullable', 'string', 'max:20'];
             $rules['restaurant_address'] = ['nullable', 'string', 'max:255'];
             $rules['restaurant_country'] = ['required', 'string', 'max:100'];
         }
