@@ -76,6 +76,7 @@
         .detail-label {
             color: #64748b;
             font-size: 14px;
+            padding-right:
         }
         .detail-value {
             color: #1e293b;
