@@ -16,6 +16,7 @@ use Illuminate\Http\File;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -536,14 +537,28 @@ class DishController extends Controller
             return $dish->load(['restaurant', 'images']);
         });
 
+        Log::info('Dish submitted successfully, sending emails for dish ID: ' . $dish->id);
+
         // Send email notification to user using MailService
         $user = $request->user();
-        MailService::send(new DishSubmittedMail($dish, $user), $user->email);
+        if ($user) {
+            $userEmailSent = MailService::send(new DishSubmittedMail($dish, $user), $user->email);
+            if (!$userEmailSent) {
+                Log::error('Failed to send dish submitted email to user: ' . $user->email . ' for dish ID: ' . $dish->id);
+            }
+        } else {
+            Log::error('No authenticated user found when sending dish submitted email for dish ID: ' . $dish->id);
+        }
 
         // Send notification to admin
         $adminEmail = MailService::getAdminNotificationEmail();
         if ($adminEmail) {
-            MailService::send(new NewDishSubmittedAdminMail($dish), $adminEmail);
+            $adminEmailSent = MailService::send(new NewDishSubmittedAdminMail($dish), $adminEmail);
+            if (!$adminEmailSent) {
+                Log::error('Failed to send new dish notification email to admin: ' . $adminEmail . ' for dish ID: ' . $dish->id);
+            }
+        } else {
+            Log::warning('Admin notification email not set, skipping admin email for dish ID: ' . $dish->id);
         }
 
         return response()->json($dish, 201);
