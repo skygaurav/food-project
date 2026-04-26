@@ -175,7 +175,7 @@
         @if($dish->comment)
         <div style="background-color: #f0f9ff; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
             <strong style="color: #0369a1;">User's Comment:</strong>
-            <p style="margin: 10px 0 0 0; color: #0c4a6e;">"{{ Str::limit($dish->comment, 300) }}"</p>
+            <p style="margin: 10px 0 0 0; color: #0c4a6e;">"{{ \Illuminate\Support\Str::limit($dish->comment, 300) }}"</p>
         </div>
         @endif
         
