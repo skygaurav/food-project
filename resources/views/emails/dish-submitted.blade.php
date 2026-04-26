@@ -126,7 +126,7 @@
             <div class="dish-detail">🏪 <span>Restaurant:</span> {{ $dish->restaurant->name }}</div>
             @endif
             @if($dish->comment)
-            <div class="dish-detail">💬 <span>Your Review:</span> {{ Str::limit($dish->comment, 100) }}</div>
+            <div class="dish-detail">💬 <span>Your Review:</span> {{ \Illuminate\Support\Str::limit($dish->comment, 100) }}</div>
             @endif
             @if($dish->meal_cost)
             <div class="dish-detail">💰 <span>Price:</span> ${{ number_format($dish->meal_cost, 2) }}</div>
